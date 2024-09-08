@@ -8,7 +8,9 @@ class Database {
         this.connect()
     }
     connect() {
-        mongoose.connect(connectString).then(_ => console.log("Connect success")).catch(err => console.log("Err connect"))
+        mongoose.connect(connectString, {
+            maxPoolSize: 50
+        }).then(_ => console.log("Connect success")).catch(err => console.log("Err connect"))
     }
     static getInstance() {
         if (!Database.instance) {
