@@ -5,10 +5,7 @@ class AccessController {
         try {
             return res.status(201).json(await AccessService.signUp(req.body));
         } catch (e) {
-            return res.status(500).json({
-                code: 1,
-                message: 'Internal Server Error'
-            });
+
         }
     }
 }

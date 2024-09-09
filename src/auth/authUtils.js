@@ -1,4 +1,3 @@
-import e from 'express'
 import jwt from 'jsonwebtoken'
 
 export const createTokenPair = async (payload, publicKey, privateKey) => {
@@ -14,9 +13,9 @@ export const createTokenPair = async (payload, publicKey, privateKey) => {
 
         jwt.verify(accessToken, publicKey, (err, decode) => {
             if (err) {
-                console.log("verify err::", err);
+                //  console.log("verify err::", err);
             } else {
-                console.log("decode varify::", decode);
+                //console.log("decode varify::", decode);
 
             }
         })

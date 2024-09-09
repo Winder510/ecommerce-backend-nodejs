@@ -5,6 +5,9 @@ import KeyTokenService from "./keyToken.service.js";
 import {
     createTokenPair
 } from "../auth/authUtils.js";
+import {
+    getInfoData
+} from "../utils/index.js";
 const RoleShop = {
     ADMIN: "ADMIN",
     USER: "USER"
@@ -59,21 +62,21 @@ class AccessService {
                     return {
                         code: 1,
                         message: "publicKeyString error",
-
                     }
                 }
 
-                const publicKeyObject = crypto.createPublicKey(publicKeyString);
-
                 const tokens = await createTokenPair({
-                    userIdL: newShop._id,
+                    userId: newShop._id,
                     email
                 }, publicKey, privateKey);
 
                 return {
                     code: 201,
                     metadata: {
-                        shop: newShop,
+                        shop: getInfoData({
+                            fields: ["_id", "name", "email"],
+                            object: newShop
+                        }),
                         tokens
                     },
                     message: 'Sign up success'
