@@ -12,6 +12,12 @@ import './dbs/init.mongo.js'
 app.use(morgan("dev"))
 app.use(helmet())
 app.use(compression())
+// For parsing application/json
+app.use(express.json());
+// For parsing application/x-www-form-urlencoded
+app.use(express.urlencoded({
+    extended: true
+}));
 
 // init route
 app.use('/', router)

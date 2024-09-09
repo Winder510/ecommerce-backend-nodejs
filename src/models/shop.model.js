@@ -1,8 +1,8 @@
 // !dmbg
-const mongoose = require('mongoose'); // Erase if already required
+import mongoose from 'mongoose'; // Erase if already required
 
 const COLLECTION_NAME = "Shops"
-const DOCUMENT_NAME = "SHOP"
+const DOCUMENT_NAME = "Shop"
 // Declare the Schema of the Mongo model
 var shopSchema = new mongoose.Schema({
     name: {
@@ -25,7 +25,7 @@ var shopSchema = new mongoose.Schema({
         default: 'inactive'
     },
     verify: {
-        type: Schema.Types.Boolean,
+        type: mongoose.Schema.Types.Boolean,
         default: false
     },
     roles: {
@@ -38,4 +38,4 @@ var shopSchema = new mongoose.Schema({
 });
 
 //Export the model
-module.exports = mongoose.model(DOCUMENT_NAME, shopSchema);
+export default mongoose.model(DOCUMENT_NAME, shopSchema);

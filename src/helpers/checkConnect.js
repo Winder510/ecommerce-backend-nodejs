@@ -10,9 +10,7 @@ const countConnect = () => {
 
 
 // check overload
-const checkOverload = () => {
 
-}
 module.exports = {
     countConnect
 }
