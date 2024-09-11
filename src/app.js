@@ -3,7 +3,7 @@ import morgan from 'morgan'
 import helmet from "helmet";
 import compression from 'compression'
 import router from './routes/index.js'
-
+import cookieParser from 'cookie-parser'
 const app = express()
 //init db
 import './dbs/init.mongo.js'
@@ -12,6 +12,7 @@ import './dbs/init.mongo.js'
 app.use(morgan("dev"))
 app.use(helmet())
 app.use(compression())
+app.use(cookieParser())
 // For parsing application/json
 app.use(express.json());
 // For parsing application/x-www-form-urlencoded
@@ -30,11 +31,14 @@ app.use((req, res, next) => {
     error.status = 404;
     next(error)
 })
+
+// The default error handler
 app.use((error, req, res, next) => {
     const statusCode = error.status || 500;
     return res.status(statusCode).json({
-        status: 'error!!',
+        status: 'Error!!',
         code: statusCode,
+        stack: error.stack,
         message: error.message || "Internal server error"
 
     })
