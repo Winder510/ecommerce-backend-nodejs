@@ -12,7 +12,7 @@ export const createTokenPair = async (payload, publicKey, privateKey) => {
     try {
         const accessToken = await jwt.sign(payload, privateKey, {
             algorithm: 'RS256',
-            expiresIn: '2 days'
+            expiresIn: '10000'
         })
         const refreshToken = await jwt.sign(payload, privateKey, {
             algorithm: 'RS256',
@@ -23,8 +23,8 @@ export const createTokenPair = async (payload, publicKey, privateKey) => {
             if (err) {
                 //  console.log("verify err::", err);
             } else {
-                console.log(">>>>>>>>>> publicKey>>>>>>", publicKey)
-                console.log("decode varify::", decode);
+
+                //console.log("decode varify::", decode);
 
             }
         })
@@ -54,8 +54,51 @@ export const authentication = asyncErrorHandler(async (req, res, next) => {
 
     const keyStore = await KeyTokenService.findByUserId(userId);
     if (!keyStore) throw new NotFoundError("Not found key store")
-    console.log(">>>>>>>>>> publicKey>>>>>>", keyStore.publicKey)
+
     try {
+        const decodeUser = jwt.verify(accessToken, keyStore.publicKey)
+        if (userId !== decodeUser.userId) {
+            throw new AuthFailureError("Invalid userid ")
+        }
+        req.keyStore = keyStore;
+        return next()
+    } catch (e) {
+        throw e
+    }
+
+})
+export const authenticationV2 = asyncErrorHandler(async (req, res, next) => {
+    const userId = req.headers['x-client-id'];
+    if (!userId) throw new AuthFailureError("Invalid request")
+
+
+    const keyStore = await KeyTokenService.findByUserId(userId);
+    if (!keyStore) throw new NotFoundError("Not found key store")
+
+    if (req.originalUrl === "/api/v1/shop/handleRefreshToken" &&
+        req.headers['refreshtoken']) {
+        try {
+            const refreshToken = req.headers['refreshtoken'];
+            const decodeUser = jwt.verify(refreshToken, keyStore.publicKey)
+            if (userId !== decodeUser.userId) {
+                throw new AuthFailureError("Invalid userid ")
+            }
+            console.log("hji")
+            req.keyStore = keyStore;
+            req.user = decodeUser;
+            req.refreshToken = refreshToken
+            return next()
+        } catch (e) {
+            throw e
+        }
+    }
+
+    const accessToken = getAccessTokenFromHeader(req);
+    if (!accessToken) throw new AuthFailureError("Invalid request")
+
+    try {
+        console.log(">>>>>>>>    accessToken accessToken")
+
         const decodeUser = jwt.verify(accessToken, keyStore.publicKey)
         if (userId !== decodeUser.userId) {
             throw new AuthFailureError("Invalid userid ")

@@ -1,7 +1,6 @@
 import keyTokenModel from "../models/keyToken.model.js";
-
 class KeyTokenService {
-    static createKeyToken = async ({
+    static upsertKeyToken = async ({
         userId,
         publicKey,
         refreshToken
@@ -39,6 +38,11 @@ class KeyTokenService {
     static removeKeyById = async (id) => {
         return await keyTokenModel.deleteOne({
             _id: id
+        })
+    }
+    static deleteKeyById = async (userId) => {
+        return await keyTokenModel.findByIdAndDelete({
+            user: userId
         })
     }
 }

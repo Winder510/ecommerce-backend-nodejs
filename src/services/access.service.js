@@ -15,15 +15,75 @@ import {
 import {
     findByEmail
 } from "./shop.service.js";
-import {
-    access
-} from "fs";
+
 const RoleShop = {
     ADMIN: "ADMIN",
     USER: "USER"
 }
 
 class AccessService {
+
+    static handleRefreshToken = async ({
+        refreshToken,
+        user,
+        keyStore,
+        res
+    }) => {
+        console.log(1)
+        if (keyStore.refreshToken !== refreshToken) {
+            throw new AuthFailureError('Shop not registed')
+        }
+
+        const foundShop = await findByEmail({
+            email: user.email
+        })
+
+        const {
+            publicKey,
+            privateKey
+        } = crypto.generateKeyPairSync('rsa', {
+            modulusLength: 4096,
+            publicKeyEncoding: {
+                type: "pkcs1",
+                format: "pem",
+            },
+            privateKeyEncoding: {
+                type: "pkcs1",
+                format: "pem",
+            },
+        });
+
+        const tokens = await createTokenPair({
+            userId: foundShop._id,
+            email: user.email
+        }, publicKey, privateKey);
+
+
+        // set cookies cho client
+        res.cookie("refresh_token", tokens.refreshToken, {
+            httpOnly: true,
+            maxAge: 60 * 60 * 1000,
+        });
+
+
+        await KeyTokenService.upsertKeyToken({
+            userId: foundShop._id,
+            publicKey,
+            refreshToken: tokens.refreshToken
+        })
+
+
+        return {
+            shop: getInfoData({
+                fields: ["_id", "name", "email"],
+                object: foundShop
+            }),
+            accessToken: tokens.accessToken
+        }
+    }
+
+
+
     static async logout(
         keyStore
     ) {
@@ -32,7 +92,7 @@ class AccessService {
     static async login({
         email,
         password,
-        refreshToken = null
+        res
     }) {
 
         const foundShop = await findByEmail({
@@ -63,7 +123,13 @@ class AccessService {
             email
         }, publicKey, privateKey);
 
-        await KeyTokenService.createKeyToken({
+        // set cookies cho client
+        res.cookie("refresh_token", tokens.refreshToken, {
+            httpOnly: true,
+            maxAge: 60 * 60 * 1000,
+        });
+
+        await KeyTokenService.upsertKeyToken({
             userId: foundShop._id,
             publicKey,
             refreshToken: tokens.refreshToken
@@ -73,14 +139,16 @@ class AccessService {
                 fields: ["_id", "name", "email"],
                 object: foundShop
             }),
-            accessToken: tokens.accessToken
+            // accessToken: tokens.accessToken
+            tokens
         }
 
     }
     static signUp = async ({
         name,
         email,
-        password
+        password,
+        res
     }) => {
         const hodelShop = await shopModel.findOne({
             email
@@ -116,7 +184,13 @@ class AccessService {
                 email
             }, publicKey, privateKey);
 
-            await KeyTokenService.createKeyToken({
+            // set cookies cho client
+            res.cookie("refresh_token", tokens.refreshToken, {
+                httpOnly: true,
+                maxAge: 60 * 60 * 1000,
+            });
+
+            await KeyTokenService.upsertKeyToken({
                 userId: newShop._id,
                 publicKey,
                 refreshToken: tokens.refreshToken
