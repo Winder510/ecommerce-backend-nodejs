@@ -29,7 +29,6 @@ class AccessService {
         keyStore,
         res
     }) => {
-        console.log(1)
         if (keyStore.refreshToken !== refreshToken) {
             throw new AuthFailureError('Shop not registed')
         }

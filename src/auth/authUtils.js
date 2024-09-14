@@ -12,7 +12,7 @@ export const createTokenPair = async (payload, publicKey, privateKey) => {
     try {
         const accessToken = await jwt.sign(payload, privateKey, {
             algorithm: 'RS256',
-            expiresIn: '10000'
+            expiresIn: '2 days'
         })
         const refreshToken = await jwt.sign(payload, privateKey, {
             algorithm: 'RS256',
@@ -97,13 +97,12 @@ export const authenticationV2 = asyncErrorHandler(async (req, res, next) => {
     if (!accessToken) throw new AuthFailureError("Invalid request")
 
     try {
-        console.log(">>>>>>>>    accessToken accessToken")
-
         const decodeUser = jwt.verify(accessToken, keyStore.publicKey)
         if (userId !== decodeUser.userId) {
             throw new AuthFailureError("Invalid userid ")
         }
         req.keyStore = keyStore;
+        
         return next()
     } catch (e) {
         throw e
