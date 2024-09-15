@@ -10,4 +10,8 @@ const router = express.Router()
 router.post('', asyncErrorHandler(productController.createProduct))
 
 
+// query
+
+router.get('/draft/all', asyncErrorHandler(productController.getAllDraftProduct))
+
 export default router
