@@ -8,7 +8,9 @@ import {
 } from "../models/product.model.js"
 import {
     findAllDraftProductForShop,
+    findAllProducts,
     findAllPublishProductForShop,
+    findProduct,
     publishProduct,
     searchProductByUser,
     unPublishProduct
@@ -90,6 +92,38 @@ export default class ProductFactory {
             keySearch
         })
     }
+
+    static async findAllProducts({
+        limit = 50,
+        sort = 'ctime',
+        page = 1,
+        filter = {
+            isPublished: true
+        },
+        select
+    }) {
+        return await findAllProducts({
+            limit,
+            sort,
+            filter,
+            select: ['product_name', 'product_description', "product_price"]
+        })
+    }
+    static async findProduct({
+        product_id
+    }) {
+        return await findProduct({
+            product_id,
+            unSelect: ['__v']
+        })
+    }
+    static async updateProduct(type, payload) {
+        const productClass = ProductFactory.productRegister[type]
+        if (!productClass) throw new BadRequestError(`Invalid product type: ${type}`)
+
+        return new productClass(payload).createProduct()
+    }
+
 
 }
 

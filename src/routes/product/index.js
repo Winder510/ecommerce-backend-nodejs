@@ -11,6 +11,8 @@ import {
 const router = express.Router()
 
 router.get('/search/:keySearch', asyncErrorHandler(productController.getListSearchProduct))
+router.get('', asyncErrorHandler(productController.findAllProducts))
+router.get('/:product_id', asyncErrorHandler(productController.findProduct))
 
 router.use(authenticationV2);
 

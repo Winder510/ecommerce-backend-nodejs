@@ -1,8 +1,12 @@
 import {
+    getSelectData,
+    unGetSelectData
+} from "../../utils/index.js";
+import {
     productModel
 } from "../product.model.js";
 
-export const findAllDraftProductForShop = async ({
+const findAllDraftProductForShop = async ({
     query,
     limit,
     skip
@@ -14,7 +18,7 @@ export const findAllDraftProductForShop = async ({
     })
 }
 
-export const findAllPublishProductForShop = async ({
+const findAllPublishProductForShop = async ({
     query,
     limit,
     skip
@@ -36,7 +40,7 @@ const queryProduct = async ({
     }).skip(skip).limit(limit).lean().exec();
 }
 
-export const publishProduct = async ({
+const publishProduct = async ({
     product_id
 }) => {
     const foundProduct = await productModel.findOne({
@@ -55,7 +59,7 @@ export const publishProduct = async ({
     });
 };
 
-export const unPublishProduct = async ({
+const unPublishProduct = async ({
     product_id
 }) => {
     const foundProduct = await productModel.findOne({
@@ -74,9 +78,13 @@ export const unPublishProduct = async ({
     });
 };
 
-export const searchProductByUser = async ({
+const searchProductByUser = async ({
     keySearch
 }) => {
+    const regexSearch = new RegExp(
+        keySearch
+    )
+    console.log(regexSearch)
     const results = await productModel.find({
         isDraft: false,
         $text: {
@@ -93,4 +101,38 @@ export const searchProductByUser = async ({
     }).lean();
 
     return results;
+}
+const findAllProducts = async ({
+    limit,
+    sort,
+    page,
+    filter,
+    select
+}) => {
+    const skip = (page - 1) * limit;
+    const sortBy = sort === 'ctime' ? {
+        _id: -1
+    } : {
+        _id: 1
+    }
+    const products = await productModel.find(filter).sort(sortBy).skip(skip).limit(limit).select(getSelectData(select)).lean();
+
+    return products;
+}
+
+const findProduct = async ({
+    product_id,
+    unSelect
+}) => {
+    return productModel.findById(product_id).select(unGetSelectData(unSelect)).lean()
+}
+export {
+    searchProductByUser,
+    findAllDraftProductForShop,
+    unPublishProduct,
+    publishProduct,
+    findAllPublishProductForShop,
+    findAllProducts,
+    findProduct
+
 }
