@@ -7,7 +7,11 @@ import {
     productModel
 } from "../models/product.model.js"
 import {
-    findAllDraftProduct
+    findAllDraftProductForShop,
+    findAllPublishProductForShop,
+    publishProduct,
+    searchProductByUser,
+    unPublishProduct
 } from "../models/repositories/product.repo.js";
 
 export default class ProductFactory {
@@ -26,6 +30,7 @@ export default class ProductFactory {
     static registerproductType(type, classRef) {
         ProductFactory.productRegister[type] = classRef;
     }
+
     static async createProduct(type, payload) {
         const productClass = ProductFactory.productRegister[type]
         if (!productClass) throw new BadRequestError(`Invalid product type: ${type}`)
@@ -33,8 +38,7 @@ export default class ProductFactory {
         return new productClass(payload).createProduct()
     }
 
-
-    static async findAllDraftProduct(
+    static async findAllDraftProductForShop(
         limit = 10,
         skip = 0
     ) {
@@ -42,7 +46,21 @@ export default class ProductFactory {
             isDraft: true
         }
         console.log(limit, skip)
-        return await findAllDraftProduct({
+        return await findAllDraftProductForShop({
+            query,
+            limit,
+            skip
+        })
+    }
+
+    static async findAllPublishProductForShop(
+        limit = 10,
+        skip = 0
+    ) {
+        const query = {
+            isPublished: true
+        }
+        return await findAllPublishProductForShop({
             query,
             limit,
             skip
@@ -52,8 +70,27 @@ export default class ProductFactory {
     static async publishProduct({
         product_id
     }) {
-
+        return await publishProduct({
+            product_id
+        })
     }
+
+    static async unPublishProduct({
+        product_id
+    }) {
+        return await unPublishProduct({
+            product_id
+        })
+    }
+
+    static async searchProduct({
+        keySearch
+    }) {
+        return await searchProductByUser({
+            keySearch
+        })
+    }
+
 }
 
 class Product {

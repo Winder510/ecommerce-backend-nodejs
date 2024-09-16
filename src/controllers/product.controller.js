@@ -10,11 +10,47 @@ class ProductController {
             metadata: await ProdutService.createProduct(req.body.product_type, req.body)
         }).send(res)
     }
-    getAllDraftProduct = async (req, res, next) => {
+    getAllDraftProductForShop = async (req, res, next) => {
         new SuccessResponse({
             message: "Get list product",
-            metadata: await ProdutService.findAllDraftProduct()
+            metadata: await ProdutService.findAllDraftProductForShop()
         }).send(res)
     }
+
+    publishProduct = async (req, res, next) => {
+        new SuccessResponse({
+            message: "publish product",
+            metadata: await ProdutService.publishProduct({
+                product_id: req.params.id
+            })
+        }).send(res)
+    }
+
+    unPublishProduct = async (req, res, next) => {
+        new SuccessResponse({
+            message: "unPublish product",
+            metadata: await ProdutService.unPublishProduct({
+                product_id: req.params.id
+            })
+        }).send(res)
+    }
+
+    getAllPublishedProductForShop = async (req, res, next) => {
+        new SuccessResponse({
+            message: "Get list product",
+            metadata: await ProdutService.findAllPublishProductForShop()
+        }).send(res)
+    }
+
+    getListSearchProduct = async (req, res, next) => {
+        console.log(req.params.keySearch)
+        new SuccessResponse({
+            message: "Get list  search product",
+            metadata: await ProdutService.searchProduct({
+                keySearch: req.params.keySearch
+            })
+        }).send(res)
+    }
+
 }
 export default new ProductController();

@@ -66,7 +66,11 @@ const productSchema = new Schema({
     collection: COLLECTION_NAME,
     timestamps: true
 })
-
+// create index for search
+productSchema.index({
+    product_name: 'text',
+    product_description: 'text'
+})
 // middle ware 
 productSchema.pre('save', function (next) {
     this.product_slug = slugify(this.product_name, {
@@ -74,11 +78,6 @@ productSchema.pre('save', function (next) {
     })
     next()
 })
-
-
-
-
-
 
 const iphoneSchema = new Schema({
     screen: {

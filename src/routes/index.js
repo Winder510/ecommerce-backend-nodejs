@@ -8,8 +8,8 @@ const router = express.Router()
 //check permission
 
 
-router.use('/api/v1', accessRouter)
 router.use('/api/v1/product', productRouter)
+router.use('/api/v1', accessRouter)
 
 
 export default router

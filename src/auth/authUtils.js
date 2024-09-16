@@ -102,7 +102,7 @@ export const authenticationV2 = asyncErrorHandler(async (req, res, next) => {
             throw new AuthFailureError("Invalid userid ")
         }
         req.keyStore = keyStore;
-        
+
         return next()
     } catch (e) {
         throw e
