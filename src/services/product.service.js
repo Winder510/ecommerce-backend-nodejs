@@ -33,6 +33,7 @@ export default class ProductFactory {
     // }
 
     static productRegister = {}
+
     static registerproductType(type, classRef) {
         ProductFactory.productRegister[type] = classRef;
     }
