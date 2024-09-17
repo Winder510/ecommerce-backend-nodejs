@@ -61,7 +61,6 @@ class ProductController {
 
 
     getListSearchProduct = async (req, res, next) => {
-        console.log(req.params.keySearch)
         new SuccessResponse({
             message: "Get list  search product",
             metadata: await ProdutService.searchProduct({
@@ -69,6 +68,16 @@ class ProductController {
             })
         }).send(res)
     }
+
+    // update product
+    updateProduct = async (req, res, next) => {
+        new SuccessResponse({
+            message: "Update product",
+            metadata: await ProdutService.updateProduct(req.body.product_type, req.params.product_id, req.body)
+        }).send(res)
+
+    }
+
 
 }
 export default new ProductController();

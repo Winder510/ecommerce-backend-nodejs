@@ -18,6 +18,7 @@ router.use(authenticationV2);
 
 
 router.post('', asyncErrorHandler(productController.createProduct))
+router.patch('/:product_id', asyncErrorHandler(productController.updateProduct))
 router.post('/publish/:id', asyncErrorHandler(productController.publishProduct))
 router.post('/unpublish/:id', asyncErrorHandler(productController.unPublishProduct))
 

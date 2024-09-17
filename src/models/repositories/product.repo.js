@@ -126,6 +126,19 @@ const findProduct = async ({
 }) => {
     return productModel.findById(product_id).select(unGetSelectData(unSelect)).lean()
 }
+
+const updateProductById = async ({
+    product_id,
+    payload,
+    model,
+    isNew = true
+}) => {
+    return await model.findByIdAndUpdate(product_id, payload, {
+        new: isNew
+    })
+}
+
+
 export {
     searchProductByUser,
     findAllDraftProductForShop,
@@ -133,6 +146,7 @@ export {
     publishProduct,
     findAllPublishProductForShop,
     findAllProducts,
-    findProduct
+    findProduct,
+    updateProductById
 
 }

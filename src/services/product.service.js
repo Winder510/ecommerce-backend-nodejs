@@ -13,8 +13,12 @@ import {
     findProduct,
     publishProduct,
     searchProductByUser,
-    unPublishProduct
+    unPublishProduct,
+    updateProductById
 } from "../models/repositories/product.repo.js";
+import {
+    removeUndefinedNullObject
+} from "../utils/index.js";
 
 export default class ProductFactory {
     // static async createProduct(type, payload) {
@@ -117,14 +121,14 @@ export default class ProductFactory {
             unSelect: ['__v']
         })
     }
-    static async updateProduct(type, payload) {
+
+
+    static async updateProduct(type, product_id, payload) {
         const productClass = ProductFactory.productRegister[type]
         if (!productClass) throw new BadRequestError(`Invalid product type: ${type}`)
 
-        return new productClass(payload).createProduct()
+        return new productClass(payload).updateProduct(product_id)
     }
-
-
 }
 
 class Product {
@@ -153,6 +157,15 @@ class Product {
             _id
         })
     }
+
+    //update product
+    async updatProduct(product_id, payload) {
+        return await updateProductById({
+            product_id,
+            payload,
+            model: productModel
+        })
+    }
 }
 class iPhone extends Product {
     async createProduct() {
@@ -163,8 +176,21 @@ class iPhone extends Product {
         if (!newProDuct) throw BadRequestError("Create new product error")
 
         return newProDuct;
+    }
+
+    async updateProduct(product_id) {
+        const objProduct = removeUndefinedNullObject(this)
 
 
+        if (this.product_attributes) {
+            await updateProductById({
+                product_id,
+                payload: objProduct,
+                model: iPhoneModel
+            })
+        }
+        const updateProduct = await super.updatProduct(product_id, objProduct)
+        return updateProduct
     }
 }
 class Mac extends Product {
@@ -176,8 +202,21 @@ class Mac extends Product {
         if (!newProDuct) throw BadRequestError("Create new product error")
 
         return newProDuct;
+    }
+
+    async updateProduct(product_id) {
+        const objProduct = removeUndefinedNullObject(this)
 
 
+        if (this.product_attributes) {
+            await updateProductById({
+                product_id,
+                payload: objProduct,
+                model: macModel
+            })
+        }
+        const updateProduct = await super.updatProduct(product_id, objProduct)
+        return updateProduct
     }
 }
 
