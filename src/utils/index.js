@@ -1,4 +1,5 @@
 import _ from 'lodash'
+import mongoose from 'mongoose'
 
 export const getInfoData = ({
     fields = [],
@@ -34,3 +35,4 @@ export const removeUndefinedNullObject = (obj) => {
 
     return result;
 };
+export const convertToObjectIdMongodb = id => mongoose.Types.ObjectId(id)

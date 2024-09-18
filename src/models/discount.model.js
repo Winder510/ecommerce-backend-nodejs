@@ -53,6 +53,10 @@ var iventoryShema = new mongoose.Schema({
         type: Number,
         required: true // so luong su dung toi da tren 1 user
     },
+    discount_max_value: {
+        type: Number,
+        required: true
+    },
     discount_min_order_value: {
         type: Number,
         required: true
@@ -61,6 +65,7 @@ var iventoryShema = new mongoose.Schema({
         type: Boolean,
         required: true
     },
+
     discount_applies_to: {
         type: String,
         required: true,
