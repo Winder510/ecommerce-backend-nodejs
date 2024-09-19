@@ -1,5 +1,6 @@
 import {
-    BadRequestError
+    BadRequestError,
+    NotFoundError
 } from "../core/error.response"
 import discountModel from "../models/discount.model"
 import {
@@ -160,14 +161,18 @@ class DiscountService {
             discount_max_uses,
             discount_start,
             discount_end,
-            discount_min_order_value
+            discount_min_order_value,
+            discount_max_uses_per_user,
+            discount_user_used,
+            discount_type,
+            discount_value
         } = foundDiscount
 
-        if (!discount_is_active) throw new BadRequestError("discount exprire")
-        if (!discount_max_uses) throw new BadRequestError("discount are out")
+        if (!discount_is_active) throw new NotFoundError("discount exprire")
+        if (!discount_max_uses) throw new NotFoundError("discount are out")
 
         if (new Date() < new Date(discount_start) || new Date() > new Date(discount_end)) {
-            throw new BadRequestError("discount exprire")
+            throw new NotFoundError("discount exprire")
         }
 
 
@@ -177,8 +182,30 @@ class DiscountService {
             totalOrder = products.reduce((acc, product) => {
                 return acc + (product.quanity + product.price)
             }, 0)
+
+            if (totalOrder < discount_min_order_value) {
+                throw new NotFoundError(`discount requirea a minium order value of ${discount_min_order_value}`)
+            }
         }
 
+        // check so lan su dung doi voi 1 user
+        if (discount_max_uses_per_user > 0) {
+            let count_uses = discount_user_used.reduce((acc, id) => {
+                if (id === userId) {
+                    return acc + 1;
+                }
+            }, 0)
+            if (count_uses >= discount_max_uses_per_user) throw new NotFoundError(`you have used it all `)
+        }
+
+        // check xem discount nay là fix_amount,..
+        const amount = discount_type === "fixed_amount" ? discount_value : totalOrder * (discount_value / 100)
+
+        return {
+            totalOrder,
+            discount: amount,
+            totalPrice: totalOrder - amount
+        }
     }
 
 }
