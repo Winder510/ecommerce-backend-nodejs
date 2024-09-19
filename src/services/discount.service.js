@@ -1,25 +1,26 @@
 import {
     BadRequestError,
     NotFoundError
-} from "../core/error.response"
-import discountModel from "../models/discount.model"
+} from "../core/error.response.js"
+import discountModel from "../models/discount.model.js"
 import {
     checkDiscountExists,
     findAllDiscountCodeUnSelect
-} from "../models/repositories/discount.repo"
+} from "../models/repositories/discount.repo.js"
 import {
     findAllProducts
-} from "../models/repositories/product.repo"
+} from "../models/repositories/product.repo.js"
 
-class DiscountService {
+
+export default class DiscountService {
     static async createDisCountCode(payload) {
         const {
             code,
-            start,
-            end,
+            start_date,
+            end_date,
             is_active,
             min_order_value,
-            prodcut_ids,
+            product_ids,
             applies_to,
             name,
             description,
@@ -45,8 +46,8 @@ class DiscountService {
             discount_type: type,
             discount_value: value,
             discount_code: code,
-            discount_start: new Date(start),
-            discount_end: new Date(end),
+            discount_start: new Date(start_date),
+            discount_end: new Date(end_date),
             discount_max_uses: max_uses,
             discount_uses_count: uses_count,
             discount_user_used: [],
@@ -55,7 +56,7 @@ class DiscountService {
             discount_is_active: is_active,
             discount_max_value: max_value,
             discount_applies_to: applies_to,
-            discount_product_id: applies_to === "all" ? [] : prodcut_ids
+            discount_product_ids: applies_to === "all" ? [] : product_ids
         })
         return newDiscount;
     }
@@ -75,13 +76,13 @@ class DiscountService {
             discount_code: code,
         }).lean()
 
-        if (!foundDiscount && !foundDiscount.discount_is_active) {
+        if (!foundDiscount && !foundDiscount?.discount_is_active) {
             throw new BadRequestError("Discount not exists")
         }
 
         const {
             discount_applies_to,
-            discount_product_id
+            discount_product_ids
         } = foundDiscount
 
         let products
@@ -103,13 +104,13 @@ class DiscountService {
                 filter: {
                     isPublished: true,
                     _id: {
-                        $in: discount_product_id
+                        $in: discount_product_ids
                     }
                 },
                 limit: +limit,
                 page: +page,
                 sort: 'ctime',
-                select: ['prodcut_name']
+                select: ['product_name']
             })
         }
         return products
@@ -177,10 +178,10 @@ class DiscountService {
 
 
         // check gia tri toi thieu cua don hang
-        const totalOrder = 0;
+        let totalOrder = 0;
         if (discount_min_order_value > 0) {
             totalOrder = products.reduce((acc, product) => {
-                return acc + (product.quanity + product.price)
+                return acc + (product.quanity * product.price)
             }, 0)
 
             if (totalOrder < discount_min_order_value) {
@@ -208,4 +209,37 @@ class DiscountService {
         }
     }
 
+    static async deleteDiscountCode({
+        codeId
+    }) {
+        const deleted = await discountModel.findByIdAndDelete({
+            discount_code: codeId
+        })
+
+        return deleted
+    }
+
+    static async cancelDiscountCode({
+        codeId,
+        userId
+    }) {
+        const foundDiscount = await checkDiscountExists({
+            filter: {
+                discount_code: codeId
+            }
+        })
+        if (!foundDiscount) throw new NotFoundError("Discount not exists")
+
+        const result = await discountModel.findByIdAndUpdate(foundDiscount._id, {
+            $pull: {
+                discount_user_used: userId
+            },
+            $inc: {
+                discount_max_uses: 1,
+                discount_uses_count: -1
+            }
+        })
+
+        return result
+    }
 }

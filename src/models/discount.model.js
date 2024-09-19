@@ -71,7 +71,7 @@ var iventoryShema = new mongoose.Schema({
         required: true,
         enum: ['all', 'specific']
     },
-    discount_product_id: {
+    discount_product_ids: {
         type: Array,
         default: [] // so san pham duoc ap dung
     }
