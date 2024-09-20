@@ -1,4 +1,5 @@
 import {
+    convertToObjectIdMongodb,
     getSelectData,
     unGetSelectData
 } from "../../utils/index.js";
@@ -138,7 +139,11 @@ const updateProductById = async ({
     })
 }
 
-
+const getProductById = async (productId) => {
+    return await productModel.findOne({
+        _id: (productId)
+    }).lean()
+}
 export {
     searchProductByUser,
     findAllDraftProductForShop,
@@ -147,6 +152,7 @@ export {
     findAllPublishProductForShop,
     findAllProducts,
     findProduct,
-    updateProductById
+    updateProductById,
+    getProductById
 
 }

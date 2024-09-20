@@ -138,7 +138,7 @@ export default class DiscountService {
     /**
      * 
      *  products:[{
-     *      productId, quanity,name,price
+     *      productId, quantity,name,price
      *    }]
      *
      */
@@ -181,7 +181,7 @@ export default class DiscountService {
         let totalOrder = 0;
         if (discount_min_order_value > 0) {
             totalOrder = products.reduce((acc, product) => {
-                return acc + (product.quanity * product.price)
+                return acc + (product.quantity * product.price)
             }, 0)
 
             if (totalOrder < discount_min_order_value) {
