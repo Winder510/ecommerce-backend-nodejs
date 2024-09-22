@@ -3,6 +3,8 @@ import {
 } from "../core/error.response.js";
 import cartModel from "../models/cart.model.js";
 import {
+    addNewProductToCart,
+    checkExistProduct,
     createUserCart,
     updateUserCartQuantity,
 } from "../models/repositories/cart.repo.js";
@@ -21,11 +23,11 @@ export class CartService {
         product.name = foundProduct.product_name;
         product.price = foundProduct.product_price;
 
-
         // check cart ton tai hay khong
         const userCart = await cartModel.findOne({
             cart_userId: userId
         })
+
         if (!userCart) {
             return await createUserCart({
                 userId,
@@ -33,14 +35,17 @@ export class CartService {
             })
         }
 
-        // neu co gio hang roi nhung chua co san pham
-        if (!userCart.cart_products.length) {
-            userCart.cart_products = [product]
-            return await userCart.save()
-        }
+        if (await checkExistProduct({
+                userId,
+                productId: product.productId
+            })) {
+            return await updateUserCartQuantity({
+                userId,
+                product
+            })
 
-        // co ton tai san pham va update quantity cua no
-        return await updateUserCartQuantity({
+        }
+        return await addNewProductToCart({
             userId,
             product
         })

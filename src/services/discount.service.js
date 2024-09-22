@@ -166,7 +166,8 @@ export default class DiscountService {
             discount_max_uses_per_user,
             discount_user_used,
             discount_type,
-            discount_value
+            discount_value,
+            discount_max_value
         } = foundDiscount
 
         if (!discount_is_active) throw new NotFoundError("discount exprire")
@@ -200,7 +201,10 @@ export default class DiscountService {
         }
 
         // check xem discount nay là fix_amount,..
-        const amount = discount_type === "fixed_amount" ? discount_value : totalOrder * (discount_value / 100)
+        let amount = discount_type === "fixed_amount" ? discount_value : totalOrder * (discount_value / 100)
+
+        // check gia tri toi da
+        amount = amount > discount_max_value ? discount_max_value : amount
 
         return {
             totalOrder,

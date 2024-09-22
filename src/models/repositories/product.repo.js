@@ -144,6 +144,28 @@ const getProductById = async (productId) => {
         _id: (productId)
     }).lean()
 }
+
+const checkProductByServer = async (products) => {
+    return await Promise.all(products.map(async product => {
+        try {
+            const foundProduct = await getProductById(product.productId);
+            if (foundProduct) {
+                return {
+                    price: foundProduct.product_price,
+                    quantity: product.quantity,
+                    productId: product.productId
+                };
+            } else {
+                throw new Error(`Product not found: ${product.productId}`);
+            }
+        } catch (error) {
+            return {
+                error: error.message,
+                productId: product.productId
+            };
+        }
+    }));
+}
 export {
     searchProductByUser,
     findAllDraftProductForShop,
@@ -153,6 +175,7 @@ export {
     findAllProducts,
     findProduct,
     updateProductById,
-    getProductById
+    getProductById,
+    checkProductByServer
 
 }
