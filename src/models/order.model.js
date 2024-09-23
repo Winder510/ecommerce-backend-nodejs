@@ -31,6 +31,10 @@ var orderSchema = new mongoose.Schema({
         type: Object,
         default: {}
     },
+    order_shipping: {
+        type: Object,
+        default: {}
+    },
     order_products: {
         type: Array,
         required: true

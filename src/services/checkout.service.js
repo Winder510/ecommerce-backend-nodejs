@@ -8,10 +8,13 @@ import {
 import {
     checkProductByServer
 } from "../models/repositories/product.repo.js";
-import {
-    CartService
-} from "./cart.service.js";
+
 import DiscountService from "./discount.service.js";
+import {
+    acquireLock,
+    releaseLock
+} from "./redis.service.js";
+import orderModel from "../models/order.model.js";
 
 class CheckOutService {
 
@@ -102,14 +105,52 @@ class CheckOutService {
             products_order,
         })
 
+        const acquireProduct = []
         // check lai so luong trong kho mot lan nua
         for (let i = 0; i < products_order.length; i++) {
             const {
                 productId,
                 quantity
-            } = products_order[i]
-
+            } = products_order[i];
+            const keyLock = await acquireLock({
+                productId,
+                quantity,
+                cartId
+            })
+            acquireProduct.push(keyLock ? true : false)
+            if (keyLock) {
+                await releaseLock(keyLock)
+            }
         }
+
+        //check if co mot sp trong kho het hang
+        if (acquireProduct.includes(false)) {
+            throw new BadRequestError("Một số sản phẩm đã được cập nhật vui lòng quay lại")
+        }
+
+        const newOrder = orderModel.create({
+            order_userId: userId,
+            order_checkout: checkOut_order,
+            order_shipping: user_address,
+            order_payment: user_payment,
+            order_products: products_order
+        })
+
+
+        // truong hop: neu insert thanh cong thi remove product co trong cart
+
+        if (newOrder) {
+            // remove product in cart
+        }
+
+        return newOrder
     }
+
+    static async getOneOrderByUser() {}
+
+    static async cancelOrderByUser() {}
+
+    static async updateOrderStatusByAdmin() {}
+
 }
 export default CheckOutService

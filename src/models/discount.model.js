@@ -8,7 +8,7 @@ const DOCUMENT_NAME = "Discount"
 const COLLECTION_NAME = "discounts"
 
 // Declare the Schema of the Mongo model
-var iventoryShema = new mongoose.Schema({
+var discountSchema = new mongoose.Schema({
     discount_name: {
         type: String,
         required: true
@@ -81,4 +81,4 @@ var iventoryShema = new mongoose.Schema({
 });
 
 //Export the model
-export default mongoose.model(DOCUMENT_NAME, iventoryShema);
+export default mongoose.model(DOCUMENT_NAME, discountSchema);
