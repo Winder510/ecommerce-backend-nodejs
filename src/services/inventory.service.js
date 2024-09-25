@@ -10,7 +10,6 @@ class InventoryService {
     static async addStockToInventory({
         stock,
         productId,
-        shopId,
         location = "QB"
     }) {
         const product = await getProductById(productId);
