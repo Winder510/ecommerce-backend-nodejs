@@ -178,7 +178,7 @@ class Product {
             options: {
                 product_name: this.product_name
             }
-        }).then(rs => console.log(rs)).catch(console.log(error))
+        }).then().catch(console.log(error))
 
 
 

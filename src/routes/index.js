@@ -5,6 +5,7 @@ import discountRouter from './discount/index.js'
 import cartRouter from './cart/index.js'
 import checkoutRouter from './checkout/index.js'
 import inventoryRouter from './inventory/index.js'
+import notificationRouter from './notification/index.js'
 
 
 const router = express.Router()
@@ -14,6 +15,7 @@ const router = express.Router()
 //check permission
 
 router.use('/api/v1/inventory', inventoryRouter)
+router.use('/api/v1/notification', notificationRouter)
 router.use('/api/v1/checkout', checkoutRouter)
 router.use('/api/v1/cart', cartRouter)
 router.use('/api/v1/discount', discountRouter)

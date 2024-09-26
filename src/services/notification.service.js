@@ -1,3 +1,6 @@
+import {
+    TYPE_NOTIFICATION
+} from "../constant/index.js";
 import notificationModel from "../models/notification.model.js";
 
 class NotificationService {
@@ -23,6 +26,31 @@ class NotificationService {
 
 
         return newNoti;
+    }
+
+    static listNotiUser = async ({
+        userId = 1,
+        type = "all",
+        isRead = 0
+    }) => {
+        const match = {
+            noti_receivedId: userId
+        }
+        if (type !== 'all') {
+            match['noti_type'] = type
+        }
+
+        return await notificationModel.aggregate([{
+            $match: match
+        }, {
+            $project: {
+                noti_type: 1,
+                noti_receivedId: 1,
+                noti_content: 1,
+                noti_options: 1
+
+            }
+        }])
     }
 }
 export default NotificationService
