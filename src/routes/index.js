@@ -6,6 +6,7 @@ import cartRouter from './cart/index.js'
 import checkoutRouter from './checkout/index.js'
 import inventoryRouter from './inventory/index.js'
 import notificationRouter from './notification/index.js'
+import uploadRouter from './upload/index.js'
 
 
 const router = express.Router()
@@ -13,7 +14,7 @@ const router = express.Router()
 // check apiKey
 
 //check permission
-
+router.use('/api/v1/upload', uploadRouter)
 router.use('/api/v1/inventory', inventoryRouter)
 router.use('/api/v1/notification', notificationRouter)
 router.use('/api/v1/checkout', checkoutRouter)
