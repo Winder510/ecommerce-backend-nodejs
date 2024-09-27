@@ -1,4 +1,10 @@
 import {
+    error
+} from "console";
+import {
+    TYPE_NOTIFICATION
+} from "../constant/index.js";
+import {
     BadRequestError
 } from "../core/error.response.js"
 import {
@@ -19,6 +25,8 @@ import {
 import {
     removeUndefinedNullObject
 } from "../utils/index.js";
+import InventoryService from "./inventory.service.js";
+import NotificationService from "./notification.service.js";
 
 export default class ProductFactory {
     // static async createProduct(type, payload) {
@@ -52,7 +60,6 @@ export default class ProductFactory {
         const query = {
             isDraft: true
         }
-        console.log(limit, skip)
         return await findAllDraftProductForShop({
             query,
             limit,
@@ -123,7 +130,6 @@ export default class ProductFactory {
         })
     }
 
-
     static async updateProduct(type, product_id, payload) {
         const productClass = ProductFactory.productRegister[type]
         if (!productClass) throw new BadRequestError(`Invalid product type: ${type}`)
@@ -153,10 +159,30 @@ class Product {
 
     // create new product
     async createProduct(_id) {
-        return await productModel.create({
+        const newProduct = await productModel.create({
             ...this,
             _id
         })
+
+        if (newProduct) {
+            const addIntoIven = await InventoryService.addStockToInventory({
+                stock: newProduct.product_quantity,
+                productId: _id
+            })
+        }
+
+        // push notifi to system
+        NotificationService.pushNotifiToSystem({
+            type: TYPE_NOTIFICATION.ORDER_001,
+            recievedId: 1,
+            options: {
+                product_name: this.product_name
+            }
+        }).then().catch(console.log(error))
+
+
+
+        return newProduct
     }
 
     //update product
