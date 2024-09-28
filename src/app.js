@@ -7,6 +7,10 @@ import cookieParser from 'cookie-parser'
 const app = express()
 //init db
 import './dbs/init.mongo.js'
+import {
+    initRedis
+} from './dbs/init.redis.js'
+await initRedis()
 
 // init middleware
 app.use(morgan("dev"))

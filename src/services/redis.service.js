@@ -5,10 +5,13 @@ import {
 import {
     reservationIventory
 } from '../models/repositories/iventory.repo.js'
-const redisClient = redis.createClient()
+import {
+    getRedis
+} from '../dbs/init.redis.js'
 
-const pexpire = promisify(redisClient.pExpire).bind(redisClient)
-const setnxAsync = promisify(redisClient.setNX).bind(redisClient) // set if not exists
+const {
+    instanceConnect: redisClient
+} = getRedis()
 
 const acquireLock = async ({
     productId,
@@ -21,7 +24,7 @@ const acquireLock = async ({
 
     for (let i = 0; i < retryTimes.length; i++) {
         ///  tạo 1 key, thằng nào cầm key thì được vào thanh toán 
-        const result = await setnxAsync(key, expireTime)
+        const result = await redisClient.setNX(key, expireTime)
 
         if (result === 1) {
             //  thao tac voi inventory
@@ -32,7 +35,7 @@ const acquireLock = async ({
             })
 
             if (isReservation.modifiedCount) {
-                await pexpire(key, expireTime)
+                await redisClient.pexpire(key, expireTime)
                 return key
             }
             return null
