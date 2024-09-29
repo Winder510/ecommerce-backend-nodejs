@@ -13,5 +13,12 @@ class CheckOutController {
         }).send(res)
     }
 
+    orderByUser = async (req, res, next) => {
+        new SuccessResponse({
+            message: "create order success",
+            metadata: await CheckOutService.orderByUser(req.body)
+        }).send(res)
+    }
+
 }
 export default new CheckOutController();

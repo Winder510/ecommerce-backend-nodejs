@@ -10,7 +10,7 @@ import './dbs/init.mongo.js'
 import {
     initRedis
 } from './dbs/init.redis.js'
-await initRedis()
+await initRedis();
 
 // init middleware
 app.use(morgan("dev"))

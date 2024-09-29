@@ -9,6 +9,7 @@ const router = express.Router()
 
 
 router.get('/review', asyncErrorHandler(checkoutController.checkoutPreview))
+router.get('/order', asyncErrorHandler(checkoutController.orderByUser))
 
 
 export default router

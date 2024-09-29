@@ -38,7 +38,6 @@ class UploadController {
             message: "upload many success",
             metadata: await uploadListImageFromLocal({
                 files,
-
             })
         }).send(res)
     }

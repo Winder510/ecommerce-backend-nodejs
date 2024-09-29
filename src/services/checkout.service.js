@@ -15,10 +15,11 @@ import {
     releaseLock
 } from "./redis.service.js";
 import orderModel from "../models/order.model.js";
+import {
+    CartService
+} from "./cart.service.js";
 
 class CheckOutService {
-
-
     /**
      *  shop_discount = [{discountId, codeId}]
      *  products_order = [{ quanity,productId}]
@@ -55,11 +56,12 @@ class CheckOutService {
             return acc + (product.price * product.quantity)
         }, 0)
 
-        const {
-            codeId
-        } = shop_discount[0]
+
         if (shop_discount.length > 0) {
             // gia su chi co 1 discount
+            const {
+                codeId
+            } = shop_discount[0]
             const {
                 discount = 0
             } = await DiscountService.getDiscountAmount({
@@ -69,15 +71,14 @@ class CheckOutService {
             })
             checkOut_order.totalDiscount += discount;
 
-            if (discount > 0) {
-                checkOut_order.totalCheckOut = checkOut_order.totalPrice - checkOut_order.totalDiscount
-            }
         }
 
-        const newData = {
-            shop_discount,
-
+        if (checkOut_order.totalDiscount > 0) {
+            checkOut_order.totalCheckOut = checkOut_order.totalPrice - checkOut_order.totalDiscount
+        } else {
+            checkOut_order.totalCheckOut = checkOut_order.totalPrice
         }
+
         return {
             raw: {
                 shop_discount,
@@ -118,6 +119,8 @@ class CheckOutService {
                 cartId
             })
             acquireProduct.push(keyLock ? true : false)
+            console.log("🚀 ~ CheckOutService ~ keyLock:", keyLock)
+            console.log(acquireProduct)
             if (keyLock) {
                 await releaseLock(keyLock)
             }
@@ -140,7 +143,12 @@ class CheckOutService {
         // truong hop: neu insert thanh cong thi remove product co trong cart
 
         if (newOrder) {
-            // remove product in cart
+            for (let i = 0; i < products_order.length; i++) {
+                await CartService.deleteUserCart({
+                    userId,
+                    productId: products_order[i].productId
+                })
+            }
         }
 
         return newOrder
