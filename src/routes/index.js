@@ -7,13 +7,16 @@ import checkoutRouter from './checkout/index.js'
 import inventoryRouter from './inventory/index.js'
 import notificationRouter from './notification/index.js'
 import uploadRouter from './upload/index.js'
-
+import profileRouter from './profile/index.js'
+import rbacRouter from './rbac/index.js'
 
 const router = express.Router()
 
 // check apiKey
 
 //check permission
+router.use('/api/v1/rbac', rbacRouter)
+router.use('/api/v1/profile', profileRouter)
 router.use('/api/v1/upload', uploadRouter)
 router.use('/api/v1/inventory', inventoryRouter)
 router.use('/api/v1/notification', notificationRouter)

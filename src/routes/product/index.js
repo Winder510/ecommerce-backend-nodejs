@@ -7,18 +7,20 @@ import productController from '../../controllers/product.controller.js'
 import {
     authenticationV2
 } from '../../auth/authUtils.js'
+import {
+    grantAccess
+} from '../../middleware/rbac.js'
 
 const router = express.Router()
 
 router.get('/search/:keySearch', asyncErrorHandler(productController.getListSearchProduct))
-router.get('', asyncErrorHandler(productController.findAllProducts))
+router.get('', grantAccess('deleteAny', 'product'), asyncErrorHandler(productController.findAllProducts))
 router.get('/:product_id', asyncErrorHandler(productController.findProduct))
 
 router.use(authenticationV2);
 
 
 router.post('', asyncErrorHandler(productController.createProduct))
-router.patch('/:product_id', asyncErrorHandler(productController.updateProduct))
 router.post('/publish/:id', asyncErrorHandler(productController.publishProduct))
 router.post('/unpublish/:id', asyncErrorHandler(productController.unPublishProduct))
 

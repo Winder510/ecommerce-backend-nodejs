@@ -119,8 +119,7 @@ class CheckOutService {
                 cartId
             })
             acquireProduct.push(keyLock ? true : false)
-            console.log("🚀 ~ CheckOutService ~ keyLock:", keyLock)
-            console.log(acquireProduct)
+
             if (keyLock) {
                 await releaseLock(keyLock)
             }
