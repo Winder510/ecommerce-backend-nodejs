@@ -11,7 +11,7 @@ const ReasonStatusCode = {
     FORBIDDEN: "Bad request error",
     CONFLICT: "Conflict error"
 }
-class ErrorResponse extends Error {
+export class ErrorResponse extends Error {
     constructor(message, status) {
         super(message)
         this.status = status

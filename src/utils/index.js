@@ -36,3 +36,16 @@ export const removeUndefinedNullObject = (obj) => {
     return result;
 };
 export const convertToObjectIdMongodb = id => mongoose.Types.ObjectId(id)
+
+
+export const replacePlaceHolder = ({
+    template,
+    params
+}) => {
+    Object.keys(params).forEach(k => {
+        const placeholer = `{{${k}}}`
+        template = template.replace(new RegExp(placeholer, 'g'), params[k])
+    })
+
+    return template
+}
