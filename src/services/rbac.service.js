@@ -84,7 +84,38 @@ const createRole = async ({
     return role;
 }
 const getListRole = async () => {
+    // 
+    const roles = await roleModel.aggregate([{
+            $unwind: '$rol_grants',
 
+        }, {
+            $lookup: {
+                from: 'Resources',
+                localField: 'rol_grants.resource',
+                foreignField: "_id",
+                as: 'resource'
+            }
+        }, {
+
+            $unwind: '$resource',
+        },
+        {
+            $project: {
+                role: "$rol_name",
+                resource: "$resource.src_name",
+                action: "$rol_grants.actions",
+                attributes: "$rol_grants.attributes",
+                _id: 0
+            }
+        }, {
+
+            $unwind: '$action',
+        },
+
+
+    ])
+
+    return roles
 }
 export {
     getListRole,
