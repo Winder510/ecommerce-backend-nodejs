@@ -37,7 +37,6 @@ var userSchema = new mongoose.Schema({
     },
     usr_sex: {
         type: Number,
-        required: true
     },
     usr_avatar: {
         type: String,

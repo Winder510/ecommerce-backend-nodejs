@@ -52,7 +52,7 @@ export const emailSendToken = async ({
         const content = replacePlaceHolder({
             template: template.temp_html,
             params: {
-                link_verify: `http://localhost:8000/hgp/welcom?token=${token.otp_token}`
+                link_verify: `http://localhost:8000/api/v1/user/welcom?token=${token.otp_token}`
             }
 
         })

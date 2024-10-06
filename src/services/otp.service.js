@@ -1,5 +1,8 @@
 import crypto from 'crypto'
 import otpModel from '../models/otp.model.js'
+import {
+    BadRequestError
+} from '../core/error.response.js'
 const generateTokenRandom = () => {
     const token = crypto.randomInt(2, Math.pow(2, 32))
     return token
@@ -16,7 +19,24 @@ const newOtp = async ({
     })
     return newToken
 }
+const checkEmailToken = async ({
+    token
+}) => {
+    const foundToken = await otpModel.findOne({
+        otp_token: token
+    }).lean()
 
+    if (!foundToken) throw new BadRequestError("Token không hợp lệ")
+
+    await otpModel.deleteOne({
+        otp_token: token
+    })
+
+    console.log("found token :: ", foundToken)
+    return foundToken
+
+}
 export {
-    newOtp
+    newOtp,
+    checkEmailToken
 }

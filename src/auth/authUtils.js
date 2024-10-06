@@ -83,7 +83,6 @@ export const authenticationV2 = asyncErrorHandler(async (req, res, next) => {
             if (userId !== decodeUser.userId) {
                 throw new AuthFailureError("Invalid userid ")
             }
-            console.log("hji")
             req.keyStore = keyStore;
             req.user = decodeUser;
             req.refreshToken = refreshToken
