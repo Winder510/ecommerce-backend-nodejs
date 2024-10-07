@@ -24,8 +24,6 @@ app.use(express.urlencoded({
     extended: true
 }));
 
-
-
 // init route
 app.use('/', router)
 
