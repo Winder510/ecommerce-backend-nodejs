@@ -43,7 +43,7 @@ export const emailSendToken = async ({
 
         // get email template
         const template = await getTemplate({
-            temp_name: 'HTML EMAIL TOKEN'
+            name: 'HTML MAIL TOKEN'
         })
 
         if (!template) throw new NotFoundError("Error template")
@@ -52,7 +52,7 @@ export const emailSendToken = async ({
         const content = replacePlaceHolder({
             template: template.temp_html,
             params: {
-                link_verify: `http://localhost:8000/api/v1/user/welcom?token=${token.otp_token}`
+                link_verify: `http://localhost:8000/api/v1/user/welcome?token=${token.otp_token}`
             }
 
         })
@@ -69,4 +69,38 @@ export const emailSendToken = async ({
         console.log(error)
     }
 
+}
+
+export const emailRemindChangePassWord = async ({
+    receicedEmail,
+    usr_name
+}) => {
+    try {
+        // get email template
+        const template = await getTemplate({
+            name: 'HTML MAIL REMIND'
+        })
+
+        console.log("template:: ", template)
+        if (!template) throw new NotFoundError("Error template")
+
+
+        const content = replacePlaceHolder({
+            template: template.temp_html,
+            params: {
+                usr_name
+            }
+
+        })
+
+        await sendEmailLinkVerify({
+            html: content,
+            toEmail: receicedEmail,
+            subject: "Hi!",
+        })
+
+        return 1;
+    } catch (error) {
+        console.log(error)
+    }
 }

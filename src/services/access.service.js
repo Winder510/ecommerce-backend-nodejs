@@ -14,12 +14,7 @@ import {
 } from "../core/error.response.js";
 import {
     findByEmail
-} from "./shop.service.js";
-
-const RoleShop = {
-    ADMIN: "ADMIN",
-    USER: "USER"
-}
+} from "../models/repositories/user.repository.js";
 
 class AccessService {
 
@@ -30,10 +25,10 @@ class AccessService {
         res
     }) => {
         if (keyStore.refreshToken !== refreshToken) {
-            throw new AuthFailureError('Shop not registed')
+            throw new AuthFailureError('user not registed')
         }
 
-        const foundShop = await findByEmail({
+        const foundUser = await findByEmail({
             email: user.email
         })
 
@@ -53,8 +48,8 @@ class AccessService {
         });
 
         const tokens = await createTokenPair({
-            userId: foundShop._id,
-            email: user.email
+            userId: foundUser._id,
+            email: user.usr_email
         }, publicKey, privateKey);
 
 
@@ -66,16 +61,16 @@ class AccessService {
 
 
         await KeyTokenService.upsertKeyToken({
-            userId: foundShop._id,
+            userId: foundUser._id,
             publicKey,
             refreshToken: tokens.refreshToken
         })
 
 
         return {
-            shop: getInfoData({
-                fields: ["_id", "name", "email"],
-                object: foundShop
+            user: getInfoData({
+                fields: ["_id", "usr_name", "usr_email"],
+                object: foundUser
             }),
             accessToken: tokens.accessToken
         }
@@ -88,18 +83,20 @@ class AccessService {
     ) {
         return await KeyTokenService.removeKeyById(keyStore._id)
     }
+
+
     static async login({
         email,
         password,
         res
     }) {
 
-        const foundShop = await findByEmail({
+        const foundUser = await findByEmail({
             email
         })
-        if (!foundShop) throw new BadRequestError("Shop is not registered")
+        if (!foundUser) throw new BadRequestError("User is not registered")
 
-        const match = await bcrypt.compare(password, foundShop.password)
+        const match = await bcrypt.compare(password, foundUser.usr_password)
         if (!match) throw new AuthFailureError("Authentication error")
 
         const {
@@ -118,7 +115,7 @@ class AccessService {
         });
 
         const tokens = await createTokenPair({
-            userId: foundShop._id,
+            userId: foundUser._id,
             email
         }, publicKey, privateKey);
 
@@ -129,148 +126,83 @@ class AccessService {
         });
 
         await KeyTokenService.upsertKeyToken({
-            userId: foundShop._id,
+            userId: foundUser._id,
             publicKey,
             refreshToken: tokens.refreshToken
         })
         return {
-            shop: getInfoData({
-                fields: ["_id", "name", "email"],
-                object: foundShop
+            user: getInfoData({
+                fields: ["_id", "usr_name", "usr_email"],
+                object: foundUser
             }),
             // accessToken: tokens.accessToken
             tokens
         }
 
     }
-    static signUp = async ({
-        name,
-        email,
-        password,
-        res
-    }) => {
-        const hodelShop = await shopModel.findOne({
-            email
-        }).lean();
-        if (hodelShop) {
-            throw new BadRequestError("Email is exists")
-        }
-        const passwordHash = await bcrypt.hash(password, 10);
+    // static signUp = async ({
+    //     name,
+    //     email,
+    //     password,
+    //     res
+    // }) => {
+    //     const hodelShop = await shopModel.findOne({
+    //         email
+    //     }).lean();
+    //     if (hodelShop) {
+    //         throw new BadRequestError("Email is exists")
+    //     }
+    //     const passwordHash = await bcrypt.hash(password, 10);
 
-        const newShop = await shopModel.create({
-            name,
-            email,
-            password: passwordHash,
-            roles: [RoleShop.ADMIN]
-        })
-        if (newShop) {
-            const {
-                publicKey,
-                privateKey
-            } = crypto.generateKeyPairSync('rsa', {
-                modulusLength: 4096,
-                publicKeyEncoding: {
-                    type: "pkcs1",
-                    format: "pem",
-                },
-                privateKeyEncoding: {
-                    type: "pkcs1",
-                    format: "pem",
-                },
-            });
-            const tokens = await createTokenPair({
-                userId: newShop._id,
-                email
-            }, publicKey, privateKey);
+    //     const newUser = await shopModel.create({
+    //         name,
+    //         email,
+    //         password: passwordHash,
+    //         roles: [RoleShop.ADMIN]
+    //     })
+    //     if (newUser) {
+    //         const {
+    //             publicKey,
+    //             privateKey
+    //         } = crypto.generateKeyPairSync('rsa', {
+    //             modulusLength: 4096,
+    //             publicKeyEncoding: {
+    //                 type: "pkcs1",
+    //                 format: "pem",
+    //             },
+    //             privateKeyEncoding: {
+    //                 type: "pkcs1",
+    //                 format: "pem",
+    //             },
+    //         });
+    //         const tokens = await createTokenPair({
+    //             userId: newUser._id,
+    //             email
+    //         }, publicKey, privateKey);
 
-            // set cookies cho client
-            res.cookie("refresh_token", tokens.refreshToken, {
-                httpOnly: true,
-                maxAge: 60 * 60 * 1000,
-            });
+    //         // set cookies cho client
+    //         res.cookie("refresh_token", tokens.refreshToken, {
+    //             httpOnly: true,
+    //             maxAge: 60 * 60 * 1000,
+    //         });
 
-            await KeyTokenService.upsertKeyToken({
-                userId: newShop._id,
-                publicKey,
-                refreshToken: tokens.refreshToken
-            });
-            return {
-                shop: getInfoData({
-                    fields: ["_id", "name", "email"],
-                    object: newShop
-                }),
-                accessToken: tokens.accessToken
-            }
-        }
-        return {
-            metadata: null,
-        }
-    }
+    //         await KeyTokenService.upsertKeyToken({
+    //             userId: newUser._id,
+    //             publicKey,
+    //             refreshToken: tokens.refreshToken
+    //         });
+    //         return {
+    //             user: getInfoData({
+    //                 fields: ["_id", "name", "email"],
+    //                 object: newUser
+    //             }),
+    //             accessToken: tokens.accessToken
+    //         }
+    //     }
+    //     return {
+    //         metadata: null,
+    //     }
+    // }
 
-    static signUpV2 = async ({
-        name = 'Hello new',
-        email,
-        password,
-        res
-    }) => {
-        const hodelShop = await shopModel.findOne({
-            email
-        }).lean();
-
-        if (hodelShop) {
-            throw new BadRequestError("Email is exists")
-        }
-
-        const passwordHash = await bcrypt.hash(password, 10);
-
-        const newUser = await shopModel.create({
-            name,
-            email,
-            password: passwordHash,
-            roles: [RoleShop.ADMIN]
-        })
-        if (newUser) {
-            const {
-                publicKey,
-                privateKey
-            } = crypto.generateKeyPairSync('rsa', {
-                modulusLength: 4096,
-                publicKeyEncoding: {
-                    type: "pkcs1",
-                    format: "pem",
-                },
-                privateKeyEncoding: {
-                    type: "pkcs1",
-                    format: "pem",
-                },
-            });
-            const tokens = await createTokenPair({
-                userId: newUser._id,
-                email
-            }, publicKey, privateKey);
-
-            // set cookies cho client
-            res.cookie("refresh_token", tokens.refreshToken, {
-                httpOnly: true,
-                maxAge: 60 * 60 * 1000,
-            });
-
-            await KeyTokenService.upsertKeyToken({
-                userId: newUser._id,
-                publicKey,
-                refreshToken: tokens.refreshToken
-            });
-            return {
-                shop: getInfoData({
-                    fields: ["_id", "name", "email"],
-                    object: newUser
-                }),
-                accessToken: tokens.accessToken
-            }
-        }
-        return {
-            metadata: null,
-        }
-    }
 }
 export default AccessService;

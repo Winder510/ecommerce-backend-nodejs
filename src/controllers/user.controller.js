@@ -2,6 +2,8 @@ import {
     SuccessResponse
 } from "../core/success.response.js"
 import {
+    changePassWordService,
+    checkLoginEmailTokenService,
     newUserService
 } from "../services/user.service.js"
 
@@ -13,8 +15,16 @@ class UserController {
         return new SuccessResponse(respond).send(res)
     }
 
-    checkRegsiterEmailToken = async (req, res, next) => {
+    checkLoginEmailToken = async (req, res, next) => {
+        const respond = await checkLoginEmailTokenService({
+            token: req.query.token,
+            res
+        })
 
+        return new SuccessResponse({
+            message: "create new user",
+            metadata: respond
+        }).send(res)
     }
 
 
@@ -24,6 +34,18 @@ class UserController {
 
     deleteUser = async (req, res, next) => {
 
+    }
+
+    changePassword = async (req, res, next) => {
+        console.log(req)
+        return new SuccessResponse({
+            message: "create new user",
+            metadata: await changePassWordService({
+                email: req.user.email,
+                ...req.body
+            })
+
+        }).send(res)
     }
 }
 export default new UserController()

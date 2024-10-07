@@ -45,28 +45,28 @@ function getAccessTokenFromHeader(req) {
     }
 }
 
-export const authentication = asyncErrorHandler(async (req, res, next) => {
-    const userId = req.headers['x-client-id'];
-    if (!userId) throw new AuthFailureError("Invalid request")
+// export const authentication = asyncErrorHandler(async (req, res, next) => {
+//     const userId = req.headers['x-client-id'];
+//     if (!userId) throw new AuthFailureError("Invalid request")
 
-    const accessToken = getAccessTokenFromHeader(req);
-    if (!accessToken) throw new AuthFailureError("Invalid request")
+//     const accessToken = getAccessTokenFromHeader(req);
+//     if (!accessToken) throw new AuthFailureError("Invalid request")
 
-    const keyStore = await KeyTokenService.findByUserId(userId);
-    if (!keyStore) throw new NotFoundError("Not found key store")
+//     const keyStore = await KeyTokenService.findByUserId(userId);
+//     if (!keyStore) throw new NotFoundError("Not found key store")
 
-    try {
-        const decodeUser = jwt.verify(accessToken, keyStore.publicKey)
-        if (userId !== decodeUser.userId) {
-            throw new AuthFailureError("Invalid userid ")
-        }
-        req.keyStore = keyStore;
-        return next()
-    } catch (e) {
-        throw e
-    }
+//     try {
+//         const decodeUser = jwt.verify(accessToken, keyStore.publicKey)
+//         if (userId !== decodeUser.userId) {
+//             throw new AuthFailureError("Invalid userid ")
+//         }
+//         req.keyStore = keyStore;
+//         return next()
+//     } catch (e) {
+//         throw e
+//     }
 
-})
+// })
 export const authenticationV2 = asyncErrorHandler(async (req, res, next) => {
     const userId = req.headers['x-client-id'];
     if (!userId) throw new AuthFailureError("Invalid request")
@@ -75,7 +75,7 @@ export const authenticationV2 = asyncErrorHandler(async (req, res, next) => {
     const keyStore = await KeyTokenService.findByUserId(userId);
     if (!keyStore) throw new NotFoundError("Not found key store")
 
-    if (req.originalUrl === "/api/v1/shop/handleRefreshToken" &&
+    if (req.originalUrl === "/api/v1/handleRefreshToken" &&
         req.headers['refreshtoken']) {
         try {
             const refreshToken = req.headers['refreshtoken'];
@@ -86,6 +86,7 @@ export const authenticationV2 = asyncErrorHandler(async (req, res, next) => {
             req.keyStore = keyStore;
             req.user = decodeUser;
             req.refreshToken = refreshToken
+
             return next()
         } catch (e) {
             throw e
@@ -100,6 +101,7 @@ export const authenticationV2 = asyncErrorHandler(async (req, res, next) => {
         if (userId !== decodeUser.userId) {
             throw new AuthFailureError("Invalid userid ")
         }
+        req.user = decodeUser;
         req.keyStore = keyStore;
 
         return next()

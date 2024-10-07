@@ -49,3 +49,8 @@ export const replacePlaceHolder = ({
 
     return template
 }
+
+export function getUsernameFromEmail(email) {
+    const username = email.split('@')[0];
+    return username;
+}

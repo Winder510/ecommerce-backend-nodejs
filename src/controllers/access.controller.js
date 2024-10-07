@@ -35,14 +35,14 @@ class AccessController {
             })
         }).send(res)
     }
-    signup = async (req, res, next) => {
-        new CREATED({
-            message: "Created success",
-            metadata: await AccessService.signUp({
-                ...req.body,
-                res
-            })
-        }).send(res)
-    }
+    // signup = async (req, res, next) => {
+    //     new CREATED({
+    //         message: "Created success",
+    //         metadata: await AccessService.signUp({
+    //             ...req.body,
+    //             res
+    //         })
+    //     }).send(res)
+    // }
 }
 export default new AccessController();

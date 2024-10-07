@@ -39,9 +39,11 @@ var commentSchema = new mongoose.Schema({
     timestamps: true,
     collection: COLLECTION_NAME
 });
-commentSchema.plugin(mongooseDelete, {
-    deletedAt: true,
-    overrideMethods: ['all'], // Ghi đè tất cả các phương thức liên quan đến xóa
-});
+
+// commentSchema.plugin(mongooseDelete, {
+//     deletedAt: true,
+//     overrideMethods: ['all'], 
+// });
+
 //Export the model
 export default mongoose.model(DOCUMENT_NAME, commentSchema);

@@ -32,7 +32,6 @@ const checkEmailToken = async ({
         otp_token: token
     })
 
-    console.log("found token :: ", foundToken)
     return foundToken
 
 }

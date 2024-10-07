@@ -2,18 +2,14 @@
 import mongoose, {
     Schema
 } from 'mongoose'; // Erase if already required
+import slugify from 'slugify';
 
 const COLLECTION_NAME = "Users"
 const DOCUMENT_NAME = "User"
 // Declare the Schema of the Mongo model
 var userSchema = new mongoose.Schema({
-    usr_id: {
-        type: Number,
-        required: true
-    },
     usr_slug: {
         type: String,
-        required: true
     },
     usr_name: {
         type: String,
@@ -23,20 +19,15 @@ var userSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    usr_salf: {
-        type: String,
-        required: true
-    },
     usr_email: {
         type: String,
         required: true
     },
     usr_phone: {
         type: String,
-        required: true
     },
     usr_sex: {
-        type: Number,
+        type: String,
     },
     usr_avatar: {
         type: String,
@@ -46,9 +37,13 @@ var userSchema = new mongoose.Schema({
         type: Date,
         default: null
     },
-    usr_roles: {
+    usr_role: {
         type: Schema.Types.ObjectId,
         ref: 'Role'
+    },
+    usr_isDefaultPassword: {
+        type: Boolean,
+        default: true
     },
     usr_status: {
         type: String,

@@ -3,11 +3,12 @@ import {
     BadRequestError
 } from '../core/error.response.js'
 import {
+    htmlEmailRemind,
     htmlEmailToken
 } from '../utils/template.html.js'
 const newTemplate = async ({
     name = 'HTML EMAIL TOKEN',
-    html = htmlEmailToken()
+    html = htmlEmailRemind()
 }) => {
 
     const foundTemp = await templateModel.findOne({
@@ -27,9 +28,11 @@ const newTemplate = async ({
 const getTemplate = async ({
     name
 }) => {
+
     const foundTemp = await templateModel.findOne({
-        tem_name: name,
+        temp_name: name,
     }).lean()
+
 
     return foundTemp
 }

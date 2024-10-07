@@ -77,3 +77,48 @@ export const htmlEmailToken = () => {
 </body>
 </html>`
 }
+
+export const htmlEmailRemind = () => {
+    return `<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Temporary Password</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            color: #333;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            text-align: center;
+        }
+        .image {
+            margin-bottom: 20px;
+        }
+        .highlight {
+            color: #007bff;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="image">
+            <img src="https://example.com/your-image-url.png" alt="Security Image" width="100">
+        </div>
+        <h2>Mật khẩu tạm thời: <a href="" class="highlight">{{usr_name}}</a></h2>
+        <p>Đây là mật khẩu mặc định hệ thống sẽ tạo cho bạn, vui lòng lưu ý thay đổi mật khẩu khi đăng nhập vào hệ thống.</p>
+        <p class="highlight">Mật khẩu hết hạn trong 2 giờ. Nếu bạn chưa thay đổi tài khoản sẽ bị xóa</p>
+    </div>
+</body>
+</html>
+`
+}
