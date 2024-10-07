@@ -11,6 +11,7 @@ import profileRouter from './profile/index.js'
 import rbacRouter from './rbac/index.js'
 import templateRouter from './template/index.js'
 import userRouter from './user/index.js'
+import commentRouter from './comment/index.js'
 
 
 const router = express.Router()
@@ -22,6 +23,7 @@ router.use('/api/v1/template', templateRouter)
 router.use('/api/v1/user', userRouter)
 router.use('/api/v1/rbac', rbacRouter)
 router.use('/api/v1/profile', profileRouter)
+router.use('/api/v1/comment', commentRouter)
 router.use('/api/v1/upload', uploadRouter)
 router.use('/api/v1/inventory', inventoryRouter)
 router.use('/api/v1/notification', notificationRouter)
