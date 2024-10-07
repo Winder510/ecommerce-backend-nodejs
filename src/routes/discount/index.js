@@ -18,6 +18,8 @@ router.use(authenticationV2);
 
 router.post('', asyncErrorHandler(discountController.createDiscount))
 router.get('', asyncErrorHandler(discountController.getAllDiscountCode))
+router.delete('', asyncErrorHandler(discountController.deleteDiscount))
+
 
 
 export default router

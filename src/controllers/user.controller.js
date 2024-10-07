@@ -16,5 +16,14 @@ class UserController {
     checkRegsiterEmailToken = async (req, res, next) => {
 
     }
+
+
+    getListUser = async (req, res, next) => {
+
+    }
+
+    deleteUser = async (req, res, next) => {
+
+    }
 }
 export default new UserController()

@@ -2,6 +2,7 @@
 import mongoose, {
     Schema
 } from 'mongoose'; // Erase if already required
+import mongooseDelete from 'mongoose-delete';
 
 
 const DOCUMENT_NAME = "Discount"
@@ -79,6 +80,9 @@ var discountSchema = new mongoose.Schema({
     timestamps: true,
     collection: COLLECTION_NAME
 });
-
+// discountSchema.plugin(mongooseDelete, {
+//     deletedAt: true,
+//     overrideMethods: ['all'],
+// });
 //Export the model
 export default mongoose.model(DOCUMENT_NAME, discountSchema);

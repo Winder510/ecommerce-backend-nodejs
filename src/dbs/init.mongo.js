@@ -1,4 +1,7 @@
 import mongoose from 'mongoose';
+import {
+    globalSoftDeletePlugin
+} from '../configs/softDelete.config.js';
 
 const connectString = "mongodb+srv://22521084:Jd2gqXdFSUCJXCZO@ecommerce-backend-nodej.lvutf.mongodb.net/";
 
@@ -6,6 +9,7 @@ const connectString = "mongodb+srv://22521084:Jd2gqXdFSUCJXCZO@ecommerce-backend
 class Database {
     constructor() {
         this.connect()
+        //   mongoose.plugin(globalSoftDeletePlugin);
     }
     connect() {
         mongoose.connect(connectString, {

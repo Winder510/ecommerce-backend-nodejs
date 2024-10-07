@@ -216,7 +216,7 @@ export default class DiscountService {
     static async deleteDiscountCode({
         codeId
     }) {
-        const deleted = await discountModel.findByIdAndDelete({
+        const deleted = await discountModel.deleteOne({
             discount_code: codeId
         })
 

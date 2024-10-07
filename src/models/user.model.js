@@ -59,6 +59,13 @@ var userSchema = new mongoose.Schema({
     timestamps: true,
     collection: COLLECTION_NAME
 });
+// middle ware 
+userSchema.pre('save', function (next) {
+    this.usr_slug = slugify(this.usr_name, {
+        lower: true
+    })
+    next()
+})
 
 //Export the model
 export default mongoose.model(DOCUMENT_NAME, userSchema);
