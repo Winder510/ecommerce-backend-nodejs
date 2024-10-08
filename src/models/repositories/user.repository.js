@@ -30,10 +30,3 @@ export {
     createUserRepo,
     findByEmail
 }
-const findUserEmail = async (email) => {
-    const user = await userModel.findOne({
-        usr_email: email
-    }).lean()
-
-    return user
-}
