@@ -4,6 +4,7 @@ import helmet from "helmet";
 import compression from 'compression'
 import router from './routes/index.js'
 import cookieParser from 'cookie-parser'
+import cors from 'cors'
 const app = express()
 //init db
 import './dbs/init.mongo.js'
@@ -12,11 +13,20 @@ import {
 } from './dbs/init.redis.js'
 await initRedis();
 
+
+
+
 // init middleware
 app.use(morgan("dev"))
 app.use(helmet())
 app.use(compression())
 app.use(cookieParser())
+app.use(cors({
+    "origin": "*",
+    "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
+    "preflightContinue": false,
+    "optionsSuccessStatus": 204
+}))
 // For parsing application/json
 app.use(express.json());
 // For parsing application/x-www-form-urlencoded

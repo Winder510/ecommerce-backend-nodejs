@@ -1,6 +1,8 @@
 import Joi from "joi";
+import mongoose from "mongoose";
 
-export default class createUserDto {
+// CreateUserDto class
+export class createUserDto {
     constructor(data) {
         this.usr_slug = data.slug;
         this.usr_name = data.name;
@@ -15,8 +17,8 @@ export default class createUserDto {
         this.usr_status = data.status;
     }
 
-    static validate(data) {
-        const schema = Joi.object({
+    static getSchema() {
+        return Joi.object({
             slug: Joi.string().required(),
             name: Joi.string().min(3).max(30).required(),
             password: Joi.string().min(6).required(),
@@ -25,11 +27,19 @@ export default class createUserDto {
             sex: Joi.string().valid("male", "female", "other").required(),
             avatar: Joi.string().uri().optional(),
             date_of_birth: Joi.date().less('now').required(),
-            role: Joi.string().valid("admin", "user", "guest").required(),
+            usr_role: Joi.string().custom((value, helper) => {
+                if (!mongoose.Types.ObjectId.isValid(value)) {
+                    return helper.message('Invalid role ID format');
+                }
+                return value;
+            }).required(),
             isDefaultPassword: Joi.boolean().required(),
-            status: Joi.string().valid("active", "inactive").required(),
+            status: Joi.string().valid('pending', 'active', 'block').required(),
         });
+    }
 
+    static validate(data) {
+        const schema = this.getSchema();
         return schema.validate(data);
     }
 }
