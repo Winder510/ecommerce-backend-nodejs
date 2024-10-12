@@ -15,11 +15,10 @@ import {
 export class CartService {
     static async addToCart({
         userId,
-        product = {} // "productId": "66e69cc55d88ce1a18535ff5",  "quantity": 12
+        product = {}, // "productId": "66e69cc55d88ce1a18535ff5",  "quantity": 12,
     }) {
         const foundProduct = await getProductById(product?.productId)
         if (!foundProduct) throw new NotFoundError("Product not exists")
-
         product.name = foundProduct.product_name;
         product.price = foundProduct.product_price;
 

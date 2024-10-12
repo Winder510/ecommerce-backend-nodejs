@@ -3,10 +3,14 @@ import mongoose, {
 } from 'mongoose'; // Erase if already required
 import slugify from 'slugify';
 
-const COLLECTION_NAME = "Products"
-const DOCUMENT_NAME = "Product"
+const COLLECTION_NAME = "Spus"
+const DOCUMENT_NAME = "Spu"
 
 const productSchema = new Schema({
+    product_id: {
+        type: String,
+        required: true
+    },
     product_name: {
         type: String,
         required: true
@@ -33,14 +37,23 @@ const productSchema = new Schema({
         type: Number,
         required: true
     },
-    product_type: {
-        type: String,
-        required: true,
-        //default: "iphone" mac ipad ...
+    product_category: {
+        type: Schema.Types.ObjectId,
+        required: true
     },
     product_attributes: {
         type: Schema.Types.Mixed,
         required: true
+        /*
+            {
+                attributeId: 12345,
+                attributeValue:[
+                    {
+                        value_id: 1
+                    }
+                ]
+            }
+         */
     },
     product_ratingAverage: {
         type: Number,
@@ -52,7 +65,24 @@ const productSchema = new Schema({
     product_variations: {
         type: Array,
         default: []
+
+        /*
+            variations:[
+                {
+                    images: ,
+                    name: color ,
+                    options: [red,blue]
+                },
+                {
+                    images: ,
+                    name: size ,
+                    options: [XL,S]
+                }
+            ]
+        */
     },
+
+
     isDraft: {
         type: Boolean,
         default: true,
@@ -65,17 +95,19 @@ const productSchema = new Schema({
         index: true,
         select: false
     },
+    isDeleted: {
+        type: Boolean,
+        default: false,
+    }
 
 }, {
     collection: COLLECTION_NAME,
     timestamps: true
 })
-// create index for search
 productSchema.index({
     product_name: 'text',
     product_description: 'text'
 })
-// middle ware 
 productSchema.pre('save', function (next) {
     this.product_slug = slugify(this.product_name, {
         lower: true
@@ -83,46 +115,4 @@ productSchema.pre('save', function (next) {
     next()
 })
 
-const iphoneSchema = new Schema({
-    screen: {
-        type: Object
-    },
-    front_camera: {
-        type: Object
-    },
-    rear_camera: {
-        type: Object
-    },
-    // ..., 
-}, {
-    collection: 'iPhones',
-    timestamps: true
-})
-const macSchema = new Schema({
-    processor: {
-        type: Object
-    },
-    ram_hard_drive: {
-        type: Object
-    },
-    screenn: {
-        type: Object
-    },
-    // ...
-}, {
-    collection: 'Macs',
-    timestamps: true
-})
-// Create models for each schema
-const productModel = mongoose.model(DOCUMENT_NAME, productSchema);
-const iPhoneModel = mongoose.model('iPhone', iphoneSchema);
-const macModel = mongoose.model('Mac', macSchema);
-
-
-
-// Export the models
-export {
-    productModel,
-    iPhoneModel,
-    macModel
-};
+export default mongoose.model(DOCUMENT_NAME, productSchema);

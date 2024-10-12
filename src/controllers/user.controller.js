@@ -1,4 +1,7 @@
 import {
+    BadRequestError
+} from "../core/error.response.js"
+import {
     SuccessResponse
 } from "../core/success.response.js"
 import {
@@ -9,9 +12,15 @@ import {
     checkLoginEmailTokenService,
     newUserService
 } from "../services/user.service.js"
+import {
+    validateEmail
+} from "../utils/index.js"
 
 class UserController {
     newUser = async (req, res, next) => {
+        if (!validateEmail(req.body?.email)) {
+            throw new BadRequestError("Email không đúng định dạng")
+        }
         const respond = await newUserService({
             email: req.body.email
         })

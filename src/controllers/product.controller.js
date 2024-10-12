@@ -3,7 +3,27 @@ import {
     SuccessResponse
 } from "../core/success.response.js";
 import ProdutService from '../services/product.service.js'
+import {
+    SpuService
+} from "../services/spu.service.js";
 class ProductController {
+
+
+    // spu,sku
+    createSpu = async (req, res, next) => {
+        new SuccessResponse({
+            message: "Create new product success",
+            metadata: await SpuService.newSPu(req.body)
+        }).send(res)
+    }
+
+
+
+    //end spu,sku
+
+
+
+
     createProduct = async (req, res, next) => {
         new SuccessResponse({
             message: "Create new product success",

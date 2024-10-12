@@ -28,6 +28,7 @@ import KeyTokenService from "./keyToken.service.js";
 const newUserService = async ({
     email = null
 }) => {
+
     const user = await userModel.findOne({
         usr_email: email
     }).lean()

@@ -17,6 +17,9 @@ router.get('/search/:keySearch', asyncErrorHandler(productController.getListSear
 router.get('', grantAccess('deleteAny', 'product'), asyncErrorHandler(productController.findAllProducts))
 router.get('/:product_id', asyncErrorHandler(productController.findProduct))
 
+// tam thoi khong check auth
+router.post('/spu/new', asyncErrorHandler(productController.createSpu))
+
 router.use(authenticationV2);
 
 

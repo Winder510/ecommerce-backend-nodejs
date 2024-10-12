@@ -23,8 +23,6 @@ class NotificationService {
             noti_options: options,
             noti_content
         })
-
-
         return newNoti;
     }
 

@@ -30,13 +30,16 @@ var cartSchema = new mongoose.Schema({
         default: 0
     },
     cart_userId: {
-        type: String,
+        type: Schema.Types.ObjectId,
         required: true
     }
 }, {
     timestamps: true,
     collection: COLLECTION_NAME
 });
-
+cartSchema.pre('save', function (next) {
+    this.cart_count_product = this.cart_count_product.length
+    next()
+})
 //Export the model
 export default mongoose.model(DOCUMENT_NAME, cartSchema);

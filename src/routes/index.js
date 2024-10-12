@@ -12,6 +12,7 @@ import rbacRouter from './rbac/index.js'
 import templateRouter from './template/index.js'
 import userRouter from './user/index.js'
 import commentRouter from './comment/index.js'
+import categoryRouter from './category/index.js'
 
 
 const router = express.Router()
@@ -20,6 +21,7 @@ const router = express.Router()
 
 //check permission
 router.use('/api/v1/template', templateRouter)
+router.use('/api/v1/category', categoryRouter)
 router.use('/api/v1/user', userRouter)
 router.use('/api/v1/rbac', rbacRouter)
 router.use('/api/v1/profile', profileRouter)
