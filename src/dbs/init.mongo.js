@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
+import 'dotenv/config';
 
-const connectString = "mongodb+srv://22521084:Jd2gqXdFSUCJXCZO@ecommerce-backend-nodej.lvutf.mongodb.net/";
+const connectString = process.env.MONGO_URI || "mongodb+srv://22521084:Jd2gqXdFSUCJXCZO@ecommerce-backend-nodej.lvutf.mongodb.net/";
 
 
 class Database {
