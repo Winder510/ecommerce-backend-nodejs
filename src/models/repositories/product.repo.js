@@ -125,7 +125,7 @@ const findProduct = async ({
     product_id,
     unSelect
 }) => {
-    return productModel.findById(product_id).select(unGetSelectData(unSelect)).lean()
+    return await productModel.findById(product_id).select(unGetSelectData(unSelect)).lean()
 }
 
 const updateProductById = async ({

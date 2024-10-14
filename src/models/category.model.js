@@ -22,6 +22,9 @@ var categorySchema = new mongoose.Schema({
     category_slug: {
         type: String,
     },
+    category_parent_Id: {
+        type: Schema.Types.ObjectId,
+    }
 }, {
     timestamps: true,
     collection: COLLECTION_NAME

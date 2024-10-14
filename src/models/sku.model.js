@@ -6,11 +6,6 @@ const COLLECTION_NAME = "Skus"
 const DOCUMENT_NAME = "Sku"
 
 const skuSchema = new Schema({
-    sku_id: {
-        type: String,
-        required: true,
-        unique: true
-    },
     sku_index: {
         type: Array,
         default: [0]
@@ -35,8 +30,12 @@ const skuSchema = new Schema({
         type: Number,
         default: 0,
     },
+    sku_totalSold: {
+        type: Number,
+        default: 0,
+    },
     product_id: {
-        type: String,
+        type: Schema.Types.ObjectId,
         required: true, // ref to spu product
     },
     isDraft: {

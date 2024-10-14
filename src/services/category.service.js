@@ -5,17 +5,19 @@ import {
 export class CategoryService {
     static async createCategory({
         name,
-        description
+        description,
+        parentId
     }) {
         const foungCategory = await categoryModel.findOne({
             category_name: name
         }).lean()
-
         if (foungCategory) throw new BadRequestError("Name of category is exists")
+
 
         const newCategory = await categoryModel.create({
             category_name: name,
             category_description: description,
+            category_parent_Id: parentId
         })
 
         return newCategory;

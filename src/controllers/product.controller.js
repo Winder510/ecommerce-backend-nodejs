@@ -4,6 +4,9 @@ import {
 } from "../core/success.response.js";
 import ProdutService from '../services/product.service.js'
 import {
+    SkuService
+} from "../services/sku.service.js";
+import {
     SpuService
 } from "../services/spu.service.js";
 class ProductController {
@@ -17,19 +20,46 @@ class ProductController {
         }).send(res)
     }
 
+    findOneSku = async (req, res, next) => {
+        new SuccessResponse({
+            message: "get new product success",
+            metadata: await SkuService.getOneSku(req.query)
+        }).send(res)
+    }
+
+    allSkuBySpu = async (req, res, next) => {
+        new SuccessResponse({
+            message: "get all product success",
+            metadata: await SkuService.allSkuBySpu(req.query)
+        }).send(res)
+    }
+
+    findOneSpu = async (req, res, next) => {
+        const {
+            spu_id
+        } = req.query
+        new SuccessResponse({
+            message: "get spu success",
+            metadata: await SpuService.getOneSpu({
+                _id: spu_id
+            })
+        }).send(res)
+    }
+
+    setDefaultSku = async (req, res, next) => {
+        new SuccessResponse({
+            message: "set default success",
+            metadata: await SkuService.setDefaultSku({
+                ...req.body
+            })
+        }).send(res)
+    }
+
+
 
 
     //end spu,sku
 
-
-
-
-    createProduct = async (req, res, next) => {
-        new SuccessResponse({
-            message: "Create new product success",
-            metadata: await ProdutService.createProduct(req.body.product_type, req.body)
-        }).send(res)
-    }
     getAllDraftProductForShop = async (req, res, next) => {
         new SuccessResponse({
             message: "Get list product",

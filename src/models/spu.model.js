@@ -7,10 +7,6 @@ const COLLECTION_NAME = "Spus"
 const DOCUMENT_NAME = "Spu"
 
 const productSchema = new Schema({
-    product_id: {
-        type: String,
-        required: true
-    },
     product_name: {
         type: String,
         required: true
@@ -38,22 +34,16 @@ const productSchema = new Schema({
         required: true
     },
     product_category: {
-        type: Schema.Types.ObjectId,
-        required: true
+        type: Array,
+        default: []
     },
     product_attributes: {
         type: Schema.Types.Mixed,
         required: true
-        /*
-            {
-                attributeId: 12345,
-                attributeValue:[
-                    {
-                        value_id: 1
-                    }
-                ]
-            }
-         */
+    },
+    product_totalSold: {
+        type: Number,
+        default: 0
     },
     product_ratingAverage: {
         type: Number,
@@ -65,7 +55,6 @@ const productSchema = new Schema({
     product_variations: {
         type: Array,
         default: []
-
         /*
             variations:[
                 {
@@ -81,7 +70,6 @@ const productSchema = new Schema({
             ]
         */
     },
-
 
     isDraft: {
         type: Boolean,

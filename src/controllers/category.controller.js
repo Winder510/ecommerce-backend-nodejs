@@ -9,12 +9,14 @@ class CategoryController {
     static async createCategory(req, res, next) {
         const {
             name,
-            description
+            description,
+            parentId
         } = req.body;
 
         const result = await CategoryService.createCategory({
             name,
-            description
+            description,
+            parentId
         });
 
         new SuccessResponse({

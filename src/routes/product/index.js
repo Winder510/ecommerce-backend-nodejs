@@ -15,10 +15,16 @@ const router = express.Router()
 
 router.get('/search/:keySearch', asyncErrorHandler(productController.getListSearchProduct))
 router.get('', grantAccess('deleteAny', 'product'), asyncErrorHandler(productController.findAllProducts))
-router.get('/:product_id', asyncErrorHandler(productController.findProduct))
+//router.get('/:product_id', asyncErrorHandler(productController.findProduct))
 
 // tam thoi khong check auth
 router.post('/spu/new', asyncErrorHandler(productController.createSpu))
+router.get('/spu', asyncErrorHandler(productController.findOneSpu))
+router.get('/sku/select', asyncErrorHandler(productController.findOneSku))
+router.post('/sku/setdefault', asyncErrorHandler(productController.setDefaultSku))
+router.get('/sku/selectAll', asyncErrorHandler(productController.findOneSku))
+
+
 
 router.use(authenticationV2);
 
