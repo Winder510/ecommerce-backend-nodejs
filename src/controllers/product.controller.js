@@ -55,10 +55,64 @@ class ProductController {
         }).send(res)
     }
 
+    // for normal user
+    getListPublishSpuByCategory = async (req, res, next) => {
+        new SuccessResponse({
+            message: "get list success",
+            metadata: await SpuService.getListPublishSpuByCategory({
+                ...req.body
+            })
+        }).send(res)
+    }
+
+    publishProduct = async (req, res, next) => {
+        new SuccessResponse({
+            message: "publish spu",
+            metadata: await SpuService.publishSpu({
+                product_id: req.params.id
+            })
+        }).send(res)
+    }
+
+    unPublishProduct = async (req, res, next) => {
+        new SuccessResponse({
+            message: "unPublish spu",
+            metadata: await SpuService.unPublishSpu({
+                product_id: req.params.id
+            })
+        }).send(res)
+    }
+
+    getListSearchSpu = async (req, res, next) => {
+        new SuccessResponse({
+            message: "Get list search spu",
+            metadata: await SpuService.searchSpu({
+                keySearch: req.params.keySearch
+            })
+        }).send(res)
+    }
+
+
+
+
+
+
+
+
+
+
+
 
 
 
     //end spu,sku
+
+
+
+
+
+
+
 
     getAllDraftProductForShop = async (req, res, next) => {
         new SuccessResponse({

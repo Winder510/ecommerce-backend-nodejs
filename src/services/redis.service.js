@@ -27,7 +27,6 @@ const acquireLock = async ({
     for (let i = 0; i < retryTimes; i++) {
         ///  tạo 1 key, thằng nào cầm key thì được vào thanh toán 
         const result = await redisClient.setNX(key, "locked")
-        console.log("🚀 ~ result:", result)
 
         if (result === true) {
             //  thao tac voi inventory

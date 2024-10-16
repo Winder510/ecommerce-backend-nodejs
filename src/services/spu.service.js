@@ -6,6 +6,12 @@ import {
 import {
     BadRequestError
 } from "../core/error.response.js"
+import {
+    findListPublishSpuByCategory,
+    publishSpu,
+    searchSpuByUser,
+    unPublishSpu
+} from "../models/repositories/spu.repo.js"
 
 export class SpuService {
     static newSPu = async ({
@@ -52,6 +58,7 @@ export class SpuService {
         return newSpu;
 
     }
+
     static async getOneSpu({
         _id
     }) {
@@ -70,4 +77,73 @@ export class SpuService {
         }
 
     }
+
+    static async getListPublishSpuByCategory({
+        categoryId = null,
+        limit = 10,
+        skip = 0
+    }) {
+        const query = {
+            isPublished: true,
+            product_category: {
+                $elemMatch: {
+                    $eq: categoryId
+                }
+            }
+        };
+
+        return await findListPublishSpuByCategory({
+            query,
+            limit,
+            skip
+        })
+    }
+
+    static async getListDraftSpuByCategory({
+        categoryId = null,
+        limit = 10,
+        skip = 0
+    }) {
+        const query = {
+            isDraft: true,
+            product_category: {
+                $elemMatch: {
+                    $eq: categoryId
+                }
+            }
+        };
+
+        return await findListPublishSpuByCategory({
+            query,
+            limit,
+            skip
+        })
+
+    }
+
+    static async publishSpu({
+        product_id
+    }) {
+        return await publishSpu({
+            product_id
+        })
+    }
+
+    static async unPublishSpu({
+        product_id
+    }) {
+        return await unPublishSpu({
+            product_id
+        })
+    }
+
+    static async searchSpu({
+        keySearch
+    }) {
+        return await searchSpuByUser({
+            keySearch
+        })
+    }
+
+
 }

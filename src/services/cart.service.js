@@ -19,6 +19,7 @@ export class CartService {
     }) {
         const foundProduct = await getProductById(product?.productId)
         if (!foundProduct) throw new NotFoundError("Product not exists")
+
         product.name = foundProduct.product_name;
         product.price = foundProduct.product_price;
 
