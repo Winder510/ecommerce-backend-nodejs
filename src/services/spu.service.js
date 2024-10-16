@@ -145,5 +145,25 @@ export class SpuService {
         })
     }
 
+    static async getBestSoldSpu({
+        categoryId,
+        limit = 5,
+        skip = 0
+    }) {
+        const query = {
+            isPulished: true,
+            product_category: {
+                $elemMatch: {
+                    $eq: categoryId
+                }
+            }
+        }
+        return await spuModel.find(query).sort({
+            product_totalSold: -1
+        }).skip(skip).limit(limit).lean().exec();
+    }
+
+
+
 
 }

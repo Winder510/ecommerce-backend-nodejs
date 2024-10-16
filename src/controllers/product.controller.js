@@ -92,6 +92,14 @@ class ProductController {
         }).send(res)
     }
 
+    getBestSoldSpuByCategory = async (req, res, next) => {
+        new SuccessResponse({
+            message: "Get list search spu",
+            metadata: await SpuService.getBestSoldSpu({
+                ...req.body
+            })
+        }).send(res)
+    }
 
 
 

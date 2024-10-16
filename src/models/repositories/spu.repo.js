@@ -36,7 +36,7 @@ const querySpu = async ({
     skip
 }) => {
     return await spuModel.find(query).sort({
-        updateAt: -1
+        created_At: -1
     }).skip(skip).limit(limit).lean().exec();
 }
 
@@ -81,7 +81,7 @@ const unPublishSpu = async ({
 const searchSpuByUser = async ({
     keySearch
 }) => {
-    const results = await productModel.find({
+    const results = await spuModel.find({
         isDraft: false,
         $text: {
             $search: keySearch
