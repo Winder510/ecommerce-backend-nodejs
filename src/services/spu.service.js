@@ -12,6 +12,10 @@ import {
     searchSpuByUser,
     unPublishSpu
 } from "../models/repositories/spu.repo.js"
+import categoryModel from "../models/category.model.js"
+import {
+    CategoryService
+} from "./category.service.js"
 
 export class SpuService {
     static newSPu = async ({
@@ -163,7 +167,55 @@ export class SpuService {
         }).skip(skip).limit(limit).lean().exec();
     }
 
+    static async getAllSpu({
+        categoryId = null,
+        isPublished,
+        isDraft,
+        iSDeleted,
+        limit = 10,
+        skip = 0
+    }) {
 
+    }
+
+
+    // admin
+    static async findAllPublishSpu() {
+
+    }
+
+    static async findAlLDraftSpu() {
+
+    }
+
+    static async totalRevenueByCategory(categoryId) {
+        const spus = await this.getListPublishSpuByCategory({
+            categoryId
+        })
+        return spus.reduce((acc, spu) => {
+            return acc + spu.product_revenue
+        }, 0)
+    }
+
+    static async getBestSoldSpuEachCategory() {
+        const allCategories = await CategoryService.getParentCategory();
+        const data = await Promise.all(allCategories.map(async (category) => {
+            const bestSold = await this.getBestSoldSpu({
+                categoryId: category._id,
+                limit: 10,
+            });
+
+            const totalRevenue = this.totalRevenueByCategory(category._id);
+
+            return {
+                category,
+                bestSold,
+                totalRevenue
+            };
+        }));
+
+        return data;
+    }
 
 
 }

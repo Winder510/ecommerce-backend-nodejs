@@ -65,6 +65,14 @@ class CategoryController {
         }).send(res);
 
     }
+
+    static async getAllCategory(req, res, next) {
+        new SuccessResponse({
+            message: 'get all category success',
+            metadata: await CategoryService.getCategories()
+        }).send(res);
+
+    }
 }
 
 export default CategoryController;

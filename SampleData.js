@@ -39,29 +39,29 @@ const product = {
 }
 
 const categories = [{
-        "name": "iPhone",
-        "description": "Apple's line of smartphones",
-        "parentId": null
+        "category_name": "iPhone",
+        "category_description": "Apple's line of smartphones",
+        "category_parentId": null
     },
     {
-        "name": "Mac",
-        "description": "Apple's line of personal computers",
-        "parentId": null
+        "category_name": "Mac",
+        "category_description": "Apple's line of personal computers",
+        "category_parentId": null
     },
     {
-        "name": "Apple Watch",
-        "description": "Apple's line of smartwatches",
-        "parentId": null
+        "category_name": "Apple Watch",
+        "category_description": "Apple's line of smartwatches",
+        "category_parentId": null
     },
     {
-        "name": "iPad",
-        "description": "Apple's line of tablets",
-        "parentId": null
+        "category_name": "iPad",
+        "category_description": "Apple's line of tablets",
+        "category_parentId": null
     },
     {
-        "name": "Phụ kiện",
-        "description": "Accessories for Apple devices",
-        "parentId": null
+        "category_name": "Phụ kiện",
+        "category_description": "Accessories for Apple devices",
+        "category_parentId": null
     }
 ];
 

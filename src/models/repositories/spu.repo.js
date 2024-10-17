@@ -105,11 +105,10 @@ const searchSpuByUser = async ({
 const findAllSpu = async ({
     limit,
     sort,
-    page,
+    skip,
     filter,
     select
 }) => {
-    const skip = (page - 1) * limit;
     const sortBy = sort === 'ctime' ? {
         _id: -1
     } : {
@@ -119,6 +118,7 @@ const findAllSpu = async ({
 
     return spus;
 }
+
 export {
     findSpuById,
     findListPublishSpuByCategory,

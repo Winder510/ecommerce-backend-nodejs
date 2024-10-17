@@ -41,7 +41,11 @@ const productSchema = new Schema({
         type: Schema.Types.Mixed,
         required: true
     },
-    product_totalSold: {
+    product_quantitySold: {
+        type: Number,
+        default: 0
+    },
+    product_revenue: {
         type: Number,
         default: 0
     },

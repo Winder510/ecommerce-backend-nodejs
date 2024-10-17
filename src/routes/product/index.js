@@ -21,22 +21,23 @@ router.get('', grantAccess('deleteAny', 'product'), asyncErrorHandler(productCon
 router.post('/spu/new', asyncErrorHandler(productController.createSpu))
 router.get('/spu', asyncErrorHandler(productController.findOneSpu))
 router.get('/sku/select', asyncErrorHandler(productController.findOneSku))
-router.post('/sku/setdefault', asyncErrorHandler(productController.setDefaultSku))
+router.post('/sku/set-default', asyncErrorHandler(productController.setDefaultSku))
 router.get('/sku/selectAll', asyncErrorHandler(productController.findOneSku))
+router.get('/list/categoryId')
 
 
-
-router.use(authenticationV2);
+//router.use(authenticationV2);
 
 
 router.post('', asyncErrorHandler(productController.createProduct))
 router.post('/publish/:id', asyncErrorHandler(productController.publishProduct))
 router.post('/unpublish/:id', asyncErrorHandler(productController.unPublishProduct))
 
-// query
+// for admin
 
-router.get('/draft/all', asyncErrorHandler(productController.getAllDraftProductForShop))
-router.get('/published/all', asyncErrorHandler(productController.getAllPublishedProductForShop))
+//router.get('/draft/all', asyncErrorHandler(productController.))
+router.get('/published/all', asyncErrorHandler(productController.getListPublishSpuByCategory))
+router.get('/top-products', asyncErrorHandler(productController.getBestSoldSpuEachCategory))
 
 
 export default router

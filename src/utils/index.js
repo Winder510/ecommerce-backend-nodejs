@@ -62,3 +62,19 @@ export function validateEmail(email) {
 export const randomNummber = () => {
     return Math.floor(100000 + Math.random() * 900000);
 };
+
+
+export async function processSale(spuId, quantity) {
+    await spuModel.findByIdAndUpdate(spuId, {
+        $inc: {
+            totalSold: quantity
+        }
+    });
+    await skuModel.findOneAndUpdate({
+        spuId
+    }, {
+        $inc: {
+            quantitySold: quantity
+        }
+    });
+}

@@ -55,4 +55,40 @@ export class CategoryService {
         return deletedCategory;
 
     }
+    static async getSubCategories(parentId) {
+        const subCategories = await categoryModel.find({
+            category_parentId: parentId
+        }).select('category_name category_description category_slug');
+
+        return Promise.all(subCategories.map(async (subCategory) => {
+            const children = await this.getSubCategories(subCategory._id); // Gọi đệ quy để lấy danh mục con
+            return {
+                ...subCategory.toObject(),
+                children // Thêm danh mục con vào danh mục cha
+            };
+        }));
+    }
+
+    static async getCategories() {
+        const categories = await categoryModel.find({
+            category_parentId: null
+        }).select('category_name category_description category_slug');
+
+        return Promise.all(categories.map(async (category) => {
+            const children = await this.getSubCategories(category._id); // Lấy danh mục con cho từng danh mục cha
+            return {
+                ...category.toObject(),
+                children // Thêm danh mục con vào danh mục cha
+            };
+        }));
+    }
+
+    static async getParentCategory() {
+        return await categoryModel.find({
+            category_parentId: null
+        }).select('category_name category_description category_slug').lean()
+    }
+
+
+
 }

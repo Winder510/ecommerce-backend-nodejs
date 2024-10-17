@@ -30,7 +30,7 @@ const skuSchema = new Schema({
         type: Number,
         default: 0,
     },
-    sku_totalSold: {
+    sku_quantitySold: {
         type: Number,
         default: 0,
     },

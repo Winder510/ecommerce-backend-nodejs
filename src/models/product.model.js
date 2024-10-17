@@ -21,19 +21,24 @@ const productSchema = new Schema({
     product_description: {
         type: String,
     },
-    // product_price: {
-    //     type: Number,
-    //     required: true
-    // },
-    // product_discount_price: {
-    //     type: Number,
-    //     required: true
-    // },
-    // product_quantity: {
-    //     type: Number,
-    //     required: true
-    // },
+    product_price: {
+        type: Number,
+        required: true
+    },
+    product_discount_price: {
+        type: Number,
+        required: true
+    },
+    product_quantity: {
+        type: Number,
+        required: true
+    },
     product_type: {
+        type: String,
+        required: true,
+        //default: "iphone" mac ipad ...
+    },
+    product_totalSold: {
         type: String,
         required: true,
         //default: "iphone" mac ipad ...

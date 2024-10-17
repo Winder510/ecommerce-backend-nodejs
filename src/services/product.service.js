@@ -108,7 +108,7 @@ export default class ProductFactory {
     static async findAllProducts({
         limit = 50,
         sort = 'ctime',
-        page = 1,
+        skip = 0,
         filter = {
             isPublished: true
         },
@@ -117,6 +117,7 @@ export default class ProductFactory {
         return await findAllProducts({
             limit,
             sort,
+            skip,
             filter,
             select: ['product_name', 'product_description', "product_price"]
         })

@@ -10,5 +10,6 @@ const router = express.Router()
 router.post('', asyncErrorHandler(CategoryController.createCategory));
 router.patch('/:id', asyncErrorHandler(CategoryController.updateCategory));
 router.delete('/:id', asyncErrorHandler(CategoryController.deleteCategory));
+router.get('/all', asyncErrorHandler(CategoryController.getAllCategory));
 
 export default router

@@ -65,24 +65,6 @@ class ProductController {
         }).send(res)
     }
 
-    publishProduct = async (req, res, next) => {
-        new SuccessResponse({
-            message: "publish spu",
-            metadata: await SpuService.publishSpu({
-                product_id: req.params.id
-            })
-        }).send(res)
-    }
-
-    unPublishProduct = async (req, res, next) => {
-        new SuccessResponse({
-            message: "unPublish spu",
-            metadata: await SpuService.unPublishSpu({
-                product_id: req.params.id
-            })
-        }).send(res)
-    }
-
     getListSearchSpu = async (req, res, next) => {
         new SuccessResponse({
             message: "Get list search spu",
@@ -101,6 +83,52 @@ class ProductController {
         }).send(res)
     }
 
+
+
+    //admin
+    publishProduct = async (req, res, next) => {
+        new SuccessResponse({
+            message: "publish spu",
+            metadata: await SpuService.publishSpu({
+                product_id: req.params.id
+            })
+        }).send(res)
+    }
+
+    unPublishProduct = async (req, res, next) => {
+        new SuccessResponse({
+            message: "unPublish spu",
+            metadata: await SpuService.unPublishSpu({
+                product_id: req.params.id
+            })
+        }).send(res)
+    }
+
+    getBestSoldSpuEachCategory = async (req, res, next) => {
+        new SuccessResponse({
+            message: "get success",
+            metadata: await SpuService.getBestSoldSpuEachCategory({})
+        }).send(res)
+    }
+
+
+
+
+
+
+    getAllPublishedSpu = async (req, res, next) => {
+        new SuccessResponse({
+            message: "Get list publish spu",
+            metadata: await SpuService.findAllPublishSpu()
+        }).send(res)
+    }
+
+    getAllDraftSpu = async (req, res, next) => {
+        new SuccessResponse({
+            message: "Get list draft spu ",
+            metadata: await SpuService.findAlLDraftSpu()
+        }).send(res)
+    }
 
 
 
@@ -122,30 +150,8 @@ class ProductController {
 
 
 
-    getAllDraftProductForShop = async (req, res, next) => {
-        new SuccessResponse({
-            message: "Get list product",
-            metadata: await ProdutService.findAllDraftProductForShop()
-        }).send(res)
-    }
 
-    publishProduct = async (req, res, next) => {
-        new SuccessResponse({
-            message: "publish product",
-            metadata: await ProdutService.publishProduct({
-                product_id: req.params.id
-            })
-        }).send(res)
-    }
 
-    unPublishProduct = async (req, res, next) => {
-        new SuccessResponse({
-            message: "unPublish product",
-            metadata: await ProdutService.unPublishProduct({
-                product_id: req.params.id
-            })
-        }).send(res)
-    }
 
     getAllPublishedProductForShop = async (req, res, next) => {
         new SuccessResponse({
@@ -172,14 +178,6 @@ class ProductController {
     }
 
 
-    getListSearchProduct = async (req, res, next) => {
-        new SuccessResponse({
-            message: "Get list  search product",
-            metadata: await ProdutService.searchProduct({
-                keySearch: req.params.keySearch
-            })
-        }).send(res)
-    }
 
     // update product
     updateProduct = async (req, res, next) => {
