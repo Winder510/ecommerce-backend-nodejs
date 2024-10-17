@@ -141,3 +141,16 @@ const exampleAttributeGroupData = {
         }
     ]
 };
+
+const newPromotion = {
+    name: "Khuyến mãi mùa hè",
+    type: "extra",
+    urlImage: "https://example.com/images/summer-sale.jpg",
+    urlPage: "https://example.com/summer-sale",
+    discountPrice: 30000,
+    appliedProduct: ["634e3b8964d5b02bc4f77bcd", "634e3b8b64d5b02bc4f77bce"],
+    startDate: new Date("2024-06-01"),
+    endDate: new Date("2024-06-30"),
+    bundle_product: "634e3b8c64d5b02bc4f77bcf",
+    quantity_limit: 2
+}
