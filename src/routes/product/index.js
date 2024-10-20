@@ -23,7 +23,7 @@ router.get('/spu', asyncErrorHandler(productController.findOneSpu))
 router.get('/sku/select', asyncErrorHandler(productController.findOneSku))
 router.post('/sku/set-default', asyncErrorHandler(productController.setDefaultSku))
 router.get('/sku/selectAll', asyncErrorHandler(productController.findOneSku))
-router.get('/list/categoryId')
+router.get('/best-sold', asyncErrorHandler(productController.getBestSoldSpuEachCategory))
 
 
 //router.use(authenticationV2);

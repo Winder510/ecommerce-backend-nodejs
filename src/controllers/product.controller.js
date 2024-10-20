@@ -107,7 +107,7 @@ class ProductController {
     getBestSoldSpuEachCategory = async (req, res, next) => {
         new SuccessResponse({
             message: "get success",
-            metadata: await SpuService.getBestSoldSpuEachCategory({})
+            metadata: await SpuService.getBestSoldSpuEachCategory()
         }).send(res)
     }
 
@@ -144,49 +144,6 @@ class ProductController {
     //end spu,sku
 
 
-
-
-
-
-
-
-
-
-
-    getAllPublishedProductForShop = async (req, res, next) => {
-        new SuccessResponse({
-            message: "Get list product",
-            metadata: await ProdutService.findAllPublishProductForShop()
-        }).send(res)
-    }
-
-
-    findAllProducts = async (req, res, next) => {
-        new SuccessResponse({
-            message: "Find all products success",
-            metadata: await ProdutService.findAllProducts(req.query)
-        }).send(res)
-    }
-
-    findProduct = async (req, res, next) => {
-        new SuccessResponse({
-            message: "Find product success",
-            metadata: await ProdutService.findProduct({
-                product_id: req.params.product_id
-            })
-        }).send(res)
-    }
-
-
-
-    // update product
-    updateProduct = async (req, res, next) => {
-        new SuccessResponse({
-            message: "Update product",
-            metadata: await ProdutService.updateProduct(req.body.product_type, req.params.product_id, req.body)
-        }).send(res)
-
-    }
 
 
 }

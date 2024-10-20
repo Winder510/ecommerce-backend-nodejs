@@ -12,7 +12,6 @@ import {
     searchSpuByUser,
     unPublishSpu
 } from "../models/repositories/spu.repo.js"
-import categoryModel from "../models/category.model.js"
 import {
     CategoryService
 } from "./category.service.js"
@@ -22,7 +21,7 @@ export class SpuService {
         name,
         description,
         thumb,
-        categoryId,
+        category,
         attributes,
         variations,
         discount_price,
@@ -41,7 +40,7 @@ export class SpuService {
             product_description: description,
             product_thumb: thumb,
             product_price: defaultSku?.sku_price,
-            product_categoryId: categoryId,
+            product_category: category,
             product_attributes: attributes,
             product_quantity,
             product_variations: variations,
@@ -89,18 +88,20 @@ export class SpuService {
     }) {
         const query = {
             isPublished: true,
-            product_category: {
-                $elemMatch: {
-                    $eq: categoryId
+            ...(categoryId && {
+                product_category: {
+                    $elemMatch: {
+                        $eq: categoryId
+                    }
                 }
-            }
+            })
         };
-
         return await findListPublishSpuByCategory({
             query,
             limit,
             skip
-        })
+        });
+
     }
 
     static async getListDraftSpuByCategory({
@@ -155,16 +156,18 @@ export class SpuService {
         skip = 0
     }) {
         const query = {
-            isPulished: true,
+            isPublished: true,
             product_category: {
-                $elemMatch: {
-                    $eq: categoryId
-                }
+                $in: [categoryId]
             }
+
         }
-        return await spuModel.find(query).sort({
-            product_totalSold: -1
-        }).skip(skip).limit(limit).lean().exec();
+        const data = await spuModel.find(query)
+            .select('product_name product_quantitySold product_quantity product_thumb').sort({
+                product_quantitySold: -1
+            }).skip(skip).limit(limit).lean().exec();
+
+        return data
     }
 
     static async getAllSpu({
@@ -180,9 +183,7 @@ export class SpuService {
 
 
     // admin
-    static async findAllPublishSpu() {
-
-    }
+    static async findAllPublishSpu() {}
 
     static async findAlLDraftSpu() {
 
@@ -193,6 +194,7 @@ export class SpuService {
             categoryId
         })
         return spus.reduce((acc, spu) => {
+
             return acc + spu.product_revenue
         }, 0)
     }
@@ -200,12 +202,13 @@ export class SpuService {
     static async getBestSoldSpuEachCategory() {
         const allCategories = await CategoryService.getParentCategory();
         const data = await Promise.all(allCategories.map(async (category) => {
+
             const bestSold = await this.getBestSoldSpu({
-                categoryId: category._id,
+                categoryId: category._id.toString(),
                 limit: 10,
             });
 
-            const totalRevenue = this.totalRevenueByCategory(category._id);
+            const totalRevenue = await this.totalRevenueByCategory(category._id.toString());
 
             return {
                 category,

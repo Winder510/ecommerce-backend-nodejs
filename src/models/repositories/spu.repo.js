@@ -35,12 +35,13 @@ const findListDraftSpuByCategory = async ({
 
 const querySpu = async ({
     query,
+    sort = {
+        created_At: -1
+    },
     limit,
     skip
 }) => {
-    return await spuModel.find(query).sort({
-        created_At: -1
-    }).skip(skip).limit(limit).lean().exec();
+    return await spuModel.find(query).sort(sort).skip(skip).limit(limit).select("-isDraft -isPublished -isDeleted -updatedAt -__v").lean().exec();
 }
 
 const publishSpu = async ({
