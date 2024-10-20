@@ -29,6 +29,9 @@ const skuSchema = new Schema({
         type: Number,
         required: true,
     },
+    sku_discount_price: {
+        type: Number,
+    },
     sku_stock: {
         type: Number,
         default: 0,
@@ -56,15 +59,18 @@ const skuSchema = new Schema({
     isDeleted: {
         type: Boolean,
         default: false,
-    },
-    isSku: {
-        type: Boolean,
-        default: true,
     }
 
 }, {
     collection: COLLECTION_NAME,
     timestamps: true
 })
+skuSchema.pre('save', function (next) {
+    this.product_slug = slugify(this.product_name, {
+        lower: true
+    })
+    this.product_stockStatus = updateStockStatus(this.product_quantity);
 
+    next()
+})
 export default mongoose.model(DOCUMENT_NAME, skuSchema);

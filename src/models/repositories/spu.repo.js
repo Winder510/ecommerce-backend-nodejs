@@ -2,6 +2,9 @@ import {
     PRODUCT_STATUS
 } from "../../constant/index.js"
 import {
+    BadRequestError
+} from "../../core/error.response.js"
+import {
     getSelectData
 } from "../../utils/index.js"
 import spuModel from "../spu.model.js"
@@ -171,9 +174,14 @@ const buildQuery = ({
 
     return query;
 };
-export const getNamespuById = async (productId) => {
-    const data = await findSpuById(productId);
-    return data?.product_name;
+
+const findByid = async (productId) => {
+    let found;
+    found = findSpuById(productId);
+    if (!found) found = findSKuId(productId);
+    if (!found) throw new BadRequestError();
+
+    return found
 }
 export {
     findSpuById,

@@ -30,7 +30,6 @@ const productSchema = new Schema({
     },
     product_discount_price: {
         type: Number,
-        required: true
     },
     product_quantity: {
         type: Number,
