@@ -171,6 +171,10 @@ const buildQuery = ({
 
     return query;
 };
+export const getNamespuById = async (productId) => {
+    const data = await findSpuById(productId);
+    return data?.product_name;
+}
 export {
     findSpuById,
     findListPublishSpuByCategory,

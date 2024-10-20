@@ -6,6 +6,9 @@ const COLLECTION_NAME = "Skus"
 const DOCUMENT_NAME = "Sku"
 
 const skuSchema = new Schema({
+    sku_name: {
+        type: String,
+    },
     sku_index: {
         type: Array,
         default: [0]
@@ -23,7 +26,7 @@ const skuSchema = new Schema({
         default: 0,
     },
     sku_price: {
-        type: String,
+        type: Number,
         required: true,
     },
     sku_stock: {
@@ -53,6 +56,10 @@ const skuSchema = new Schema({
     isDeleted: {
         type: Boolean,
         default: false,
+    },
+    isSku: {
+        type: Boolean,
+        default: true,
     }
 
 }, {

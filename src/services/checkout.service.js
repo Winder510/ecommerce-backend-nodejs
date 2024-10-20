@@ -18,6 +18,9 @@ import orderModel from "../models/order.model.js";
 import {
     CartService
 } from "./cart.service.js";
+import {
+    checkSpuByServer
+} from "../models/repositories/order.repo.js";
 
 class CheckOutService {
     /**
@@ -43,7 +46,7 @@ class CheckOutService {
             totalCheckOut: 0 // tong tien phai thanh toán
         }
         // check product available
-        const checkProductServer = await checkProductByServer(products_order);
+        const checkProductServer = await checkSpuByServer(products_order);
         // console.log("checkProductServer::", checkProductServer)
 
         const errors = checkProductServer.filter(product => !product || product.error);

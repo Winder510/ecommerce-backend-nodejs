@@ -1,5 +1,5 @@
 import skuModel from "../models/sku.model.js";
-import _ from 'lodash'
+
 import spuModel from "../models/spu.model.js";
 import {
     BadRequestError
@@ -9,18 +9,21 @@ import {
     findSpuById
 } from "../models/repositories/spu.repo.js";
 import {
+    createSkuName,
     findSkuById
 } from "../models/repositories/sku.repo.js";
 
 export class SkuService {
     static async newSku({
         spu_id,
+        product_variations,
+        product_name,
         sku_list
-
     }) {
         const convevt_sku_list = sku_list.map(sku => {
             return {
                 ...sku,
+                sku_name: product_name + createSkuName(product_variations, sku),
                 product_id: spu_id,
             }
         })

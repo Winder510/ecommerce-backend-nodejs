@@ -52,6 +52,8 @@ export class SpuService {
             // create skus
             await SkuService.newSku({
                 spu_id: newSpu._id,
+                product_name: name,
+                product_variations: variations,
                 sku_list
             })
         }
@@ -201,6 +203,7 @@ export class SpuService {
             .lean().exec()
         return products;
     }
+
     static async totalRevenueByCategory(categoryId) {
         const spus = await this.getListPublishSpuByCategory({
             categoryId
@@ -231,6 +234,8 @@ export class SpuService {
 
         return data;
     }
+
+
 
 
 }

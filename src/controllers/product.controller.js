@@ -126,7 +126,7 @@ class ProductController {
 
     findAllSpuWithCondition = async (req, res, next) => {
         new SuccessResponse({
-            message: "Get list draft spu ",
+            message: "Get list spu ",
             metadata: await SpuService.findAllSpuWithCondition(req.query)
         }).send(res)
     }

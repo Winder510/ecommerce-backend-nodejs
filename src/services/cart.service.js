@@ -11,6 +11,7 @@ import {
 import {
     getProductById
 } from "../models/repositories/product.repo.js";
+import spuModel from "../models/spu.model.js";
 
 export class CartService {
     static async addToCart({
@@ -58,7 +59,7 @@ export class CartService {
      * data {
      *      item_product:
      *          {
-     *              quantity, price,old_quantity,productId
+     *              quantity,old_quantity,productId
      *          }
      *      
      *      versions
@@ -116,11 +117,26 @@ export class CartService {
 
         return deleteCart
     }
-    static async getListUserCart({
+    static async showCart({
         userId
     }) {
-        return await cartModel.findOne({
+        const cart = await cartModel.findOne({
             cart_userId: userId
         }).lean()
+
+        if (!cart || !cart.cart_products || cart.cart_products.length === 0) {
+            return {
+                message: "Giỏ hàng trống",
+                cartItems: []
+            };
+        }
+        const productIds = cart.cart_products.map(item => item.productId);
+
+        const products = await spuModel.find({
+            _id: {
+                $in: productIds
+            }
+        }).select('').lean();
+
     }
 }
