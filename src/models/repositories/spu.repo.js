@@ -1,4 +1,7 @@
 import {
+    PRODUCT_STATUS
+} from "../../constant/index.js"
+import {
     getSelectData
 } from "../../utils/index.js"
 import spuModel from "../spu.model.js"
@@ -120,6 +123,54 @@ const findAllSpu = async ({
     return spus;
 }
 
+const buildQuery = ({
+    product_status,
+    stock_status,
+    categoryId
+}) => {
+    const query = {};
+
+    // Trạng thái sản phẩm
+    if (product_status) {
+        switch (product_status) {
+            case PRODUCT_STATUS.PUBLISHED:
+                query.isPublished = true;
+                query.isDeleted = false;
+                break;
+            case PRODUCT_STATUS.DRAFT:
+                query.isDraft = true;
+                break;
+            case PRODUCT_STATUS.DELETED:
+                query.isDeleted = true;
+                break;
+            case PRODUCT_STATUS.ALL:
+                break;
+        }
+    }
+
+    if (stock_status) {
+        if ([STOCK_STATUS.IN_STOCK, STOCK_STATUS.LOW_INVENTORY, STOCK_STATUS.OUT_OF_STOCK].includes(stock_status)) {
+            query.product_stockStatus = stock_status;
+        } else {
+            throw new Error('Invalid stock status');
+        }
+    }
+
+    if (categoryId) {
+        if (Array.isArray(categoryId)) {
+            query.product_category = {
+                $in: categoryId
+            };
+        } else {
+            query.product_category = {
+                $in: [categoryId]
+            };
+        }
+    }
+
+
+    return query;
+};
 export {
     findSpuById,
     findListPublishSpuByCategory,
@@ -127,5 +178,6 @@ export {
     publishSpu,
     unPublishSpu,
     searchSpuByUser,
-    findAllSpu
+    findAllSpu,
+    buildQuery
 }

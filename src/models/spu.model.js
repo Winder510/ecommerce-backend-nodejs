@@ -2,6 +2,9 @@ import mongoose, {
     Schema
 } from 'mongoose'; // Erase if already required
 import slugify from 'slugify';
+import {
+    STOCK_STATUS
+} from '../constant/index.js';
 
 const COLLECTION_NAME = "Spus"
 const DOCUMENT_NAME = "Spu"
@@ -32,6 +35,9 @@ const productSchema = new Schema({
     product_quantity: {
         type: Number,
         required: true
+    },
+    product_stockStatus: {
+        type: String,
     },
     product_category: {
         type: Array,
@@ -96,15 +102,33 @@ const productSchema = new Schema({
     collection: COLLECTION_NAME,
     timestamps: true
 })
+const updateStockStatus = function (quantity) {
+    if (quantity === 0) {
+        return STOCK_STATUS.OUT_OF_STOCK;
+    } else if (quantity > 0 && quantity < 5) {
+        return STOCK_STATUS.LOW_INVENTORY;
+    } else {
+        return STOCK_STATUS.IN_STOCK;
+    }
+};
+
 productSchema.index({
     product_name: 'text',
     product_description: 'text'
 })
+
 productSchema.pre('save', function (next) {
     this.product_slug = slugify(this.product_name, {
         lower: true
     })
+    this.product_stockStatus = updateStockStatus(this.product_quantity);
     next()
 })
-
+productSchema.pre('updateOne', function (next) {
+    const quantity = this.getUpdate().product_quantity;
+    if (quantity !== undefined) {
+        this.getUpdate().product_stockStatus = updateStockStatus(quantity);
+    }
+    next();
+});
 export default mongoose.model(DOCUMENT_NAME, productSchema);

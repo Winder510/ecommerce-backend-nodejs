@@ -78,3 +78,13 @@ export async function processSale(spuId, quantity) {
         }
     });
 }
+
+export const updateStockStatus = function (quantity) {
+    if (quantity === 0) {
+        return 'out of stock';
+    } else if (quantity > 0 && quantity < 5) {
+        return 'low stock';
+    } else {
+        return 'in stock';
+    }
+};

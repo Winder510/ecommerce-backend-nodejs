@@ -7,6 +7,7 @@ import {
     BadRequestError
 } from "../core/error.response.js"
 import {
+    buildQuery,
     findListPublishSpuByCategory,
     publishSpu,
     searchSpuByUser,
@@ -170,25 +171,36 @@ export class SpuService {
         return data
     }
 
-    static async getAllSpu({
-        categoryId = null,
-        isPublished,
-        isDraft,
-        iSDeleted,
+    // admin
+    static async findAllSpuWithCondition({
+        product_status,
+        stock_status,
+        categoryId,
+        sortBy, // sortBy
+        order = "asc",
         limit = 10,
         skip = 0
     }) {
+        const query = buildQuery({
+            product_status,
+            stock_status,
+            categoryId
+        });
+        console.log(query)
 
+        const sortOptions = {};
+        sortOptions[sortBy] = order === 'asc' ? 1 : -1;
+
+
+        const products = await spuModel.find(query)
+            .skip(skip)
+            .limit(limit)
+            .sort(sortOptions || {
+                createdAt: -1
+            })
+            .lean().exec()
+        return products;
     }
-
-
-    // admin
-    static async findAllPublishSpu() {}
-
-    static async findAlLDraftSpu() {
-
-    }
-
     static async totalRevenueByCategory(categoryId) {
         const spus = await this.getListPublishSpuByCategory({
             categoryId

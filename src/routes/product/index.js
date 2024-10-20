@@ -38,6 +38,7 @@ router.post('/unpublish/:id', asyncErrorHandler(productController.unPublishProdu
 //router.get('/draft/all', asyncErrorHandler(productController.))
 router.get('/published/all', asyncErrorHandler(productController.getListPublishSpuByCategory))
 router.get('/top-products', asyncErrorHandler(productController.getBestSoldSpuEachCategory))
+router.get('/management/spu', asyncErrorHandler(productController.findAllSpuWithCondition))
 
 
 export default router

@@ -55,6 +55,7 @@ class ProductController {
         }).send(res)
     }
 
+
     // for normal user
     getListPublishSpuByCategory = async (req, res, next) => {
         new SuccessResponse({
@@ -83,8 +84,6 @@ class ProductController {
         }).send(res)
     }
 
-
-
     //admin
     publishProduct = async (req, res, next) => {
         new SuccessResponse({
@@ -111,11 +110,6 @@ class ProductController {
         }).send(res)
     }
 
-
-
-
-
-
     getAllPublishedSpu = async (req, res, next) => {
         new SuccessResponse({
             message: "Get list publish spu",
@@ -130,19 +124,12 @@ class ProductController {
         }).send(res)
     }
 
-
-
-
-
-
-
-
-
-
-
-
-    //end spu,sku
-
+    findAllSpuWithCondition = async (req, res, next) => {
+        new SuccessResponse({
+            message: "Get list draft spu ",
+            metadata: await SpuService.findAllSpuWithCondition(req.query)
+        }).send(res)
+    }
 
 
 
