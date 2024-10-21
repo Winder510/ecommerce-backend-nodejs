@@ -149,6 +149,7 @@ const checkProductByServer = async (products) => {
     return await Promise.all(products.map(async product => {
         try {
             const foundProduct = await getProductById(product.productId);
+
             if (foundProduct) {
                 return {
                     price: foundProduct.product_price,

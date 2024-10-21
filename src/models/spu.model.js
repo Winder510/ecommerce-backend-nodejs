@@ -10,6 +10,10 @@ const COLLECTION_NAME = "Spus"
 const DOCUMENT_NAME = "Spu"
 
 const productSchema = new Schema({
+    product_id: {
+        type: String,
+
+    },
     product_name: {
         type: String,
         required: true

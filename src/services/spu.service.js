@@ -23,12 +23,26 @@ export class SpuService {
         description,
         thumb,
         category,
+        price,
+        quantity,
         attributes,
         variations,
         discount_price,
         sku_list = []
     }) => {
-
+        if (!sku_list.length && !variations) {
+            console.log("hêrerererere")
+            return await spuModel.create({
+                product_name: name,
+                product_description: description,
+                product_thumb: thumb,
+                product_price: price,
+                product_quantity: quantity,
+                product_category: category,
+                product_attributes: attributes,
+                product_discount_price: discount_price
+            })
+        }
         const product_quantity = sku_list.reduce((acc, sku) => {
             return acc + sku?.sku_stock
         }, 0)
@@ -49,7 +63,6 @@ export class SpuService {
         })
 
         if (newSpu && sku_list.length) {
-            // create skus
             await SkuService.newSku({
                 spu_id: newSpu._id,
                 product_name: name,

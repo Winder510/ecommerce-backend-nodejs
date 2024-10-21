@@ -175,14 +175,7 @@ const buildQuery = ({
     return query;
 };
 
-const findByid = async (productId) => {
-    let found;
-    found = findSpuById(productId);
-    if (!found) found = findSKuId(productId);
-    if (!found) throw new BadRequestError();
 
-    return found
-}
 export {
     findSpuById,
     findListPublishSpuByCategory,
