@@ -1,4 +1,3 @@
-import shopModel from "../models/shop.model.js";
 import bcrypt from "bcrypt";
 import crypto from 'crypto'
 import KeyTokenService from "./keyToken.service.js";
@@ -76,14 +75,11 @@ class AccessService {
         }
     }
 
-
-
     static async logout(
         keyStore
     ) {
         return await KeyTokenService.removeKeyById(keyStore._id)
     }
-
 
     static async login({
         email,
@@ -140,69 +136,7 @@ class AccessService {
         }
 
     }
-    // static signUp = async ({
-    //     name,
-    //     email,
-    //     password,
-    //     res
-    // }) => {
-    //     const hodelShop = await shopModel.findOne({
-    //         email
-    //     }).lean();
-    //     if (hodelShop) {
-    //         throw new BadRequestError("Email is exists")
-    //     }
-    //     const passwordHash = await bcrypt.hash(password, 10);
 
-    //     const newUser = await shopModel.create({
-    //         name,
-    //         email,
-    //         password: passwordHash,
-    //         roles: [RoleShop.ADMIN]
-    //     })
-    //     if (newUser) {
-    //         const {
-    //             publicKey,
-    //             privateKey
-    //         } = crypto.generateKeyPairSync('rsa', {
-    //             modulusLength: 4096,
-    //             publicKeyEncoding: {
-    //                 type: "pkcs1",
-    //                 format: "pem",
-    //             },
-    //             privateKeyEncoding: {
-    //                 type: "pkcs1",
-    //                 format: "pem",
-    //             },
-    //         });
-    //         const tokens = await createTokenPair({
-    //             userId: newUser._id,
-    //             email
-    //         }, publicKey, privateKey);
-
-    //         // set cookies cho client
-    //         res.cookie("refresh_token", tokens.refreshToken, {
-    //             httpOnly: true,
-    //             maxAge: 60 * 60 * 1000,
-    //         });
-
-    //         await KeyTokenService.upsertKeyToken({
-    //             userId: newUser._id,
-    //             publicKey,
-    //             refreshToken: tokens.refreshToken
-    //         });
-    //         return {
-    //             user: getInfoData({
-    //                 fields: ["_id", "name", "email"],
-    //                 object: newUser
-    //             }),
-    //             accessToken: tokens.accessToken
-    //         }
-    //     }
-    //     return {
-    //         metadata: null,
-    //     }
-    // }
 
 }
 export default AccessService;

@@ -40,10 +40,10 @@ class CartController {
         }).send(res)
     }
 
-    listToCart = async (req, res, next) => {
+    showCart = async (req, res, next) => {
         new SuccessResponse({
             message: "success",
-            metadata: await CartService.getListUserCart(req.query)
+            metadata: await CartService.showCart(req.query)
         }).send(res)
     }
 

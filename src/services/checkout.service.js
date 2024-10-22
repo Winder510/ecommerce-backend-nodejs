@@ -5,9 +5,7 @@ import {
     NotFoundError,
     BadRequestError
 } from "../core/error.response.js";
-import {
-    checkProductByServer
-} from "../models/repositories/product.repo.js";
+
 
 import DiscountService from "./discount.service.js";
 import {

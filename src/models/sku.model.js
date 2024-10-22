@@ -6,6 +6,10 @@ const COLLECTION_NAME = "Skus"
 const DOCUMENT_NAME = "Sku"
 
 const skuSchema = new Schema({
+    sku_id:{
+        type: String,
+
+    },
     sku_name: {
         type: String,
     },

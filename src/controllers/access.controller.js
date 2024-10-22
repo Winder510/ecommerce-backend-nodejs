@@ -3,6 +3,7 @@ import {
     SuccessResponse
 } from "../core/success.response.js";
 import AccessService from "../services/access.service.js";
+import passport from '../configs/passport.config.js'
 
 class AccessController {
     handleRefreshToken = async (req, res, next) => {
@@ -35,14 +36,8 @@ class AccessController {
             })
         }).send(res)
     }
-    // signup = async (req, res, next) => {
-    //     new CREATED({
-    //         message: "Created success",
-    //         metadata: await AccessService.signUp({
-    //             ...req.body,
-    //             res
-    //         })
-    //     }).send(res)
-    // }
+
+
+
 }
 export default new AccessController();

@@ -60,7 +60,7 @@ const productSchema = new Schema({
     },
     product_ratingAverage: {
         type: Number,
-        default: 4.5,
+        default: 0,
         min: [1, "Rating must above 1.0"],
         max: [5, "Rating must below 5.0"],
         set: (val) => Math.round(val * 10) / 10

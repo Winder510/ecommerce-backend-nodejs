@@ -20,7 +20,7 @@ var cartSchema = new mongoose.Schema({
         /**
          * [
          *   {
-         *      productId,quantity,name,price
+         *      productId,quantity,
          *   }
          * ]
          */

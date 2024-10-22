@@ -14,7 +14,7 @@ import userRouter from './user/index.js'
 import commentRouter from './comment/index.js'
 import categoryRouter from './category/index.js'
 import attributeGroupRouter from './attributeGroup/index.js'
-
+import passportRouter from './passport/index.js'
 
 const router = express.Router()
 
@@ -22,6 +22,8 @@ const router = express.Router()
 
 //check permission
 router.use('/api/v1/attribute', attributeGroupRouter)
+router.use('/api/v1/attribute', attributeGroupRouter)
+
 router.use('/api/v1/template', templateRouter)
 router.use('/api/v1/category', categoryRouter)
 router.use('/api/v1/user', userRouter)
@@ -35,6 +37,7 @@ router.use('/api/v1/checkout', checkoutRouter)
 router.use('/api/v1/cart', cartRouter)
 router.use('/api/v1/discount', discountRouter)
 router.use('/api/v1/product', productRouter)
+router.use('/api/v1', passportRouter)
 router.use('/api/v1', accessRouter)
 
 
