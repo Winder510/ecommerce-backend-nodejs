@@ -1,24 +1,21 @@
 // !dmbg
-import mongoose, {
-    Schema
-} from 'mongoose'; // Erase if already required
-import {
-    type
-} from 'os';
+import mongoose, { Schema } from 'mongoose'; // Erase if already required
+import { type } from 'os';
 
-const DOCUMENT_NAME = "Order"
-const COLLECTION_NAME = "Orders"
+const DOCUMENT_NAME = 'Order';
+const COLLECTION_NAME = 'Orders';
 
 // Declare the Schema of the Mongo model
-var orderSchema = new mongoose.Schema({
-    order_userId: {
-        type: String,
-        required: true
-    },
-    order_checkout: {
-        type: Object,
-        default: {}
-        /*
+var orderSchema = new mongoose.Schema(
+    {
+        order_userId: {
+            type: String,
+            required: true,
+        },
+        order_checkout: {
+            type: Object,
+            default: {},
+            /*
         order_checkout={
             totalPrice: 0, // tong tien hang
             feeShip: 0, // phi van chuyen
@@ -26,32 +23,34 @@ var orderSchema = new mongoose.Schema({
             totalCheckOut: 0 // tong tien phai thanh toán
         }
         */
+        },
+        order_payment: {
+            type: Object,
+            default: {},
+        },
+        order_shipping: {
+            type: Object,
+            default: {},
+        },
+        order_products: {
+            type: Array,
+            required: true,
+        },
+        order_trackingNumber: {
+            type: String,
+            default: 'SPX000',
+        },
+        order_status: {
+            type: String,
+            enum: ['pending', 'confirmed', 'shipped', 'cancelled', 'delivered'],
+            default: 'pending',
+        },
     },
-    order_payment: {
-        type: Object,
-        default: {}
+    {
+        timestamps: true,
+        collection: COLLECTION_NAME,
     },
-    order_shipping: {
-        type: Object,
-        default: {}
-    },
-    order_products: {
-        type: Array,
-        required: true
-    },
-    order_trackingNumber: {
-        type: String,
-        default: 'SPX000'
-    },
-    order_status: {
-        type: String,
-        enum: ['pending', 'confirmed', 'shipped', 'cancelled', 'delivered'],
-        default: 'pending'
-    }
-}, {
-    timestamps: true,
-    collection: COLLECTION_NAME
-});
+);
 
 //Export the model
 export default mongoose.model(DOCUMENT_NAME, orderSchema);

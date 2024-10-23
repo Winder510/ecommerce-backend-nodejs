@@ -1,5 +1,5 @@
-import Joi from "joi";
-import mongoose from "mongoose";
+import Joi from 'joi';
+import mongoose from 'mongoose';
 
 // CreateUserDto class
 export class createUserDto {
@@ -23,16 +23,22 @@ export class createUserDto {
             name: Joi.string().min(3).max(30).required(),
             password: Joi.string().min(6).required(),
             email: Joi.string().email().required(),
-            phone: Joi.string().pattern(/^[0-9]+$/).min(10).max(15).required(),
-            sex: Joi.string().valid("male", "female", "other").required(),
+            phone: Joi.string()
+                .pattern(/^[0-9]+$/)
+                .min(10)
+                .max(15)
+                .required(),
+            sex: Joi.string().valid('male', 'female', 'other').required(),
             avatar: Joi.string().uri().optional(),
             date_of_birth: Joi.date().less('now').required(),
-            usr_role: Joi.string().custom((value, helper) => {
-                if (!mongoose.Types.ObjectId.isValid(value)) {
-                    return helper.message('Invalid role ID format');
-                }
-                return value;
-            }).required(),
+            usr_role: Joi.string()
+                .custom((value, helper) => {
+                    if (!mongoose.Types.ObjectId.isValid(value)) {
+                        return helper.message('Invalid role ID format');
+                    }
+                    return value;
+                })
+                .required(),
             isDefaultPassword: Joi.boolean().required(),
             status: Joi.string().valid('pending', 'active', 'block').required(),
         });

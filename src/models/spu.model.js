@@ -6,21 +6,20 @@ import {
     STOCK_STATUS
 } from '../constant/index.js';
 
-const COLLECTION_NAME = "Spus"
-const DOCUMENT_NAME = "Spu"
+const COLLECTION_NAME = 'Spus';
+const DOCUMENT_NAME = 'Spu';
 
 const productSchema = new Schema({
     product_id: {
         type: String,
-
     },
     product_name: {
         type: String,
-        required: true
+        required: true,
     },
     product_thumb: {
         type: String,
-        required: true
+        required: true,
     },
     product_slug: {
         type: String,
@@ -30,44 +29,44 @@ const productSchema = new Schema({
     },
     product_price: {
         type: Number,
-        required: true
+        required: true,
     },
     product_discount_price: {
         type: Number,
     },
     product_quantity: {
         type: Number,
-        required: true
+        required: true,
     },
     product_stockStatus: {
         type: String,
     },
     product_category: {
         type: Array,
-        default: []
+        default: [],
     },
     product_attributes: {
         type: Schema.Types.Mixed,
-        required: true
+        required: true,
     },
     product_quantitySold: {
         type: Number,
-        default: 0
+        default: 0,
     },
     product_revenue: {
         type: Number,
-        default: 0
+        default: 0,
     },
     product_ratingAverage: {
         type: Number,
         default: 0,
-        min: [1, "Rating must above 1.0"],
-        max: [5, "Rating must below 5.0"],
-        set: (val) => Math.round(val * 10) / 10
+        min: [1, 'Rating must above 1.0'],
+        max: [5, 'Rating must below 5.0'],
+        set: (val) => Math.round(val * 10) / 10,
     },
     product_variations: {
         type: Array,
-        default: []
+        default: [],
         /*
             variations:[
                 {
@@ -88,23 +87,22 @@ const productSchema = new Schema({
         type: Boolean,
         default: true,
         index: true,
-        select: false
+        select: false,
     },
     isPublished: {
         type: Boolean,
         default: false,
         index: true,
-        select: false
+        select: false,
     },
     isDeleted: {
         type: Boolean,
         default: false,
-    }
-
+    },
 }, {
     collection: COLLECTION_NAME,
-    timestamps: true
-})
+    timestamps: true,
+}, );
 const updateStockStatus = function (quantity) {
     if (quantity === 0) {
         return STOCK_STATUS.OUT_OF_STOCK;
@@ -117,16 +115,16 @@ const updateStockStatus = function (quantity) {
 
 productSchema.index({
     product_name: 'text',
-    product_description: 'text'
-})
+    product_description: 'text',
+});
 
 productSchema.pre('save', function (next) {
     this.product_slug = slugify(this.product_name, {
-        lower: true
-    })
+        lower: true,
+    });
     this.product_stockStatus = updateStockStatus(this.product_quantity);
-    next()
-})
+    next();
+});
 productSchema.pre('updateOne', function (next) {
     const quantity = this.getUpdate().product_quantity;
     if (quantity !== undefined) {

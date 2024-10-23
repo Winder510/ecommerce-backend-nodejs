@@ -1,18 +1,19 @@
 import AccessControl from 'accesscontrol';
 
-let grantList = [{
+let grantList = [
+    {
         role: 'admin',
         resource: 'profile',
         action: 'create:any',
-        attributes: '*'
+        attributes: '*',
     },
 
     {
         role: 'user',
         resource: 'profile',
         action: 'delete:any',
-        attributes: '*'
-    }
+        attributes: '*',
+    },
 ];
 
-export default new AccessControl(grantList)
+export default new AccessControl(grantList);

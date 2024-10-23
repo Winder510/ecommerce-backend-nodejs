@@ -1,12 +1,10 @@
-import express from 'express'
+import express from 'express';
 
-import {
-    asyncErrorHandler
-} from '../../helpers/asyncHandler.js'
-import templateController from '../../controllers/template.controller.js'
+import { asyncErrorHandler } from '../../helpers/asyncHandler.js';
+import templateController from '../../controllers/template.controller.js';
 
-const router = express.Router()
+const router = express.Router();
 
-router.post('', asyncErrorHandler(templateController.newTemplate))
+router.post('', asyncErrorHandler(templateController.newTemplate));
 
-export default router
+export default router;

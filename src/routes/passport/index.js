@@ -1,31 +1,33 @@
-import express from 'express'
-import passport from '../../configs/passport.config.js'
-const router = express.Router()
+import express from 'express';
+import passport from '../../configs/passport.config.js';
+const router = express.Router();
 // Đường dẫn để người dùng nhấn nút đăng nhập qua Facebook
-router.get('/auth/facebook', passport.authenticate('facebook', {
-    scope: ['email'] // Yêu cầu quyền truy cập email
-}));
+router.get(
+    '/auth/facebook',
+    passport.authenticate('facebook', {
+        scope: ['email'], // Yêu cầu quyền truy cập email
+    }),
+);
 
 // Callback sau khi người dùng đăng nhập thành công
-router.get('/auth/facebook/callback',
+router.get(
+    '/auth/facebook/callback',
     passport.authenticate('facebook', {
-        failureRedirect: '/login'
+        failureRedirect: '/login',
     }),
     (req, res) => {
-        const {
-            token
-        } = req.user;
+        const { token } = req.user;
 
-        res.cookie("refresh_token", token.refreshToken, {
+        res.cookie('refresh_token', token.refreshToken, {
             httpOnly: true,
             maxAge: 60 * 60 * 1000,
         });
 
         res.json({
             user: req.user.profile._json,
-            token: token.accessToken
+            token: token.accessToken,
         });
-    }
+    },
 );
 
 // Route xem thông tin người dùng đã đăng nhập
@@ -45,4 +47,4 @@ router.get('/logout', (req, res) => {
     });
 });
 
-export default router
+export default router;

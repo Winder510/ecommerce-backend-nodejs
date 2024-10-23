@@ -1,20 +1,17 @@
-import _ from 'lodash'
-import mongoose from 'mongoose'
+import _ from 'lodash';
+import mongoose from 'mongoose';
 
-export const getInfoData = ({
-    fields = [],
-    object = {}
-}) => {
-    return _.pick(object, fields)
-}
+export const getInfoData = ({ fields = [], object = {} }) => {
+    return _.pick(object, fields);
+};
 
 export const getSelectData = (select) => {
-    return Object.fromEntries(select.map(e => [e, 1]))
-}
+    return Object.fromEntries(select.map((e) => [e, 1]));
+};
 
 export const unGetSelectData = (unSelect) => {
-    return Object.fromEntries(unSelect.map(e => [e, 0]))
-}
+    return Object.fromEntries(unSelect.map((e) => [e, 0]));
+};
 
 export const removeUndefinedNullObject = (obj) => {
     const result = {};
@@ -25,7 +22,7 @@ export const removeUndefinedNullObject = (obj) => {
         if ([null, undefined].includes(current)) return;
         if (Array.isArray(current)) return;
 
-        if (typeof current === "object") {
+        if (typeof current === 'object') {
             result[k] = removeUndefinedNullObject(current);
             return;
         }
@@ -35,20 +32,16 @@ export const removeUndefinedNullObject = (obj) => {
 
     return result;
 };
-export const convertToObjectIdMongodb = id => mongoose.Types.ObjectId(id)
+export const convertToObjectIdMongodb = (id) => mongoose.Types.ObjectId(id);
 
+export const replacePlaceHolder = ({ template, params }) => {
+    Object.keys(params).forEach((k) => {
+        const placeholer = `{{${k}}}`;
+        template = template.replace(new RegExp(placeholer, 'g'), params[k]);
+    });
 
-export const replacePlaceHolder = ({
-    template,
-    params
-}) => {
-    Object.keys(params).forEach(k => {
-        const placeholer = `{{${k}}}`
-        template = template.replace(new RegExp(placeholer, 'g'), params[k])
-    })
-
-    return template
-}
+    return template;
+};
 
 export function getUsernameFromEmail(email) {
     const username = email.split('@')[0];
@@ -63,20 +56,22 @@ export const randomNummber = () => {
     return Math.floor(100000 + Math.random() * 900000);
 };
 
-
 export async function processSale(spuId, quantity) {
     await spuModel.findByIdAndUpdate(spuId, {
         $inc: {
-            totalSold: quantity
-        }
+            totalSold: quantity,
+        },
     });
-    await skuModel.findOneAndUpdate({
-        spuId
-    }, {
-        $inc: {
-            quantitySold: quantity
-        }
-    });
+    await skuModel.findOneAndUpdate(
+        {
+            spuId,
+        },
+        {
+            $inc: {
+                quantitySold: quantity,
+            },
+        },
+    );
 }
 
 export const updateStockStatus = function (quantity) {

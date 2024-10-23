@@ -1,6 +1,4 @@
-import {
-    productModel
-} from "../models/product.model.js";
+import { productModel } from '../models/product.model.js';
 
 class PromotionService {
     static async createNew({
@@ -14,7 +12,7 @@ class PromotionService {
         endDate,
         bundle_product,
         quantity_limit,
-        status
+        status,
     }) {
         const newPromotion = new productModel({
             pro_name: name,
@@ -27,11 +25,11 @@ class PromotionService {
             pro_endDate: endDate,
             pro_bundleProduct: bundle_product,
             pro_quantityLimit: quantity_limit,
-            pro_status: endDate < new Date() ? "inactive" : status
+            pro_status: endDate < new Date() ? 'inactive' : status,
         });
 
         const savedPromotion = await newPromotion.save();
         return savedPromotion;
     }
 }
-export default PromotionService
+export default PromotionService;

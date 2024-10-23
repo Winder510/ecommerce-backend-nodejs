@@ -1,39 +1,32 @@
-import jwt from 'jsonwebtoken'
-import {
-    asyncErrorHandler
-} from '../helpers/asyncHandler.js'
-import {
-    AuthFailureError,
-    NotFoundError
-} from '../core/error.response.js'
-import KeyTokenService from '../services/keyToken.service.js'
+import jwt from 'jsonwebtoken';
+import { asyncErrorHandler } from '../helpers/asyncHandler.js';
+import { AuthFailureError, NotFoundError } from '../core/error.response.js';
+import KeyTokenService from '../services/keyToken.service.js';
 
 export const createTokenPair = async (payload, publicKey, privateKey) => {
     try {
         const accessToken = await jwt.sign(payload, privateKey, {
             algorithm: 'RS256',
-            expiresIn: '2 days'
-        })
+            expiresIn: '2 days',
+        });
         const refreshToken = await jwt.sign(payload, privateKey, {
             algorithm: 'RS256',
-            expiresIn: '7 days'
-        })
+            expiresIn: '7 days',
+        });
 
         jwt.verify(accessToken, publicKey, (err, decode) => {
             if (err) {
                 //  console.log("verify err::", err);
             } else {
-
                 //console.log("decode varify::", decode);
-
             }
-        })
+        });
         return {
             accessToken,
-            refreshToken
-        }
+            refreshToken,
+        };
     } catch (e) {}
-}
+};
 
 function getAccessTokenFromHeader(req) {
     const authHeader = req.headers['authorization'];
@@ -69,44 +62,41 @@ function getAccessTokenFromHeader(req) {
 // })
 export const authenticationV2 = asyncErrorHandler(async (req, res, next) => {
     const userId = req.headers['x-client-id'];
-    if (!userId) throw new AuthFailureError("Invalid request")
-
+    if (!userId) throw new AuthFailureError('Invalid request');
 
     const keyStore = await KeyTokenService.findByUserId(userId);
-    if (!keyStore) throw new NotFoundError("Not found key store")
+    if (!keyStore) throw new NotFoundError('Not found key store');
 
-    if (req.originalUrl === "/api/v1/handleRefreshToken" &&
-        req.headers['refreshtoken']) {
+    if (req.originalUrl === '/api/v1/handleRefreshToken' && req.headers['refreshtoken']) {
         try {
             const refreshToken = req.headers['refreshtoken'];
-            const decodeUser = jwt.verify(refreshToken, keyStore.publicKey)
+            const decodeUser = jwt.verify(refreshToken, keyStore.publicKey);
             if (userId !== decodeUser.userId) {
-                throw new AuthFailureError("Invalid userid ")
+                throw new AuthFailureError('Invalid userid ');
             }
             req.keyStore = keyStore;
             req.user = decodeUser;
-            req.refreshToken = refreshToken
+            req.refreshToken = refreshToken;
 
-            return next()
+            return next();
         } catch (e) {
-            throw e
+            throw e;
         }
     }
 
     const accessToken = getAccessTokenFromHeader(req);
-    if (!accessToken) throw new AuthFailureError("Invalid request")
+    if (!accessToken) throw new AuthFailureError('Invalid request');
 
     try {
-        const decodeUser = jwt.verify(accessToken, keyStore.publicKey)
+        const decodeUser = jwt.verify(accessToken, keyStore.publicKey);
         if (userId !== decodeUser.userId) {
-            throw new AuthFailureError("Invalid userid ")
+            throw new AuthFailureError('Invalid userid ');
         }
         req.user = decodeUser;
         req.keyStore = keyStore;
 
-        return next()
+        return next();
     } catch (e) {
-        throw e
+        throw e;
     }
-
-})
+});

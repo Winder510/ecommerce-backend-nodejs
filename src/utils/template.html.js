@@ -75,8 +75,8 @@ export const htmlEmailToken = () => {
         </div>
     </div>
 </body>
-</html>`
-}
+</html>`;
+};
 
 export const htmlEmailRemind = () => {
     return `<!DOCTYPE html>
@@ -120,5 +120,5 @@ export const htmlEmailRemind = () => {
     </div>
 </body>
 </html>
-`
-}
+`;
+};

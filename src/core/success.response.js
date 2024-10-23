@@ -1,44 +1,31 @@
 const StatusCode = {
     OK: 200,
-    CREATED: 201
-}
+    CREATED: 201,
+};
 export class SuccessResponse {
-    constructor({
-        message,
-        status = StatusCode.OK,
-        metadata
-    }) {
-        this.message = message
+    constructor({ message, status = StatusCode.OK, metadata }) {
+        this.message = message;
         this.status = status;
-        this.metadata = metadata
+        this.metadata = metadata;
     }
     send(res, headers = {}) {
-        return res.status(this.status).json(this)
+        return res.status(this.status).json(this);
     }
 }
 export class Ok extends SuccessResponse {
-    constructor({
-        message,
-        metadata
-    }) {
+    constructor({ message, metadata }) {
         super({
             message,
-            metadata
-        })
+            metadata,
+        });
     }
-
 }
 export class CREATED extends SuccessResponse {
-    constructor({
-        message,
-        status = StatusCode.OK,
-        metadata
-    }) {
+    constructor({ message, status = StatusCode.OK, metadata }) {
         super({
             message,
             status,
-            metadata
-        })
+            metadata,
+        });
     }
-
 }

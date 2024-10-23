@@ -1,71 +1,85 @@
 import {
+    BadRequestError,
     NotFoundError
-} from "../core/error.response.js";
-import cartModel from "../models/cart.model.js";
+} from '../core/error.response.js';
+import cartModel from '../models/cart.model.js';
 import {
     addNewProductToCart,
     checkExistProduct,
     createUserCart,
     updateUserCartQuantity,
-} from "../models/repositories/cart.repo.js";
+} from '../models/repositories/cart.repo.js';
 import {
     getProductById
-} from "../models/repositories/product.repo.js";
-import spuModel from "../models/spu.model.js";
+} from '../models/repositories/product.repo.js';
+import {
+    findProduct
+} from '../models/repositories/spu.repo.js';
+import spuModel from '../models/spu.model.js';
 
 export class CartService {
     static async addToCart({
         userId,
-        product = {}, // "productId": "66e69cc55d88ce1a18535ff5",  "quantity": 12,
+        spuId,
+        skuId,
+        quantity
     }) {
-        const foundProduct = await getProductById(product?.productId)
-        if (!foundProduct) throw new NotFoundError("Product not exists")
-
-        product.name = foundProduct.product_name;
-        product.price = foundProduct.product_price;
+        let product = await findProduct({
+            skuId,
+            spuId,
+        });
+        if (!product) throw new NotFoundError('Product not exists');
+        if (product.product_quantity < quantity) throw new BadRequestError('Quantity is not enough');
 
         // check cart ton tai hay khong
         const userCart = await cartModel.findOne({
-            cart_userId: userId
-        })
+            cart_userId: userId,
+        });
 
         if (!userCart) {
             return await createUserCart({
                 userId,
-                product
-            })
+                spuId,
+                skuId,
+                quantity
+            });
         }
 
-        if (await checkExistProduct({
+        if (
+            await checkExistProduct({
                 userId,
-                productId: product.productId
-            })) {
+                spuId,
+                skuId,
+            })
+        ) {
             return await updateUserCartQuantity({
                 userId,
-                product
-            })
-
+                spuId,
+                skuId,
+                quantity,
+            });
         }
         return await addNewProductToCart({
             userId,
-            product
-        })
-
+            spuId,
+            skuId,
+            quantity
+        });
     }
 
     /**
-     * update cart
-     * 
-     * data {
-     *      item_product:
-     *          {
-     *              quantity,old_quantity,productId
-     *          }
-     *      
-     *      versions
+                     * update cart
+                     * 
+                     * data {
+                     *      item_product:
+                     *          {
+                     *              quantity,old_quantity,productId
+                     *          }
+                     *      
+                     *      versions
 
-     * }
-     */
+                     * }
+                     */
 
     static async addToCartV2({
         userId,
@@ -75,17 +89,16 @@ export class CartService {
             quantity,
             old_quantity,
             productId
-        } = item_products
+        } = item_products;
 
-
-        const foundProduct = await getProductById(productId)
-        if (!foundProduct) throw new NotFoundError("Product not exists")
+        const foundProduct = await getProductById(productId);
+        if (!foundProduct) throw new NotFoundError('Product not exists');
 
         if (quantity === 0) {
             this.deleteUserCart({
                 userId,
-                productId
-            })
+                productId,
+            });
         }
 
         return await updateUserCartQuantity({
@@ -93,9 +106,8 @@ export class CartService {
             product: {
                 productId,
                 quantity: quantity - old_quantity,
-
-            }
-        })
+            },
+        });
     }
     static async deleteUserCart({
         userId,
@@ -103,40 +115,44 @@ export class CartService {
     }) {
         const query = {
                 cart_userId: userId,
-                cart_state: 'active'
+                cart_state: 'active',
             },
             updateSet = {
                 $pull: {
                     cart_products: {
-                        productId
-                    }
-                }
-            }
+                        productId,
+                    },
+                },
+            };
 
-        const deleteCart = await cartModel.updateOne(query, updateSet)
+        const deleteCart = await cartModel.updateOne(query, updateSet);
 
-        return deleteCart
+        return deleteCart;
     }
     static async showCart({
         userId
     }) {
-        const cart = await cartModel.findOne({
-            cart_userId: userId
-        }).lean()
+        const cart = await cartModel
+            .findOne({
+                cart_userId: userId,
+            })
+            .lean();
 
         if (!cart || !cart.cart_products || cart.cart_products.length === 0) {
             return {
-                message: "Giỏ hàng trống",
-                cartItems: []
+                message: 'Giỏ hàng trống',
+                cartItems: [],
             };
         }
-        const productIds = cart.cart_products.map(item => item.productId);
+        const productIds = cart.cart_products.map((item) => item.productId);
 
-        const products = await spuModel.find({
-            _id: {
-                $in: productIds
-            }
-        }).select('').lean();
-
+        const products = await spuModel
+            .find({
+                _id: {
+                    $in: productIds,
+                },
+            })
+            .select('')
+            .lean();
     }
 }

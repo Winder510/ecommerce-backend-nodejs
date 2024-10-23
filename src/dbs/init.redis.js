@@ -1,14 +1,12 @@
-import redis from "redis";
-import {
-    InternalError
-} from "../core/error.response.js";
+import redis from 'redis';
+import { InternalError } from '../core/error.response.js';
 
 let client = {};
 const statusConnectRedis = {
     CONNECT: 'connect',
     END: 'end',
     RECONNECT: 'reconnect',
-    ERROR: 'error'
+    ERROR: 'error',
 };
 
 const handleEventConnection = (connectionRedis) => {
@@ -41,14 +39,14 @@ const initRedis = async () => {
             reconnectStrategy: function (retries) {
                 console.log(retries);
                 if (retries > 20) {
-                    console.log("Too many attempts to reconnect. Redis connection was terminated");
-                    return new Error("Too many retries.");
+                    console.log('Too many attempts to reconnect. Redis connection was terminated');
+                    return new Error('Too many retries.');
                 } else {
                     return retries * 500; // Retry after a delay
                 }
-            }
+            },
         },
-        connectTimeout: 10000
+        connectTimeout: 10000,
     });
 
     handleEventConnection(instanceRedis);
@@ -80,8 +78,4 @@ const closeRedis = () => {
     }
 };
 
-export {
-    initRedis,
-    getRedis,
-    closeRedis
-};
+export { initRedis, getRedis, closeRedis };

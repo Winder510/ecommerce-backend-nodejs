@@ -1,45 +1,33 @@
-import {
-    BadRequestError
-} from "../core/error.response.js";
-import {
-    SuccessResponse
-} from "../core/success.response.js";
-import {
-    uploadImageFromLocal,
-    uploadImageFromUrl,
-    uploadListImageFromLocal
-} from "../services/upload.service.js";
+import { BadRequestError } from '../core/error.response.js';
+import { SuccessResponse } from '../core/success.response.js';
+import { uploadImageFromLocal, uploadImageFromUrl, uploadListImageFromLocal } from '../services/upload.service.js';
 class UploadController {
     uploadFileImage = async (req, res, next) => {
         new SuccessResponse({
-            message: "upload success",
-            metadata: await uploadImageFromUrl()
-        }).send(res)
-    }
+            message: 'upload success',
+            metadata: await uploadImageFromUrl(),
+        }).send(res);
+    };
     uploadFileThumb = async (req, res, next) => {
-        const {
-            file
-        } = req;
-        if (!file) throw new BadRequestError("File missing")
+        const { file } = req;
+        if (!file) throw new BadRequestError('File missing');
         new SuccessResponse({
-            message: "upload success",
+            message: 'upload success',
             metadata: await uploadImageFromLocal({
-                path: file.path
-            })
-        }).send(res)
-    }
+                path: file.path,
+            }),
+        }).send(res);
+    };
     uploadListImageFiles = async (req, res, next) => {
-        const {
-            files
-        } = req;
-        if (!files.length) throw new BadRequestError("File missing")
+        const { files } = req;
+        if (!files.length) throw new BadRequestError('File missing');
 
         new SuccessResponse({
-            message: "upload many success",
+            message: 'upload many success',
             metadata: await uploadListImageFromLocal({
                 files,
-            })
-        }).send(res)
-    }
+            }),
+        }).send(res);
+    };
 }
 export default new UploadController();
