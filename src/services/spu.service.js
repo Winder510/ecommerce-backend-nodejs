@@ -1,7 +1,11 @@
 import _ from 'lodash';
 import spuModel from '../models/spu.model.js';
-import { SkuService } from './sku.service.js';
-import { BadRequestError } from '../core/error.response.js';
+import {
+    SkuService
+} from './sku.service.js';
+import {
+    BadRequestError
+} from '../core/error.response.js';
 import {
     buildQuery,
     findListPublishSpuByCategory,
@@ -9,7 +13,9 @@ import {
     searchSpuByUser,
     unPublishSpu,
 } from '../models/repositories/spu.repo.js';
-import { CategoryService } from './category.service.js';
+import {
+    CategoryService
+} from './category.service.js';
 
 export class SpuService {
     static newSPu = async ({
@@ -25,7 +31,6 @@ export class SpuService {
         sku_list = [],
     }) => {
         if (!sku_list.length && !variations) {
-            console.log('hêrerererere');
             return await spuModel.create({
                 product_name: name,
                 product_description: description,
@@ -70,7 +75,9 @@ export class SpuService {
         return newSpu;
     };
 
-    static async getOneSpu({ _id }) {
+    static async getOneSpu({
+        _id
+    }) {
         const foundSpu = await spuModel.findById(_id).lean();
 
         if (!foundSpu) throw new BadRequestError('Spu not exists');
@@ -85,7 +92,11 @@ export class SpuService {
         };
     }
 
-    static async getListPublishSpuByCategory({ categoryId = null, limit = 10, skip = 0 }) {
+    static async getListPublishSpuByCategory({
+        categoryId = null,
+        limit = 10,
+        skip = 0
+    }) {
         const query = {
             isPublished: true,
             ...(categoryId && {
@@ -103,7 +114,11 @@ export class SpuService {
         });
     }
 
-    static async getListDraftSpuByCategory({ categoryId = null, limit = 10, skip = 0 }) {
+    static async getListDraftSpuByCategory({
+        categoryId = null,
+        limit = 10,
+        skip = 0
+    }) {
         const query = {
             isDraft: true,
             product_category: {
@@ -120,25 +135,35 @@ export class SpuService {
         });
     }
 
-    static async publishSpu({ product_id }) {
+    static async publishSpu({
+        product_id
+    }) {
         return await publishSpu({
             product_id,
         });
     }
 
-    static async unPublishSpu({ product_id }) {
+    static async unPublishSpu({
+        product_id
+    }) {
         return await unPublishSpu({
             product_id,
         });
     }
 
-    static async searchSpu({ keySearch }) {
+    static async searchSpu({
+        keySearch
+    }) {
         return await searchSpuByUser({
             keySearch,
         });
     }
 
-    static async getBestSoldSpu({ categoryId, limit = 5, skip = 0 }) {
+    static async getBestSoldSpu({
+        categoryId,
+        limit = 5,
+        skip = 0
+    }) {
         const query = {
             isPublished: true,
             product_category: {

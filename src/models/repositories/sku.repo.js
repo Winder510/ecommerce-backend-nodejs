@@ -15,4 +15,7 @@ const createSkuName = (product_variations, sku) => {
         .trim();
 };
 
-export { findSkuById, createSkuName };
+export {
+    findSkuById,
+    createSkuName
+};

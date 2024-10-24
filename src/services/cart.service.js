@@ -7,11 +7,10 @@ import {
     addNewProductToCart,
     checkExistProduct,
     createUserCart,
+    replaceItemsInCart,
     updateUserCartQuantity,
 } from '../models/repositories/cart.repo.js';
-import {
-    getProductById
-} from '../models/repositories/product.repo.js';
+
 import {
     findProduct
 } from '../models/repositories/spu.repo.js';
@@ -88,30 +87,41 @@ export class CartService {
         const {
             quantity,
             old_quantity,
-            productId
+            spuId,
+            skuId
         } = item_products;
-
-        const foundProduct = await getProductById(productId);
-        if (!foundProduct) throw new NotFoundError('Product not exists');
-
+        console.log({
+            quantity,
+            old_quantity,
+            spuId,
+            skuId
+        })
+        let product = await findProduct({
+            skuId,
+            spuId,
+        });
+        if (!product) throw new NotFoundError('Product not exists');
+        if (product.product_quantity < quantity) throw new BadRequestError("Đã đạt đến số lượng tối đa")
         if (quantity === 0) {
             this.deleteUserCart({
                 userId,
-                productId,
+                spuId,
+                skuId
             });
         }
 
         return await updateUserCartQuantity({
             userId,
-            product: {
-                productId,
-                quantity: quantity - old_quantity,
-            },
+            spuId,
+            skuId,
+            quantity: quantity - old_quantity,
+
         });
     }
     static async deleteUserCart({
         userId,
-        productId
+        spuId,
+        skuId
     }) {
         const query = {
                 cart_userId: userId,
@@ -120,7 +130,8 @@ export class CartService {
             updateSet = {
                 $pull: {
                     cart_products: {
-                        productId,
+                        spuId,
+                        skuId
                     },
                 },
             };
@@ -129,6 +140,7 @@ export class CartService {
 
         return deleteCart;
     }
+
     static async showCart({
         userId
     }) {
@@ -144,15 +156,80 @@ export class CartService {
                 cartItems: [],
             };
         }
-        const productIds = cart.cart_products.map((item) => item.productId);
 
-        const products = await spuModel
-            .find({
-                _id: {
-                    $in: productIds,
-                },
+        const items = await Promise.all(cart.cart_products.map(async (item) => {
+            const {
+                spuId,
+                skuId,
+                quantity
+            } = item
+
+            const product = await findProduct({
+                spuId,
+                skuId
             })
-            .select('')
-            .lean();
+
+            if (skuId) {
+                return {
+                    skuId: product._id,
+                    spuId: product.product_id,
+                    name: product.sku_name,
+                    price: product.sku_price,
+                    thumb: product.sku_thumb,
+                    quantity,
+                    totalPrice: product.sku_price * quantity
+                }
+            } else {
+                return {
+                    spuId: product._id,
+                    name: product.product_name,
+                    price: product.product_price,
+                    thumb: product.product_thumb,
+                    quantity,
+                    totalPrice: product.product_price * quantity
+                }
+            }
+
+        }));
+
+        return items
     }
+
+    static async replaceItemInCart({
+        userId,
+        spuId,
+        oldSkuId,
+        newSkuId,
+    }) {
+        const userCart = await cartModel.findOne({
+            cart_userId: userId
+        }).lean();
+        if (!userCart) {
+            throw new NotFoundError("Giỏ hàng không tồn tại");
+        }
+
+        const newProduct = await findProduct({
+            spuId,
+            skuId: newSkuId
+        })
+
+        const itemIndex = userCart.cart_products.findIndex(item => item.skuId?.toString() === oldSkuId);
+        if (itemIndex === -1) {
+            throw new NotFoundError("Sản phẩm cũ không tồn tại trong giỏ hàng");
+        }
+
+        const currentQuantity = userCart.cart_products[itemIndex].quantity;
+
+        if (currentQuantity > newProduct.product_quantity) throw new BadRequestError("Số lượng sản phầm không đủ")
+
+        return await replaceItemsInCart({
+            userId,
+            spuId,
+            oldSkuId,
+            newSkuId,
+        })
+
+    }
+
+
 }

@@ -51,6 +51,34 @@ export const updateUserCartQuantity = async ({
     return await cartModel.findOneAndUpdate(query, updateSet, options).lean();
 };
 
+export const replaceItemsInCart = async ({
+    userId,
+    spuId,
+    oldSkuId,
+    newSkuId,
+}) => {
+    const query = {
+        cart_userId: userId,
+        cart_state: 'active',
+        'cart_products.spuId': spuId,
+        'cart_products.skuId': oldSkuId,
+    };
+
+    const updateSet = {
+        $set: {
+            'cart_products.$.skuId': newSkuId,
+        },
+    };
+
+    const options = {
+        new: true,
+    };
+
+    const updatedCart = await cartModel.findOneAndUpdate(query, updateSet, options).lean();
+    return updatedCart;
+};
+
+
 // Hàm để thêm sản phẩm mới vào giỏ hàng
 export const addNewProductToCart = async ({
     userId,

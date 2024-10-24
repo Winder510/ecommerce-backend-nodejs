@@ -39,5 +39,12 @@ class CartController {
             metadata: await CartService.showCart(req.query),
         }).send(res);
     };
+
+    replaceItem = async (req, res, next) => {
+        new SuccessResponse({
+            message: 'success',
+            metadata: await CartService.replaceItemInCart(req.body),
+        }).send(res);
+    };
 }
 export default new CartController();

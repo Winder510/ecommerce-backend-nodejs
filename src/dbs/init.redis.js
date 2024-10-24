@@ -1,5 +1,7 @@
 import redis from 'redis';
-import { InternalError } from '../core/error.response.js';
+import {
+    InternalError
+} from '../core/error.response.js';
 
 let client = {};
 const statusConnectRedis = {
@@ -78,4 +80,8 @@ const closeRedis = () => {
     }
 };
 
-export { initRedis, getRedis, closeRedis };
+export {
+    initRedis,
+    getRedis,
+    closeRedis
+};

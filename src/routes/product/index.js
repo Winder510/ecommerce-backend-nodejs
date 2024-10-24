@@ -1,9 +1,15 @@
 import express from 'express';
 
-import { asyncErrorHandler } from '../../helpers/asyncHandler.js';
+import {
+    asyncErrorHandler
+} from '../../helpers/asyncHandler.js';
 import productController from '../../controllers/product.controller.js';
-import { authenticationV2 } from '../../auth/authUtils.js';
-import { grantAccess } from '../../middleware/rbac.js';
+import {
+    authenticationV2
+} from '../../auth/authUtils.js';
+import {
+    grantAccess
+} from '../../middleware/rbac.js';
 
 const router = express.Router();
 
