@@ -10,25 +10,21 @@ import {
     replaceItemsInCart,
     updateUserCartQuantity,
 } from '../models/repositories/cart.repo.js';
-
 import {
-    findProduct
-} from '../models/repositories/spu.repo.js';
-import spuModel from '../models/spu.model.js';
+    findSkuById
+} from '../models/repositories/sku.repo.js';
+
 
 export class CartService {
     static async addToCart({
         userId,
-        spuId,
         skuId,
         quantity
     }) {
-        let product = await findProduct({
-            skuId,
-            spuId,
-        });
+        let product = await findSkuById(skuId);
         if (!product) throw new NotFoundError('Product not exists');
-        if (product.product_quantity < quantity) throw new BadRequestError('Quantity is not enough');
+
+        if (product.sku_stock < quantity) throw new BadRequestError('Quantity is not enough');
 
         // check cart ton tai hay khong
         const userCart = await cartModel.findOne({
@@ -38,7 +34,6 @@ export class CartService {
         if (!userCart) {
             return await createUserCart({
                 userId,
-                spuId,
                 skuId,
                 quantity
             });
@@ -47,20 +42,17 @@ export class CartService {
         if (
             await checkExistProduct({
                 userId,
-                spuId,
                 skuId,
             })
         ) {
             return await updateUserCartQuantity({
                 userId,
-                spuId,
                 skuId,
                 quantity,
             });
         }
         return await addNewProductToCart({
             userId,
-            spuId,
             skuId,
             quantity
         });
@@ -87,32 +79,25 @@ export class CartService {
         const {
             quantity,
             old_quantity,
-            spuId,
             skuId
         } = item_products;
-        console.log({
-            quantity,
-            old_quantity,
-            spuId,
+
+        let product = await findSkuById(
             skuId
-        })
-        let product = await findProduct({
-            skuId,
-            spuId,
-        });
+        );
         if (!product) throw new NotFoundError('Product not exists');
-        if (product.product_quantity < quantity) throw new BadRequestError("Đã đạt đến số lượng tối đa")
+
+        if (product.sku_stock < quantity) throw new BadRequestError('Quantity is not enough');
+
         if (quantity === 0) {
             this.deleteUserCart({
                 userId,
-                spuId,
                 skuId
             });
         }
 
         return await updateUserCartQuantity({
             userId,
-            spuId,
             skuId,
             quantity: quantity - old_quantity,
 
@@ -120,7 +105,6 @@ export class CartService {
     }
     static async deleteUserCart({
         userId,
-        spuId,
         skuId
     }) {
         const query = {
@@ -130,7 +114,6 @@ export class CartService {
             updateSet = {
                 $pull: {
                     cart_products: {
-                        spuId,
                         skuId
                     },
                 },
@@ -159,37 +142,23 @@ export class CartService {
 
         const items = await Promise.all(cart.cart_products.map(async (item) => {
             const {
-                spuId,
                 skuId,
                 quantity
             } = item
 
-            const product = await findProduct({
-                spuId,
+            let product = await findSkuById(
                 skuId
-            })
+            );
 
-            if (skuId) {
-                return {
-                    skuId: product._id,
-                    spuId: product.product_id,
-                    name: product.sku_name,
-                    price: product.sku_price,
-                    thumb: product.sku_thumb,
-                    quantity,
-                    totalPrice: product.sku_price * quantity
-                }
-            } else {
-                return {
-                    spuId: product._id,
-                    name: product.product_name,
-                    price: product.product_price,
-                    thumb: product.product_thumb,
-                    quantity,
-                    totalPrice: product.product_price * quantity
-                }
+
+            return {
+                skuId: product.sku_id,
+                name: product.sku_name,
+                price: product.sku_price,
+                thumb: product.sku_thumb,
+                quantity,
+                totalPrice: product.sku_price * quantity
             }
-
         }));
 
         return items
@@ -197,7 +166,6 @@ export class CartService {
 
     static async replaceItemInCart({
         userId,
-        spuId,
         oldSkuId,
         newSkuId,
     }) {
@@ -208,10 +176,9 @@ export class CartService {
             throw new NotFoundError("Giỏ hàng không tồn tại");
         }
 
-        const newProduct = await findProduct({
-            spuId,
-            skuId: newSkuId
-        })
+        let newProduct = await findSkuById(
+            newSkuId
+        );
 
         const itemIndex = userCart.cart_products.findIndex(item => item.skuId?.toString() === oldSkuId);
         if (itemIndex === -1) {
@@ -224,7 +191,6 @@ export class CartService {
 
         return await replaceItemsInCart({
             userId,
-            spuId,
             oldSkuId,
             newSkuId,
         })

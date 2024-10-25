@@ -16,6 +16,9 @@ import {
 import {
     CategoryService
 } from './category.service.js';
+import {
+    lowestPriceSKU
+} from '../models/repositories/sku.repo.js';
 
 export class SpuService {
     static newSPu = async ({
@@ -23,42 +26,47 @@ export class SpuService {
         description,
         thumb,
         category,
-        price,
         quantity,
         attributes,
         variations,
-        discount_price,
         sku_list = [],
+        /*
+        sku_list = [  "sku_index": [
+                1,
+                2
+            ],
+            "sku_thumb":   "https://example.com/images/macbook-silver.jpg",
+            "sku_price": 2900,
+            "sku_stock": 2
+            ]
+        */
     }) => {
-        if (!sku_list.length && !variations) {
-            return await spuModel.create({
-                product_name: name,
-                product_description: description,
-                product_thumb: thumb,
-                product_price: price,
-                product_quantity: quantity,
-                product_category: category,
-                product_attributes: attributes,
-                product_discount_price: discount_price,
-            });
-        }
+        // if (!sku_list.length && !variations) {
+        //     return await spuModel.create({
+        //         product_name: name,
+        //         product_description: description,
+        //         product_thumb: thumb,
+        //         product_quantity: quantity,
+        //         product_category: category,
+        //         product_attributes: attributes,
+        //     });
+        // }
+
         const product_quantity = sku_list.reduce((acc, sku) => {
             return acc + sku?.sku_stock;
         }, 0);
+        const lowestSku = lowestPriceSKU(sku_list);
 
-        const defaultSku = sku_list.find((sku) => sku.isDefault === true);
-        if (!defaultSku) throw new BadRequestError('Can not find default sku');
 
         const newSpu = await spuModel.create({
             product_name: name,
             product_description: description,
             product_thumb: thumb,
-            product_price: defaultSku?.sku_price,
+            product_price: lowestSku?.sku_price,
             product_category: category,
             product_attributes: attributes,
             product_quantity,
             product_variations: variations,
-            product_discount_price: discount_price,
         });
 
         if (newSpu && sku_list.length) {

@@ -6,14 +6,11 @@ const COLLECTION_NAME = 'Skus';
 const DOCUMENT_NAME = 'Sku';
 
 const skuSchema = new Schema({
-    sku_id: {
-        type: String,
-    },
     sku_name: {
         type: String,
     },
     sku_thumb: {
-        type: String,
+        type: String
     },
     sku_index: {
         type: Array,
@@ -26,10 +23,6 @@ const skuSchema = new Schema({
     sku_slug: {
         type: String,
         default: '',
-    },
-    sku_sort: {
-        type: Number,
-        default: 0,
     },
     sku_price: {
         type: Number,
@@ -70,12 +63,4 @@ const skuSchema = new Schema({
     collection: COLLECTION_NAME,
     timestamps: true,
 }, );
-skuSchema.pre('save', function (next) {
-    this.product_slug = slugify(this.product_name, {
-        lower: true,
-    });
-    this.product_stockStatus = updateStockStatus(this.product_quantity);
-
-    next();
-});
 export default mongoose.model(DOCUMENT_NAME, skuSchema);

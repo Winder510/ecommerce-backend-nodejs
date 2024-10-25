@@ -1,17 +1,23 @@
-import { PRODUCT_STATUS } from '../../constant/index.js';
-import { getSelectData } from '../../utils/index.js';
+import {
+    PRODUCT_STATUS
+} from '../../constant/index.js';
+import {
+    getSelectData
+} from '../../utils/index.js';
 import spuModel from '../spu.model.js';
-import { findSkuById } from './sku.repo.js';
+import {
+    findSkuById
+} from './sku.repo.js';
 
 const findSpuById = async (spuId) => {
-    return await spuModel
-        .findOne({
-            _id: spuId,
-        })
-        .lean();
+    return await spuModel.findById(spuId).lean();
 };
 
-const findListPublishSpuByCategory = async ({ query, limit = 10, skip = 0 }) => {
+const findListPublishSpuByCategory = async ({
+    query,
+    limit = 10,
+    skip = 0
+}) => {
     return await querySpu({
         query,
         limit,
@@ -19,7 +25,11 @@ const findListPublishSpuByCategory = async ({ query, limit = 10, skip = 0 }) => 
     });
 };
 
-const findListDraftSpuByCategory = async ({ query, limit = 10, skip = 0 }) => {
+const findListDraftSpuByCategory = async ({
+    query,
+    limit = 10,
+    skip = 0
+}) => {
     return await querySpu({
         query,
         limit,
@@ -45,7 +55,9 @@ const querySpu = async ({
         .exec();
 };
 
-const publishSpu = async ({ product_id }) => {
+const publishSpu = async ({
+    product_id
+}) => {
     const foundSpu = await spuModel.findOne({
         _id: product_id,
     });
@@ -54,18 +66,17 @@ const publishSpu = async ({ product_id }) => {
         throw new Error('Product not found');
     }
 
-    return await spuModel.updateOne(
-        {
-            _id: product_id,
-        },
-        {
-            isDraft: false,
-            isPublished: true,
-        },
-    );
+    return await spuModel.updateOne({
+        _id: product_id,
+    }, {
+        isDraft: false,
+        isPublished: true,
+    }, );
 };
 
-const unPublishSpu = async ({ product_id }) => {
+const unPublishSpu = async ({
+    product_id
+}) => {
     const foundSpu = await spuModel.findOne({
         _id: product_id,
     });
@@ -74,32 +85,28 @@ const unPublishSpu = async ({ product_id }) => {
         throw new Error('Product not found');
     }
 
-    return await spuModel.updateOne(
-        {
-            _id: product_id,
-        },
-        {
-            isDraft: true,
-            isPublished: false,
-        },
-    );
+    return await spuModel.updateOne({
+        _id: product_id,
+    }, {
+        isDraft: true,
+        isPublished: false,
+    }, );
 };
 
-const searchSpuByUser = async ({ keySearch }) => {
+const searchSpuByUser = async ({
+    keySearch
+}) => {
     const results = await spuModel
-        .find(
-            {
-                isDraft: false,
-                $text: {
-                    $search: keySearch,
-                },
+        .find({
+            isDraft: false,
+            $text: {
+                $search: keySearch,
             },
-            {
-                score: {
-                    $meta: 'textScore',
-                },
+        }, {
+            score: {
+                $meta: 'textScore',
             },
-        )
+        }, )
         .sort({
             score: {
                 $meta: 'textScore',
@@ -110,15 +117,19 @@ const searchSpuByUser = async ({ keySearch }) => {
     return results;
 };
 
-const findAllSpu = async ({ limit, sort, skip, filter, select }) => {
+const findAllSpu = async ({
+    limit,
+    sort,
+    skip,
+    filter,
+    select
+}) => {
     const sortBy =
-        sort === 'ctime'
-            ? {
-                  _id: -1,
-              }
-            : {
-                  _id: 1,
-              };
+        sort === 'ctime' ? {
+            _id: -1,
+        } : {
+            _id: 1,
+        };
     const spus = await productModel
         .find(filter)
         .sort(sortBy)
@@ -130,7 +141,11 @@ const findAllSpu = async ({ limit, sort, skip, filter, select }) => {
     return spus;
 };
 
-const buildQuery = ({ product_status, stock_status, categoryId }) => {
+const buildQuery = ({
+    product_status,
+    stock_status,
+    categoryId
+}) => {
     const query = {};
 
     // Trạng thái sản phẩm
@@ -173,7 +188,10 @@ const buildQuery = ({ product_status, stock_status, categoryId }) => {
 
     return query;
 };
-const findProduct = async ({ skuId, spuId }) => {
+const findProduct = async ({
+    skuId,
+    spuId
+}) => {
     let product;
     if (skuId) {
         product = await findSkuById(skuId);

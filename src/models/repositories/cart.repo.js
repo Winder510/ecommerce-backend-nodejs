@@ -2,7 +2,6 @@ import cartModel from '../cart.model.js';
 
 export const createUserCart = async ({
     userId,
-    spuId,
     skuId,
     quantity
 }) => {
@@ -13,7 +12,6 @@ export const createUserCart = async ({
         updateOrInsert = {
             $addToSet: {
                 cart_products: {
-                    spuId,
                     skuId,
                     quantity
                 },
@@ -28,14 +26,12 @@ export const createUserCart = async ({
 
 export const updateUserCartQuantity = async ({
     userId,
-    spuId,
     skuId,
     quantity
 }) => {
     const query = {
             cart_userId: userId,
             cart_state: 'active',
-            'cart_products.spuId': spuId,
             'cart_products.skuId': skuId,
         },
         updateSet = {
@@ -60,7 +56,6 @@ export const replaceItemsInCart = async ({
     const query = {
         cart_userId: userId,
         cart_state: 'active',
-        'cart_products.spuId': spuId,
         'cart_products.skuId': oldSkuId,
     };
 
@@ -82,7 +77,6 @@ export const replaceItemsInCart = async ({
 // Hàm để thêm sản phẩm mới vào giỏ hàng
 export const addNewProductToCart = async ({
     userId,
-    spuId,
     skuId,
     quantity
 }) => {
@@ -93,7 +87,6 @@ export const addNewProductToCart = async ({
         }, {
             $push: {
                 cart_products: {
-                    spuId,
                     skuId,
                     quantity
                 },
@@ -106,7 +99,6 @@ export const addNewProductToCart = async ({
 };
 
 export const checkExistProduct = async ({
-    spuId,
     skuId,
     userId
 }) => {
@@ -114,7 +106,6 @@ export const checkExistProduct = async ({
         .findOne({
             cart_userId: userId,
             cart_state: 'active',
-            'cart_products.spuId': spuId,
             'cart_products.skuId': skuId,
         })
         .lean();

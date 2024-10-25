@@ -14,10 +14,6 @@ var cartSchema = new mongoose.Schema({
         default: 'active',
     },
     cart_products: [{
-        spuId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Spu',
-        },
         skuId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Sku',

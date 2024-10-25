@@ -1,17 +1,31 @@
 import skuModel from '../models/sku.model.js';
 
 import spuModel from '../models/spu.model.js';
-import { BadRequestError } from '../core/error.response.js';
+import {
+    BadRequestError
+} from '../core/error.response.js';
 
-import { findSpuById } from '../models/repositories/spu.repo.js';
-import { createSkuName, findSkuById } from '../models/repositories/sku.repo.js';
+import {
+    findSpuById
+} from '../models/repositories/spu.repo.js';
+import {
+    createSkuName,
+    findSkuById
+} from '../models/repositories/sku.repo.js';
+import slugify from 'slugify';
 
 export class SkuService {
-    static async newSku({ spu_id, product_variations, product_name, sku_list }) {
+    static async newSku({
+        spu_id,
+        product_variations,
+        product_name,
+        sku_list
+    }) {
         const convevt_sku_list = sku_list.map((sku) => {
             return {
                 ...sku,
                 sku_name: product_name + createSkuName(product_variations, sku),
+                sku_slug: slugify(product_name + createSkuName(product_variations, sku)),
                 product_id: spu_id,
             };
         });
@@ -19,7 +33,10 @@ export class SkuService {
 
         return newSkus;
     }
-    static async getOneSku({ sku_id, product_id }) {
+    static async getOneSku({
+        sku_id,
+        product_id
+    }) {
         //read cachhe
 
         const sku = await skuModel
@@ -35,7 +52,9 @@ export class SkuService {
         return _.omit(sku, ['__v', 'isDeleted', 'updatedAt', 'createdAt']);
     }
 
-    static async allSkuBySpu({ product_id }) {
+    static async allSkuBySpu({
+        product_id
+    }) {
         const foundProduct = await spuModel
             .findOne({
                 _id: product_id,
@@ -53,7 +72,10 @@ export class SkuService {
         return allSku;
     }
 
-    static async setDefaultSku({ isDefault, sku_id }) {
+    static async setDefaultSku({
+        isDefault,
+        sku_id
+    }) {
         const foundSku = await findSkuById(sku_id);
         if (!foundSku) throw new BadRequestError('Not found sku');
 

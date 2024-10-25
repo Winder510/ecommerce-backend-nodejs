@@ -103,6 +103,7 @@ const productSchema = new Schema({
     collection: COLLECTION_NAME,
     timestamps: true,
 }, );
+
 const updateStockStatus = function (quantity) {
     if (quantity === 0) {
         return STOCK_STATUS.OUT_OF_STOCK;
@@ -127,6 +128,7 @@ productSchema.pre('save', function (next) {
 });
 productSchema.pre('updateOne', function (next) {
     const quantity = this.getUpdate().product_quantity;
+
     if (quantity !== undefined) {
         this.getUpdate().product_stockStatus = updateStockStatus(quantity);
     }

@@ -1,11 +1,8 @@
 import skuModel from '../sku.model.js';
 
 const findSkuById = async (skuId) => {
-    return await skuModel
-        .findOne({
-            _id: skuId,
-        })
-        .lean();
+    console.log(skuId)
+    return await skuModel.findById(skuId).lean();
 };
 const createSkuName = (product_variations, sku) => {
     return sku.sku_index
@@ -15,7 +12,13 @@ const createSkuName = (product_variations, sku) => {
         .trim();
 };
 
+const lowestPriceSKU = (sku_list) => {
+    return sku_list.reduce((min, current) => {
+        return current.sku_price < min.sku_price ? current : min;
+    })
+};
 export {
     findSkuById,
-    createSkuName
+    createSkuName,
+    lowestPriceSKU
 };
