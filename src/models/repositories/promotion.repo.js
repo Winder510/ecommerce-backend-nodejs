@@ -38,9 +38,7 @@ export const getListAppliedSpu = async (promotionId) => {
     console.log("🚀 ~ data ~ data:", data)
     const spuIds = data.map(spu => spu.product_id);
     console.log("🚀 ~ getListAppliedSpu ~ spuIds:", spuIds)
-    const uniqueSpuIds = spuIds.filter((id, index) => {
-        return spuIds.indexOf(id) === index;
-    });
+    const uniqueSpuIds = [...new Set(spuIds.map(id => id.toString().trim()))];
 
 
     return uniqueSpuIds
