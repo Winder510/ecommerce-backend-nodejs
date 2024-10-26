@@ -1,18 +1,35 @@
-import { findCartById } from '../models/repositories/cart.repo.js';
-import { NotFoundError, BadRequestError } from '../core/error.response.js';
+import {
+    findCartById
+} from '../models/repositories/cart.repo.js';
+import {
+    NotFoundError,
+    BadRequestError
+} from '../core/error.response.js';
 
 import DiscountService from './discount.service.js';
-import { acquireLock, releaseLock } from './redis.service.js';
+import {
+    acquireLock,
+    releaseLock
+} from './redis.service.js';
 import orderModel from '../models/order.model.js';
-import { CartService } from './cart.service.js';
-import { checkSpuByServer } from '../models/repositories/order.repo.js';
+import {
+    CartService
+} from './cart.service.js';
+import {
+    checkSpuByServer
+} from '../models/repositories/order.repo.js';
 
 class CheckOutService {
     /**
      *  shop_discount = [{discountId, codeId}]
      *  products_order = [{ quanity,productId}]
      */
-    static async checkOutRevew({ cartId, userId, shop_discount, products_order = [] }) {
+    static async checkOutRevew({
+        cartId,
+        userId,
+        shop_discount,
+        products_order = []
+    }) {
         // check cart id
         const foundCart = findCartById({
             cartId,
@@ -23,8 +40,10 @@ class CheckOutService {
             totalPrice: 0, // tong tien hang
             feeShip: 0, // phi van chuyen
             totalDiscount: 0, // tong tien discount giam gia
+            accLoyalPoint: 0, // diem tich luy duoc
             totalCheckOut: 0, // tong tien phai thanh toán
         };
+
         // check product available
         const checkProductServer = await checkSpuByServer(products_order);
         // console.log("checkProductServer::", checkProductServer)
@@ -41,8 +60,12 @@ class CheckOutService {
 
         if (shop_discount.length > 0) {
             // gia su chi co 1 discount
-            const { codeId } = shop_discount[0];
-            const { discount = 0 } = await DiscountService.getDiscountAmount({
+            const {
+                codeId
+            } = shop_discount[0];
+            const {
+                discount = 0
+            } = await DiscountService.getDiscountAmount({
                 codeId,
                 userId,
                 products: checkProductServer,
@@ -65,8 +88,18 @@ class CheckOutService {
         };
     }
 
-    static async orderByUser({ cartId, userId, shop_discount, products_order, user_payment = {}, user_address = {} }) {
-        const { raw, checkOut_order } = await CheckOutService.checkOutRevew({
+    static async orderByUser({
+        cartId,
+        userId,
+        shop_discount,
+        products_order,
+        user_payment = {},
+        user_address = {}
+    }) {
+        const {
+            raw,
+            checkOut_order
+        } = await CheckOutService.checkOutRevew({
             cartId,
             userId,
             shop_discount,
@@ -76,7 +109,10 @@ class CheckOutService {
         const acquireProduct = [];
         // check lai so luong trong kho mot lan nua
         for (let i = 0; i < products_order.length; i++) {
-            const { productId, quantity } = products_order[i];
+            const {
+                productId,
+                quantity
+            } = products_order[i];
             const keyLock = await acquireLock({
                 productId,
                 quantity,

@@ -15,6 +15,8 @@ import commentRouter from './comment/index.js';
 import categoryRouter from './category/index.js';
 import attributeGroupRouter from './attributeGroup/index.js';
 import passportRouter from './passport/index.js';
+import promotionRouter from './promotion/index.js';
+
 
 const router = express.Router();
 
@@ -22,8 +24,7 @@ const router = express.Router();
 
 //check permission
 router.use('/api/v1/attribute', attributeGroupRouter);
-router.use('/api/v1/attribute', attributeGroupRouter);
-
+router.use('/api/v1/promotion', promotionRouter);
 router.use('/api/v1/template', templateRouter);
 router.use('/api/v1/category', categoryRouter);
 router.use('/api/v1/user', userRouter);

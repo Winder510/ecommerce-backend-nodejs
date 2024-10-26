@@ -1,35 +1,54 @@
-import { productModel } from '../models/product.model.js';
+import promotionModel from "../models/promotion.model.js";
+import {
+    BadRequestError,
+    NotFoundError
+} from '../core/error.response.js'
 
+import {
+    getListAppliedSpu,
+    isTimeSlotAvailable
+} from '../models/repositories/promotion.repo.js'
 class PromotionService {
-    static async createNew({
-        name,
-        type,
-        urlImage,
-        urlPage,
-        discountPrice,
-        appliedProduct,
-        startDate,
-        endDate,
-        bundle_product,
-        quantity_limit,
-        status,
+    static async createNewProduct({
+        prom_name,
+        products,
+        startTime,
+        endTime,
     }) {
-        const newPromotion = new productModel({
-            pro_name: name,
-            pro_type: type,
-            pro_urlImage: urlImage,
-            pro_urlPage: urlPage,
-            pro_discountPrice: discountPrice,
-            pro_appliedProduct: appliedProduct,
-            pro_startDate: startDate,
-            pro_endDate: endDate,
-            pro_bundleProduct: bundle_product,
-            pro_quantityLimit: quantity_limit,
-            pro_status: endDate < new Date() ? 'inactive' : status,
+
+        const isAvailable = await isTimeSlotAvailable(startTime, endTime);
+
+        if (!isAvailable) {
+            throw new BadRequestError('The promotion time slot overlaps with an existing promotion.');
+        }
+
+        const newPromotion = new promotionModel({
+            prom_name,
+            products,
+            startTime,
+            endTime,
         });
 
         const savedPromotion = await newPromotion.save();
         return savedPromotion;
+    }
+
+    static async deletePromotion(promotionId) {
+
+        const deletedPromotion = await Promotion.findByIdAndDelete(promotionId);
+
+        if (!deletedPromotion) {
+            throw new NotFoundError('Promotion not found');
+        }
+
+        return deletedPromotion;
+
+    }
+
+    static async getSpuInPromotion({
+        promotionId
+    }) {
+        return await getListAppliedSpu(promotionId)
     }
 }
 export default PromotionService;

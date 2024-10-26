@@ -1,68 +1,64 @@
-// !dmbg
-import { required } from 'joi';
-import mongoose, { Schema } from 'mongoose';
+import mongoose, {
+    Schema
+} from 'mongoose';
 const COLLECTION_NAME = 'Promotions';
 const DOCUMENT_NAME = 'Promotion';
 
-var promotionSchema = new mongoose.Schema(
-    {
-        pro_name: {
-            type: String,
-            required: true,
-        },
-        pro_type: {
-            type: String,
-            enum: ['included', 'extra', 'bundle'], // Các loại khuyến mãi
-            required: true,
-        },
-        pro_urlImage: {
-            type: String,
-            required: true,
-        },
-        pro_urlPage: {
-            type: String,
-            required: true,
-        },
-        pro_discountPrice: {
-            type: Number,
-            required: true,
-            min: 0, // Giá giảm không được âm
-        },
-        pro_appliedProduct: [
-            {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: 'Product', // Liên kết tới sản phẩm được áp dụng
-            },
-        ],
-        pro_startDate: {
-            type: Date,
-            required: true,
-        },
-        pro_endDate: {
-            type: Date,
-            required: true,
-        },
-        pro_bundle_product: {
+var promotionSchema = new mongoose.Schema({
+    prom_name: {
+        type: String,
+        required: true,
+    },
+    products: [{
+        productId: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'Product',
-            default: null, // Sản phẩm tặng kèm
+            ref: 'sku',
+            required: true
         },
-        pro_quantity_limit: {
-            type: Number,
-            default: 1, // Giới hạn số lượng sản phẩm tặng kèm
-            min: 0,
-        },
-        pro_status: {
+        discountType: {
             type: String,
-            enum: ['active', 'inactive'],
-            default: 'active', // Trạng thái khuyến mãi
+            enum: ['percentage', 'fixed'],
+            required: true
         },
+        discountValue: {
+            type: Number,
+            required: true
+        },
+        quantityLimit: {
+            type: Number,
+            required: true, // Giới hạn số lượng giảm giá
+            min: 1
+        },
+        appliedQuantity: {
+            type: Number,
+            default: 0 // Số lượng giảm giá đã được áp dụng
+        }
+    }],
+    startTime: {
+        type: Date,
+        required: true
     },
-    {
-        timestamps: true,
-        collection: COLLECTION_NAME,
+    endTime: {
+        type: Date,
+        required: true
     },
-);
+    status: {
+        type: String,
+        enum: ['active', 'inactive'],
+        default: 'active'
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now
+    },
+    updatedAt: {
+        type: Date,
+        default: Date.now
+    }
+}, {
+    timestamps: true,
+    collection: COLLECTION_NAME,
+}, );
 
 //Export the model
 export default mongoose.model(DOCUMENT_NAME, promotionSchema);

@@ -7,11 +7,12 @@ import {
     addNewProductToCart,
     checkExistProduct,
     createUserCart,
+    getProductInfor,
     replaceItemsInCart,
     updateUserCartQuantity,
 } from '../models/repositories/cart.repo.js';
 import {
-    findSkuById
+    findSkuById,
 } from '../models/repositories/sku.repo.js';
 
 
@@ -146,18 +147,11 @@ export class CartService {
                 quantity
             } = item
 
-            let product = await findSkuById(
-                skuId
-            );
-
+            let data = await getProductInfor(skuId)
 
             return {
-                skuId: product.sku_id,
-                name: product.sku_name,
-                price: product.sku_price,
-                thumb: product.sku_thumb,
+                ...data,
                 quantity,
-                totalPrice: product.sku_price * quantity
             }
         }));
 

@@ -35,6 +35,12 @@ const skuSchema = new Schema({
         type: Number,
         default: 0,
     },
+    loyalPointRate: {
+        type: Number,
+        min: 0,
+        max: 1,
+        default: 0.05
+    },
     sku_quantitySold: {
         type: Number,
         default: 0,

@@ -1,8 +1,20 @@
+import {
+    SuccessResponse
+} from "../core/success.response.js";
+import PromotionService from "../services/promotion.service.js";
+
 class PromotionController {
     createNew = async (req, res, next) => {
         new SuccessResponse({
             message: 'Update product',
-            metadata: await pro.updateProduct(req.body.product_type, req.params.product_id, req.body),
+            metadata: await PromotionService.createNewProduct(req.body),
+        }).send(res);
+    };
+
+    getSpuInPromotion = async (req, res, next) => {
+        new SuccessResponse({
+            message: 'Update product',
+            metadata: await PromotionService.getSpuInPromotion(req.query),
         }).send(res);
     };
 }

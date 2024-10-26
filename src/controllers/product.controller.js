@@ -1,7 +1,14 @@
-import { CREATED, SuccessResponse } from '../core/success.response.js';
+import {
+    CREATED,
+    SuccessResponse
+} from '../core/success.response.js';
 import ProdutService from '../services/product.service.js';
-import { SkuService } from '../services/sku.service.js';
-import { SpuService } from '../services/spu.service.js';
+import {
+    SkuService
+} from '../services/sku.service.js';
+import {
+    SpuService
+} from '../services/spu.service.js';
 class ProductController {
     // spu,sku
     createSpu = async (req, res, next) => {
@@ -26,7 +33,9 @@ class ProductController {
     };
 
     findOneSpu = async (req, res, next) => {
-        const { spu_id } = req.query;
+        const {
+            spu_id
+        } = req.query;
         new SuccessResponse({
             message: 'get spu success',
             metadata: await SpuService.getOneSpu({

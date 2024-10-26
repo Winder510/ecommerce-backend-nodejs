@@ -16,8 +16,13 @@ const PRODUCT_STATUS = {
     DRAFT: 'DRAFT',
     PUBLISHED: 'PUBLISHED',
 };
+const DISCOUNT_TYPE = {
+    PERCENTAGE: "percenage",
+    FIXED: "fixed"
+}
 export {
     TYPE_NOTIFICATION,
     STOCK_STATUS,
-    PRODUCT_STATUS
+    PRODUCT_STATUS,
+    DISCOUNT_TYPE
 };
