@@ -16,12 +16,6 @@ class PromotionService {
         endTime,
     }) {
 
-        const isAvailable = await isTimeSlotAvailable(startTime, endTime);
-
-        if (!isAvailable) {
-            throw new BadRequestError('The promotion time slot overlaps with an existing promotion.');
-        }
-
         const newPromotion = new promotionModel({
             prom_name,
             products,
@@ -46,9 +40,17 @@ class PromotionService {
     }
 
     static async getSpuInPromotion({
-        promotionId
+        startTime,
+        endTime
     }) {
-        return await getListAppliedSpu(promotionId)
+
+        const promotionOverLap = await isTimeSlotAvailable(startTime, endTime);
+
+        if (promotionOverLap) {
+            return await getListAppliedSpu(promotionOverLap._id)
+        }
+
+        return [];
     }
 }
 export default PromotionService;

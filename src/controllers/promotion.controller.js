@@ -11,11 +11,13 @@ class PromotionController {
         }).send(res);
     };
 
-    getSpuInPromotion = async (req, res, next) => {
+    getSpuInPromotionIfOverLap = async (req, res, next) => {
         new SuccessResponse({
-            message: 'Update product',
-            metadata: await PromotionService.getSpuInPromotion(req.query),
+            message: 'Check overlap',
+            metadata: await PromotionService.getSpuInPromotion(req.body),
         }).send(res);
     };
+
+
 }
 export default new PromotionController();
