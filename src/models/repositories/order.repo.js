@@ -1,39 +1,19 @@
-/*
-{
-    productId: "spu-567",
-    product_name: "Áo thun",
-    isVariant: false
-},
-{
-    productId: "sku-123",
-    product_name: "Áo thun màu đỏ, size M",
-    isVariant: true,
-}
-*/
+import {
+    getProductInfor
+} from './cart.repo.js';
 
-import { findSkuById } from './sku.repo.js';
-import { findSpuById } from './spu.repo.js';
-
-const checkSpuByServer = async (products) => {
+const checkSkuByServer = async (products) => {
     return await Promise.all(
         products.map(async (product) => {
             try {
                 let foundProduct;
-                // Kiểm tra thông tin sản phẩm
-                if (product.isVariant) {
-                    foundProduct = await findSkuById(product.productId);
-                    if (foundProduct && foundProduct.product_id) {
-                        throw new Error(
-                            `SKU mismatch: ${product.productId} does not belong to SPU ${product.parentSpu}`,
-                        );
-                    }
-                } else {
-                    // Truy vấn từ database để kiểm tra SPU hợp lệ
-                    foundProduct = await findSpuById(product.productId);
-                }
+                foundProduct = await getProductInfor(product.productId);
                 if (foundProduct) {
                     return {
-                        price: product.isVariant ? foundProduct.sku_price : foundProduct.product_price,
+                        price: foundProduct.originalPrice,
+                        loyalPoint: foundProduct.loyalPoint,
+                        priceAfterDiscount: foundProduct.originalPrice,
+                        discount: foundProduct.discount,
                         quantity: product.quantity,
                         productId: product.productId,
                     };
@@ -49,4 +29,6 @@ const checkSpuByServer = async (products) => {
         }),
     );
 };
-export { checkSpuByServer };
+export {
+    checkSkuByServer
+};

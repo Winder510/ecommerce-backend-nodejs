@@ -1,7 +1,15 @@
-import { BadRequestError, NotFoundError } from '../core/error.response.js';
+import {
+    BadRequestError,
+    NotFoundError
+} from '../core/error.response.js';
 import discountModel from '../models/discount.model.js';
-import { checkDiscountExists, findAllDiscountCodeUnSelect } from '../models/repositories/discount.repo.js';
-import { findAllProducts } from '../models/repositories/product.repo.js';
+import {
+    checkDiscountExists,
+    findAllDiscountCodeUnSelect
+} from '../models/repositories/discount.repo.js';
+import {
+    findAllProducts
+} from '../models/repositories/product.repo.js';
 
 export default class DiscountService {
     static async createDisCountCode(payload) {
@@ -55,7 +63,12 @@ export default class DiscountService {
     static async updateDiscount() {}
 
     // user
-    static async getAllProdcutWithDiscountCode({ code, userId, limit, page }) {
+    static async getAllProdcutWithDiscountCode({
+        code,
+        userId,
+        limit,
+        page
+    }) {
         const foundDiscount = await discountModel
             .findOne({
                 discount_code: code,
@@ -66,7 +79,10 @@ export default class DiscountService {
             throw new BadRequestError('Discount not exists');
         }
 
-        const { discount_applies_to, discount_product_ids } = foundDiscount;
+        const {
+            discount_applies_to,
+            discount_product_ids
+        } = foundDiscount;
 
         let products;
         if (discount_applies_to === 'all') {
@@ -100,7 +116,10 @@ export default class DiscountService {
     }
 
     // get all discount of shop
-    static async getAllDiscountCodeByShop({ limit, page }) {
+    static async getAllDiscountCodeByShop({
+        limit,
+        page
+    }) {
         const discounts = await findAllDiscountCodeUnSelect({
             limit: +limit,
             page: +page,
@@ -122,7 +141,11 @@ export default class DiscountService {
      *    }]
      *
      */
-    static async getDiscountAmount({ codeId, userId, products }) {
+    static async getDiscountAmount({
+        codeId,
+        userId,
+        products
+    }) {
         const foundDiscount = await checkDiscountExists({
             filter: {
                 discount_code: codeId,
@@ -161,7 +184,7 @@ export default class DiscountService {
             }, 0);
 
             if (totalOrder < discount_min_order_value) {
-                throw new NotFoundError(`discount requirea a minium order value of ${discount_min_order_value}`);
+                throw new NotFoundError(`discount require a minium order value of ${discount_min_order_value}`);
             }
         }
 
@@ -188,7 +211,9 @@ export default class DiscountService {
         };
     }
 
-    static async deleteDiscountCode({ codeId }) {
+    static async deleteDiscountCode({
+        codeId
+    }) {
         const deleted = await discountModel.deleteOne({
             discount_code: codeId,
         });
@@ -196,7 +221,10 @@ export default class DiscountService {
         return deleted;
     }
 
-    static async cancelDiscountCode({ codeId, userId }) {
+    static async cancelDiscountCode({
+        codeId,
+        userId
+    }) {
         const foundDiscount = await checkDiscountExists({
             filter: {
                 discount_code: codeId,

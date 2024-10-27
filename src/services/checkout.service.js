@@ -2,7 +2,6 @@ import {
     findCartById
 } from '../models/repositories/cart.repo.js';
 import {
-    NotFoundError,
     BadRequestError
 } from '../core/error.response.js';
 
@@ -16,12 +15,12 @@ import {
     CartService
 } from './cart.service.js';
 import {
-    checkSpuByServer
+    checkSkuByServer
 } from '../models/repositories/order.repo.js';
 
 class CheckOutService {
     /**
-     *  shop_discount = [{discountId, codeId}]
+     *  shop_discount = [codeId]
      *  products_order = [{ quanity,productId}]
      */
     static async checkOutRevew({
@@ -39,45 +38,49 @@ class CheckOutService {
         let checkOut_order = {
             totalPrice: 0, // tong tien hang
             feeShip: 0, // phi van chuyen
-            totalDiscount: 0, // tong tien discount giam gia
+            productDiscount: 0,
+            voucherDiscount: 0,
             accLoyalPoint: 0, // diem tich luy duoc
             totalCheckOut: 0, // tong tien phai thanh toán
         };
 
         // check product available
-        const checkProductServer = await checkSpuByServer(products_order);
-        // console.log("checkProductServer::", checkProductServer)
+        const checkProductServer = await checkSkuByServer(products_order);
 
         const errors = checkProductServer.filter((product) => !product || product.error);
         if (errors.length > 0) {
-            throw new BadRequest('One or more products are invalid.');
+            throw new BadRequestError('One or more products are invalid.');
         }
 
         // tong tien don hang
         checkOut_order.totalPrice = checkProductServer.reduce((acc, product) => {
             return acc + product.price * product.quantity;
         }, 0);
+        checkOut_order.productDiscount = checkProductServer.reduce((acc, product) => {
+            return acc + product.discount * product.quantity;
+        }, 0);
+        checkOut_order.accLoyalPoint = checkProductServer.reduce((acc, product) => {
+            return acc + product.loyalPoint;
+        }, 0);
 
         if (shop_discount.length > 0) {
-            // gia su chi co 1 discount
-            const {
-                codeId
-            } = shop_discount[0];
-            const {
-                discount = 0
-            } = await DiscountService.getDiscountAmount({
-                codeId,
-                userId,
-                products: checkProductServer,
-            });
-            checkOut_order.totalDiscount += discount;
+            let discountAmount = 0;
+            await Promise.all(shop_discount.map(async (codeId) => {
+                const {
+                    discount = 0
+                } = await DiscountService.getDiscountAmount({
+                    codeId,
+                    userId,
+                    products: checkProductServer,
+                });
+                discountAmount += discount
+            }));
+            checkOut_order.voucherDiscount = discountAmount;
+
         }
 
-        if (checkOut_order.totalDiscount > 0) {
-            checkOut_order.totalCheckOut = checkOut_order.totalPrice - checkOut_order.totalDiscount;
-        } else {
-            checkOut_order.totalCheckOut = checkOut_order.totalPrice;
-        }
+        checkOut_order.totalCheckOut = checkOut_order.totalPrice - checkOut_order.productDiscount - checkOut_order.voucherDiscount;
+
 
         return {
             raw: {

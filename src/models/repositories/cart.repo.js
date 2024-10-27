@@ -158,6 +158,7 @@ export const getProductInfor = async (skuId) => {
             originalPrice: sku.sku_price,
             discount: 0,
             priceAfterDiscount: sku.sku_price,
+            loyalPoint: sku.sku_price * sku.loyalPointRate,
         };
     }
 
@@ -181,6 +182,7 @@ export const getProductInfor = async (skuId) => {
         name: sku.sku_name,
         thumb: sku.sku_thumb,
         ...priceInfo,
+        loyalPoint: priceInfo.priceAfterDiscount * sku.loyalPointRate,
         expireDiscountTime: infor.endTime,
     };
 };
@@ -199,7 +201,7 @@ const calDiscountPrice = ({
             (originalPrice * discountValue) : discountValue;
     }
 
-    const priceAfterDiscount = originalPrice - discount;
+    const priceAfterDiscount = originalPrice - discount > 0 ? originalPrice - discount : 0;
 
     return {
         originalPrice,

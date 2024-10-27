@@ -47,7 +47,7 @@ const skuSchema = new Schema({
     },
     product_id: {
         type: Schema.Types.ObjectId,
-        required: true, // ref to spu product
+        required: true,
     },
     isDraft: {
         type: Boolean,
