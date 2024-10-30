@@ -1,9 +1,21 @@
 import CheckOutService from './checkout.service.js';
-import { acquireLock, releaseLock } from './redis.service.js';
+import {
+    acquireLock,
+    releaseLock
+} from './redis.service.js';
 
 export class OrderService {
-    static async orderByUser({ cartId, userId, shop_discount, products_order, user_payment = {}, user_address = {} }) {
-        const { raw, checkOut_order } = await CheckOutService.checkOutRevew({
+    static async orderByUser({
+        cartId,
+        userId,
+        shop_discount,
+        products_order,
+        user_payment = {},
+        user_address = {}
+    }) {
+        const {
+            checkOut_order
+        } = await CheckOutService.checkOutRevew({
             cartId,
             userId,
             shop_discount,
@@ -13,7 +25,10 @@ export class OrderService {
         const acquireProduct = [];
         // check lai so luong trong kho mot lan nua
         for (let i = 0; i < products_order.length; i++) {
-            const { productId, quantity } = products_order[i];
+            const {
+                productId,
+                quantity
+            } = products_order[i];
             const keyLock = await acquireLock({
                 productId,
                 quantity,
