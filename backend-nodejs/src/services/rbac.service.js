@@ -1,11 +1,18 @@
-import { BadRequestError } from '../core/error.response.js';
+import {
+    AuthFailureError,
+    BadRequestError
+} from '../core/error.response.js';
 import resourceModel from '../models/resource.model.js';
 import roleModel from '../models/role.model.js';
+import userModel from '../models/user.model.js';
 
-const createResource = async ({ name, slug, description }) => {
+const createResource = async ({
+    name,
+    slug,
+    description
+}) => {
     const resourceExists = await resourceModel.findOne({
-        $or: [
-            {
+        $or: [{
                 src_name: name,
             },
             {
@@ -23,29 +30,36 @@ const createResource = async ({ name, slug, description }) => {
     });
     return resource;
 };
-const getListResource = async ({ userId, limit = 30, offset = 0, search }) => {
+const getListResource = async ({
+    userId,
+    limit = 30,
+    offset = 0,
+    search
+}) => {
     // check admin tai middleware
 
-    const resource = await resourceModel.aggregate([
-        {
-            $project: {
-                _id: 0,
-                name: '$src_name',
-                slug: '$src_slug',
-                description: '$src_description',
-                resourceId: '$_id',
-                createAt: 1,
-            },
+    const resource = await resourceModel.aggregate([{
+        $project: {
+            _id: 0,
+            name: '$src_name',
+            slug: '$src_slug',
+            description: '$src_description',
+            resourceId: '$_id',
+            createAt: 1,
         },
-    ]);
+    }, ]);
     return resource;
 };
-const createRole = async ({ name, slug, description, grants = [] }) => {
+const createRole = async ({
+    name,
+    slug,
+    description,
+    grants = []
+}) => {
     // check exists
 
     const roleExists = await roleModel.findOne({
-        $or: [
-            {
+        $or: [{
                 rol_name: name,
             },
             {
@@ -69,10 +83,18 @@ const createRole = async ({ name, slug, description, grants = [] }) => {
 
     return role;
 };
-const getListRole = async () => {
+const getListRole = async ({
+    userId // admin mới xem được 
+}) => {
+    console.log("🚀 ~ userId:", userId)
     //
-    const roles = await roleModel.aggregate([
-        {
+    const user = await userModel.findById(userId).populate('usr_role');
+    const isAdmin = user.usr_role.rol_name === 'admin';
+
+    if (!isAdmin) throw new AuthFailureError("You don't have permission");
+
+
+    const roles = await roleModel.aggregate([{
             $unwind: '$rol_grants',
         },
         {
@@ -102,4 +124,9 @@ const getListRole = async () => {
 
     return roles;
 };
-export { getListRole, createResource, getListResource, createRole };
+export {
+    getListRole,
+    createResource,
+    getListResource,
+    createRole
+};

@@ -27,11 +27,9 @@ export class SpuService {
         description,
         thumb,
         category,
-        quantity,
         attributes,
         variations,
         sku_list = [],
-
         // sku_list = [  "sku_index": [
         //         1,
         //         2

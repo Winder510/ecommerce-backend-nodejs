@@ -1,5 +1,12 @@
-import { SuccessResponse } from '../core/success.response.js';
-import { createRole, getListResource, getListRole, createResource } from '../services/rbac.service.js';
+import {
+    SuccessResponse
+} from '../core/success.response.js';
+import {
+    createRole,
+    getListResource,
+    getListRole,
+    createResource
+} from '../services/rbac.service.js';
 
 const newRole = async (req, res, next) => {
     new SuccessResponse({
@@ -26,4 +33,9 @@ const listRole = async (req, res, next) => {
     }).send(res);
 };
 
-export { newRole, newResource, listRole, listResource };
+export {
+    newRole,
+    newResource,
+    listRole,
+    listResource
+};

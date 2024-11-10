@@ -1,6 +1,15 @@
-import { CREATED, SuccessResponse } from '../core/success.response.js';
+import {
+    CREATED,
+    SuccessResponse
+} from '../core/success.response.js';
 import AccessService from '../services/access.service.js';
 import passport from '../configs/passport.config.js';
+import {
+    validateEmail
+} from '../utils/index.js';
+import {
+    newUserService
+} from '../services/user.service.js';
 
 class AccessController {
     handleRefreshToken = async (req, res, next) => {
@@ -24,7 +33,7 @@ class AccessController {
         }).send(res);
     };
 
-    login = async (req, res, next) => {
+    signin = async (req, res, next) => {
         new SuccessResponse({
             message: 'login success',
             metadata: await AccessService.login({
@@ -32,6 +41,16 @@ class AccessController {
                 res,
             }),
         }).send(res);
+    };
+
+    signup = async (req, res, next) => {
+        if (!validateEmail(req.body?.email)) {
+            throw new BadRequestError('Email không đúng định dạng');
+        }
+        const respond = await newUserService({
+            email: req.body.email,
+        });
+        return new SuccessResponse(respond).send(res);
     };
 }
 export default new AccessController();

@@ -15,7 +15,6 @@ class PromotionService {
         startTime,
         endTime,
     }) {
-
         const newPromotion = new promotionModel({
             prom_name,
             products,

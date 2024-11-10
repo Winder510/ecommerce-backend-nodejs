@@ -1,7 +1,13 @@
 import categoryModel from '../models/category.model.js';
-import { BadRequestError } from '../core/error.response.js';
+import {
+    BadRequestError
+} from '../core/error.response.js';
 export class CategoryService {
-    static async createCategory({ name, description, parentId }) {
+    static async createCategory({
+        name,
+        description,
+        parentId
+    }) {
         const foungCategory = await categoryModel
             .findOne({
                 category_name: name,
@@ -18,7 +24,11 @@ export class CategoryService {
         return newCategory;
     }
 
-    static async updateCategory({ categoryId, name, description }) {
+    static async updateCategory({
+        categoryId,
+        name,
+        description
+    }) {
         const category = await categoryModel.findById(categoryId);
         if (!category) {
             throw new BadRequestError('CategoryId not found');
@@ -32,7 +42,9 @@ export class CategoryService {
         return updatedCategory;
     }
 
-    static async deleteCategory({ categoryId }) {
+    static async deleteCategory({
+        categoryId
+    }) {
         // Find and delete the category by its ID
         const deletedCategory = await categoryModel.findByIdAndDelete(categoryId);
 

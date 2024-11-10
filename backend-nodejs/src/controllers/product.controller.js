@@ -2,8 +2,6 @@ import {
     CREATED,
     SuccessResponse
 } from '../core/success.response.js';
-import ElasticService from '../services/elastic.service.js';
-import ProdutService from '../services/product.service.js';
 import {
     SkuService
 } from '../services/sku.service.js';
