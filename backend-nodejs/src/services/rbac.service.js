@@ -84,7 +84,8 @@ const createRole = async ({
     return role;
 };
 const getListRole = async ({
-    userId // admin mới xem được 
+    userId, // admin mới xem được
+
 }) => {
     console.log("🚀 ~ userId:", userId)
     //
