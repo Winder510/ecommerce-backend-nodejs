@@ -7,9 +7,9 @@ import orderController from '../../controllers/order.controller.js';
 const router = express.Router();
 
 router.post('', asyncErrorHandler(orderController.orderByUser));
-router.post('/:orderId', asyncErrorHandler(orderController.getOneOrderByUser));
-router.post('', asyncErrorHandler(orderController.cancelOrderByUser));
-router.post('', asyncErrorHandler(orderController.updateOrderStatusByAdmin));
+router.get('/:orderId', asyncErrorHandler(orderController.getOneOrderByUser));
+router.delete('/:orderId', asyncErrorHandler(orderController.cancelOrderByUser));
+router.post('/change-status', asyncErrorHandler(orderController.updateOrderStatusByAdmin));
 
 
 

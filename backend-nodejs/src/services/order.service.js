@@ -3,12 +3,11 @@ import {
     acquireLock,
     releaseLock
 } from './redis.service.js';
-import CartService from './cart.service.js';
-import orderModel from './order.model.js';
 import {
     BadRequestError,
     NotFoundError
-} from '../errors'; // Custom error handling
+} from '../core/error.response.js'; // Custom error handling
+import orderModel from '../models/order.model.js';
 
 export class OrderService {
     // Place an order by user

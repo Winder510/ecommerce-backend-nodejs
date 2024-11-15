@@ -55,6 +55,9 @@ services:
         container_name: backend_container
         ports:
             - '8000:8000'
+        volumes:
+            - ./backend-nodejs:/usr/src/app # Gắn toàn bộ thư mục mã nguồn vào container
+            - /usr/src/app/node_modules # Volume ẩn danh để tránh ghi đè node_modules
         depends_on:
             - mongodb
             - elasticsearch

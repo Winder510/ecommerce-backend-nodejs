@@ -4,7 +4,7 @@ import {
     BadRequestError,
     ErrorResponse
 } from '../core/error.response.js';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 
 import {

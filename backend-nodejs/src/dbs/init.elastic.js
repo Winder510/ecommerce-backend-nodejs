@@ -8,7 +8,7 @@ let esClient;
 const initElastic = async () => {
     try {
         esClient = new Client({
-            node: 'http://localhost:9200'
+            node: 'http://elasticsearch:9200' //http://localhost:9200
         });
         console.log('Elasticsearch is connected');
     } catch (error) {

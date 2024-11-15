@@ -36,7 +36,7 @@ const initRedis = async () => {
     }
 
     const instanceRedis = await redis.createClient({
-        url: 'redis://localhost:6379',
+        url: 'redis://redis:6379', //redis://localhost:6379
         socket: {
             reconnectStrategy: function (retries) {
                 console.log(retries);

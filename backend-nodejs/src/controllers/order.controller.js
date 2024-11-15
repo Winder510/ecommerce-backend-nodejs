@@ -21,18 +21,18 @@ class CheckOutController {
     };
 
 
-    orderByUser = async (req, res, next) => {
+    cancelOrderByUser = async (req, res, next) => {
         new SuccessResponse({
             message: 'create order success',
-            metadata: await OrderService.orderByUser(req.body),
+            metadata: await OrderService.cancelOrderByUser(req.body),
         }).send(res);
     };
 
 
-    orderByUser = async (req, res, next) => {
+    updateOrderStatusByAdmin = async (req, res, next) => {
         new SuccessResponse({
             message: 'create order success',
-            metadata: await OrderService.orderByUser(req.body),
+            metadata: await OrderService.updateOrderStatusByAdmin(req.body),
         }).send(res);
     };
 }
