@@ -2,7 +2,7 @@ import amqp from 'amqplib';
 
 const connectToRabbitMQ = async () => {
     try {
-        const connection = await amqp.connect('amqp://localhost');
+        const connection = await amqp.connect('amqp://rabbitmq_ms:5672');
         if (!connection) throw new Error('Failed to connect to RabbitMQ');
 
         const channel = await connection.createChannel();

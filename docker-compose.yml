@@ -1,0 +1,114 @@
+version: "3"
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: appleshop_mongo_ms
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_DATABASE=appleshop
+      - MONGO_INITDB_ROOT_USERNAME=appleshop
+      - MONGO_INITDB_ROOT_PASSWORD=123456789
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - app_network
+
+  redis:
+    image: redis:latest
+    container_name: appleshop_redis_ms
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - app_network
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.10.0
+    container_name: appleshop_es_ms
+    environment:
+      - node.name=appleshop_es
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - discovery.type=single-node
+    ports:
+      - "9200:9200"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+    networks:
+      - app_network
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.10.0
+    container_name: appleshop_kibana_ms
+    ports:
+      - 5601:5601
+    depends_on:
+      - elasticsearch
+    networks:
+      - app_network
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq_ms
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - ~/.docker-conf/rabbitmq/data:/var/lib/rabbitmq/
+      - ~/.docker-conf/rabbitmq/log:/var/log/rabbitmq
+    networks:
+      - app_network
+
+  backend:
+    build: ./backend-nodejs
+    container_name: backend_container_ms
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend-nodejs:/usr/src/app
+      - /usr/src/app/node_modules
+    depends_on:
+      - mongodb
+      - redis
+      - elasticsearch
+    environment:
+      - MONGO_URI=mongodb://appleshop_mongo:27017
+      - REDIS_URL=redis://appleshop_redis:6379
+      - ELASTICSEARCH_URL=http://appleshop_es:9200
+    networks:
+      - app_network
+
+  system-msg-queue:
+    build: ./system-msg-queue
+    container_name: system_msg_queue
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./system-msg-queue:/usr/src/app
+      - /usr/src/app/node_modules
+    depends_on:
+      - rabbitmq
+    environment:
+      - RABBITMQ_URL=amqp://rabbitmq:5672
+    networks:
+      - app_network
+
+volumes:
+  mongo_data:
+    driver: local
+  redis_data:
+    driver: local
+  esdata:
+    driver: local
+  rabbitmq:
+    driver: local
+
+networks:
+  app_network:
+    driver: bridge
