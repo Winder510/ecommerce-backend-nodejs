@@ -12,8 +12,18 @@ class ProductController {
     // spu,sku
     createSpu = async (req, res, next) => {
         new SuccessResponse({
-            message: 'Create new product success',
+            message: 'Create new product ',
             metadata: await SpuService.newSPu(req.body),
+        }).send(res);
+    };
+
+    updateSpu = async (req, res, next) => {
+        new SuccessResponse({
+            message: 'Update new product ',
+            metadata: await SpuService.updateSpu({
+                ...req.body,
+                ...req.params
+            }),
         }).send(res);
     };
 

@@ -56,7 +56,11 @@ app.use(passport.session());
 
 // init route
 app.use('/', router);
-
+app.get('/', (req, res) => {
+    res.send({
+        message: "Server is running",
+    })
+})
 // handling error
 app.use((req, res, next) => {
     const error = new Error('Not found !!');

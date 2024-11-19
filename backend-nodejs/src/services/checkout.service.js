@@ -5,15 +5,6 @@ import {
     BadRequestError
 } from '../core/error.response.js';
 
-import DiscountService from './discount.service.js';
-import {
-    acquireLock,
-    releaseLock
-} from './redis.service.js';
-import orderModel from '../models/order.model.js';
-import {
-    CartService
-} from './cart.service.js';
 import {
     checkSkuByServer
 } from '../models/repositories/order.repo.js';

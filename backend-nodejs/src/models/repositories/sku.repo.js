@@ -21,10 +21,23 @@ const lowestPriceSKU = (sku_list) => {
 const getSpuId = async (skuId) => {
     return await skuModel.findById(skuId).select("product_id -_id").lean()
 }
+
+const getQuantityBySpus = async (spuId) => {
+    const skus = await skuModel.find({
+        product_id: spuId
+    })
+
+    const quantity = skus.reduce((acc, sku) => {
+        return acc + sku.sku_stock;
+    }, 0)
+
+    return quantity;
+}
 export {
     findSkuById,
     createSkuName,
     lowestPriceSKU,
-    getSpuId
+    getSpuId,
+    getQuantityBySpus
 
 };

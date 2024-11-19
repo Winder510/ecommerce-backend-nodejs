@@ -33,5 +33,4 @@ const sendSyncMessage = async (productData) => {
     await channel.close();
     await connection.close();
 }
-
 export default sendSyncMessage;

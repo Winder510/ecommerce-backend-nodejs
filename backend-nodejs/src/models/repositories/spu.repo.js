@@ -4,6 +4,9 @@ import {
 import {
     getSelectData
 } from '../../utils/index.js';
+import {
+    productModel
+} from '../product.model.js';
 import spuModel from '../spu.model.js';
 import {
     findSkuById
@@ -201,6 +204,13 @@ const findProduct = async ({
     return product;
 };
 
+const updateQuantitySpu = async (spuId, quantity) => {
+    return await productModel.findOneAndUpdate({
+        _id: spuId
+    }, {
+        product_quantity: quantity
+    })
+}
 export {
     findSpuById,
     findListPublishSpuByCategory,
@@ -211,4 +221,5 @@ export {
     findAllSpu,
     buildQuery,
     findProduct,
+    updateQuantitySpu
 };

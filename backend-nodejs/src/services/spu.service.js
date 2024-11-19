@@ -20,9 +20,10 @@ import {
     lowestPriceSKU
 } from '../models/repositories/sku.repo.js';
 import sendSyncMessage from '../../test/rabbitmq/sync-data.producerDLX.js';
+import skuModel from '../models/sku.model.js';
 
 export class SpuService {
-    static newSPu = async ({
+    static async newSPu({
         name,
         description,
         thumb,
@@ -39,7 +40,7 @@ export class SpuService {
         //     "sku_stock": 2
         //     ]
 
-    }) => {
+    }) {
         const product_quantity = sku_list.reduce((acc, sku) => {
             return acc + sku?.sku_stock;
         }, 0);
@@ -71,6 +72,47 @@ export class SpuService {
 
         return newSpu;
     };
+
+    static async updateSpu({
+        id,
+        name,
+        description,
+        thumb,
+        category,
+        attributes,
+        variations,
+        sku_list = [],
+    }) {
+        console.log("🚀 ~ SpuService ~ id:", id)
+        const product_quantity = sku_list.reduce((acc, sku) => {
+            return acc + sku?.sku_stock;
+        }, 0);
+        const lowestSku = lowestPriceSKU(sku_list);
+
+        const updatedSpu = await spuModel.findOneAndUpdate({
+            _id: id
+        }, {
+            product_name: name,
+            product_description: description,
+            product_thumb: thumb,
+            product_price: lowestSku?.sku_price,
+            product_category: category,
+            product_attributes: attributes,
+            product_quantity,
+            product_variations: variations,
+        })
+
+        if (updatedSpu && sku_list.length) {
+            await SkuService.updateSku({
+                spu_id: id,
+                product_name: name,
+                product_variations: variations,
+                sku_list,
+            });
+        }
+
+        return updatedSpu;
+    }
 
     static async getOneSpu({
         _id
@@ -260,4 +302,5 @@ export class SpuService {
             skip,
         });
     }
+
 }

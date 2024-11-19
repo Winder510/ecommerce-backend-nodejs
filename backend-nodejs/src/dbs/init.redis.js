@@ -36,7 +36,7 @@ const initRedis = async () => {
     }
 
     const instanceRedis = await redis.createClient({
-        url: 'redis://redis:6379', //redis://localhost:6379
+        url: 'redis://localhost:6379', //redis://localhost:6379
         socket: {
             reconnectStrategy: function (retries) {
                 console.log(retries);
@@ -44,7 +44,7 @@ const initRedis = async () => {
                     console.log('Too many attempts to reconnect. Redis connection was terminated');
                     return new Error('Too many retries.');
                 } else {
-                    return retries * 500; // Retry after a delay
+                    return retries * 500;
                 }
             },
         },

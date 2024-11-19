@@ -21,7 +21,7 @@ export class SkuService {
         product_name,
         sku_list
     }) {
-        const convevt_sku_list = sku_list.map((sku) => {
+        const convert_sku_list = sku_list.map((sku) => {
             return {
                 ...sku,
                 sku_name: product_name + createSkuName(product_variations, sku),
@@ -29,10 +29,28 @@ export class SkuService {
                 product_id: spu_id,
             };
         });
-        const newSkus = skuModel.create(convevt_sku_list);
+        const newSkus = skuModel.create(convert_sku_list);
 
         return newSkus;
     }
+    static async updateSku({
+        spu_id,
+        product_variations,
+        product_name,
+        sku_list
+    }) {
+        const convert_sku_list = Promise.all(sku_list.map(async (sku) => {
+            await skuModel.findOneAndUpdate({
+                sku_index: sku.sku_index,
+                product_id: spu_id
+            }, {
+                ...sku,
+                sku_name: product_name + createSkuName(product_variations, sku),
+                sku_slug: slugify(product_name + createSkuName(product_variations, sku)),
+            })
+        }));
+    }
+
     static async getOneSku({
         sku_id,
         product_id
@@ -91,4 +109,6 @@ export class SkuService {
         });
         return true;
     }
+
+
 }
