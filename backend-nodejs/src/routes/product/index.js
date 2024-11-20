@@ -16,6 +16,7 @@ router.get('/search/:keySearch', asyncErrorHandler(productController.getListSear
 // tam thoi khong check auth
 router.post('/spu/new', asyncErrorHandler(productController.createSpu));
 router.patch('/spu/update/:id', asyncErrorHandler(productController.updateSpu));
+router.delete('/spu/delete/:id', asyncErrorHandler(productController.deleteSpu));
 router.get('/spu', asyncErrorHandler(productController.findOneSpu));
 router.get('/sku/select', asyncErrorHandler(productController.findOneSku));
 router.post('/sku/set-default', asyncErrorHandler(productController.setDefaultSku));

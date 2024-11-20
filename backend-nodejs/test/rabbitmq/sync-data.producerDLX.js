@@ -1,6 +1,9 @@
 import connectToRabbitMQ from '../../src/dbs/init.rabbitmq.js';
 
-const sendSyncMessage = async (productData) => {
+const sendSyncMessage = async ({
+    action,
+    data
+}) => {
     const {
         channel,
         connection
@@ -28,7 +31,10 @@ const sendSyncMessage = async (productData) => {
     await channel.bindQueue(queueResult.queue, syncExchange)
 
     // send message
-    channel.publish(syncExchange, '', Buffer.from(JSON.stringify(productData)));
+    channel.publish(syncExchange, '', Buffer.from(JSON.stringify({
+        action,
+        data
+    })));
 
     await channel.close();
     await connection.close();

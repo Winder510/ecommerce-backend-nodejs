@@ -28,8 +28,8 @@ class MessageService {
             console.log(`Consumer is waiting for messages in ${syncQueue}...`);
             channel.consume(syncQueue, async (message) => {
                 if (message !== null) {
-                    const productData = JSON.parse(message.content.toString());
-                    ElasticService.syncProductWithElasticsearch(productData)
+                    const payload = JSON.parse(message.content.toString());
+                    ElasticService.syncProductWithElasticsearch(payload)
                     channel.ack(message);
                 }
             }, {

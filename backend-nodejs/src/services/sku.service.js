@@ -59,6 +59,8 @@ export class SkuService {
             product_id: spuId
         })
     }
+
+
     static async getOneSku({
         sku_id,
         product_id

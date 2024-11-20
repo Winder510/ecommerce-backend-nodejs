@@ -27,6 +27,16 @@ class ProductController {
         }).send(res);
     };
 
+    deleteSpu = async (req, res, next) => {
+        new SuccessResponse({
+            message: 'delete new product ',
+            metadata: await SpuService.deleteSpu({
+                spuId: req.params.id
+            }),
+        }).send(res);
+    };
+
+
     findOneSku = async (req, res, next) => {
         new SuccessResponse({
             message: 'get new product success',

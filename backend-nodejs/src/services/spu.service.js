@@ -68,7 +68,10 @@ export class SpuService {
         }
 
         // sync data via elasticsearch
-        sendSyncMessage(newSpu)
+        sendSyncMessage({
+            action: "add",
+            data: newSpu
+        })
 
         return newSpu;
     };
@@ -88,7 +91,7 @@ export class SpuService {
         }, 0);
         const lowestSku = lowestPriceSKU(sku_list);
 
-        const updatedSpu = await spuModel.findOneAndUpdate({
+        const updated = await spuModel.findOneAndUpdate({
             _id: id
         }, {
             product_name: name,
@@ -101,7 +104,7 @@ export class SpuService {
             product_variations: variations,
         })
 
-        if (updatedSpu && sku_list.length) {
+        if (updated && sku_list.length) {
             await SkuService.updateSku({
                 spu_id: id,
                 product_name: name,
@@ -109,6 +112,13 @@ export class SpuService {
                 sku_list,
             });
         }
+
+        const updatedSpu = await spuModel.findById(id).lean();
+
+        sendSyncMessage({
+            action: "update",
+            data: updatedSpu
+        })
 
         return updatedSpu;
     }
@@ -125,7 +135,10 @@ export class SpuService {
 
         const deletedSpu = await spuModel.findByIdAndDelete(spuId);
 
-        //  sendDeleteMessage(spuId);
+        sendSyncMessage({
+            action: "delete",
+            data: foundSpu
+        });
 
         return deletedSpu;
     }
