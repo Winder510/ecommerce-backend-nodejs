@@ -15,6 +15,7 @@ class ElasticService {
             const productData = {
                 id: data._id,
                 name: data?.product_name,
+                thumb: data?.product_thumb,
                 description: data?.product_description,
                 price: data?.product_price,
                 quantity: data?.product_quantity,
