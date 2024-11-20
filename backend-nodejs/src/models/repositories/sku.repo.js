@@ -18,7 +18,7 @@ const lowestPriceSKU = (sku_list) => {
     })
 };
 
-const getSpuId = async (skuId) => {
+const getSpuIdBySku = async (skuId) => {
     return await skuModel.findById(skuId).select("product_id -_id").lean()
 }
 
@@ -33,11 +33,69 @@ const getQuantityBySpus = async (spuId) => {
 
     return quantity;
 }
+
+const updateDefaultSku = async ({
+    skuId = null,
+    spuId
+}) => {
+    try {
+        await skuModel.updateMany({
+            product_id: spuId
+        }, {
+            $set: {
+                sku_default: false
+            }
+        });
+        if (!skuId) {
+            // Tìm sản phẩm có giá thấp nhất
+            const skuWithLowestPrice = await skuModel.aggregate([{
+                    $match: { // Thêm điều kiện lọc
+                        product_id: spuId
+                    }
+                },
+                {
+                    $sort: {
+                        price: 1 // Sắp xếp theo giá thấp nhất
+                    }
+                },
+                {
+                    $limit: 1 // Lấy sản phẩm có giá thấp nhất
+                }
+            ]);
+            console.log("🚀 ~ skuWithLowestPrice:", skuWithLowestPrice)
+
+            if (skuWithLowestPrice.length > 0) {
+                const skuId = skuWithLowestPrice[0]._id;
+
+                // Cập nhật sản phẩm có giá thấp nhất, đặt `isDefault` = true
+                await skuModel.updateOne({
+                    _id: skuId
+                }, {
+                    $set: {
+                        sku_default: true
+                    }
+                });
+            } else {
+                console.log('No product found.');
+            }
+        } else {
+            await skuModel.updateOne({
+                _id: skuId
+            }, {
+                sku_default: true
+            })
+        }
+    } catch (error) {
+        console.error('Error updating default product:', error);
+    }
+};
+
 export {
     findSkuById,
     createSkuName,
     lowestPriceSKU,
-    getSpuId,
-    getQuantityBySpus
+    getSpuIdBySku,
+    getQuantityBySpus,
+    updateDefaultSku
 
 };

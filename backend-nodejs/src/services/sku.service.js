@@ -10,7 +10,8 @@ import {
 } from '../models/repositories/spu.repo.js';
 import {
     createSkuName,
-    findSkuById
+    findSkuById,
+    updateDefaultSku
 } from '../models/repositories/sku.repo.js';
 import slugify from 'slugify';
 
@@ -31,6 +32,9 @@ export class SkuService {
         });
         const newSkus = skuModel.create(convert_sku_list);
 
+        await updateDefaultSku({
+            spuId: spu_id
+        })
         return newSkus;
     }
     static async updateSku({

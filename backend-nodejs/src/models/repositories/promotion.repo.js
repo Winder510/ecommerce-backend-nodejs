@@ -1,6 +1,6 @@
 import promotionModel from "../promotion.model.js";
 import {
-    getSpuId
+    getSpuIdBySku
 } from '../repositories/sku.repo.js'
 export const isTimeSlotAvailable = async (startTime, endTime) => {
     const overlappingPromotion = await promotionModel.findOne({
@@ -33,7 +33,7 @@ export const getListAppliedSpu = async (promotionId) => {
     const skus = await promotionModel.findById(promotionId).select("products.productId -_id");
     const skuIds = skus.products?.map(product => product.productId);
     const data = await Promise.all(skuIds.map(async (skuId) => {
-        return await getSpuId(skuId);
+        return await getSpuIdBySku(skuId);
     }))
     const spuIds = data.map(spu => spu.product_id);
     const uniqueSpuIds = [...new Set(spuIds.map(id => id.toString().trim()))];
