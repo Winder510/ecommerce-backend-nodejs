@@ -147,5 +147,6 @@ class ProductController {
         }).send(res);
     };
 
+
 }
 export default new ProductController();

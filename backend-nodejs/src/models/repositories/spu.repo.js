@@ -211,6 +211,28 @@ const updateQuantitySpu = async (spuId, quantity) => {
         product_quantity: quantity
     })
 }
+
+const getSpuByIds = async (productIds, filter = {}, sort = {}) => {
+    try {
+        const products = await spuModel.find({
+                _id: {
+                    $in: productIds
+                },
+                ...filter
+            }).sort(sort)
+            .lean();
+
+        if (!products.length) {
+            throw new Error('No products found for the given IDs.');
+        }
+
+        return products;
+    } catch (error) {
+        console.error("Error fetching products:", error);
+        throw new Error('Failed to fetch products');
+    }
+}
+
 export {
     findSpuById,
     findListPublishSpuByCategory,
@@ -221,5 +243,6 @@ export {
     findAllSpu,
     buildQuery,
     findProduct,
-    updateQuantitySpu
+    updateQuantitySpu,
+    getSpuByIds
 };

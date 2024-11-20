@@ -2,37 +2,59 @@
 import {
     esClient
 } from '../dbs/init.elastic.js';
+import {
+    getSpuByIds
+} from '../models/repositories/spu.repo.js';
 class ElasticService {
     static searchProduct = async ({
-        query,
+        textSearch,
         page = 1,
-        size = 10
+        size = 10,
+        sort = {
+            product_quantitySold: -1
+        },
+        filter = ""
+
     }) => {
         try {
             const from = (page - 1) * size;
-
             const response = await esClient.search({
                 index: 'products',
                 body: {
                     from,
                     size,
                     query: {
-                        multi_match: {
-                            query: query,
-                            fields: ['name', 'description'],
-                            fuzziness: 'AUTO'
+                        bool: {
+                            should: [{
+                                    multi_match: {
+                                        query: textSearch,
+                                        fields: ['name^3', 'description'],
+                                        fuzziness: 2, // Allow up to 2 character changes
+                                        prefix_length: 1, // Require at least 1 exact character at the beginning
+                                    }
+                                },
+                                {
+                                    wildcard: {
+                                        name: {
+                                            value: `*${textSearch.toLowerCase()}*` // Wildcard query for partial matches
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
             });
 
             const hits = response.body.hits.hits;
-            const products = hits.map(hit => ({
-                id: hit._id,
-                ...hit._source
-            }));
 
-            return products;
+            const productIds = hits.map(hit => {
+                return hit._id
+            })
+            if (productIds.length > 0) {
+                return await getSpuByIds(productIds, filter, sort);
+            } else return []
+
         } catch (error) {
             console.error('Error searching for product:', error);
         }
@@ -45,6 +67,7 @@ class ElasticService {
             const result = await esClient.search({
                 index: 'products',
                 body: {
+                    size: 5,
                     query: {
                         multi_match: {
                             query: textSearch,
@@ -61,6 +84,7 @@ class ElasticService {
                 name: hit._source.name,
                 score: hit._score // Điểm số của gợi ý
             }));
+
 
             return suggestions;
         } catch (error) {
