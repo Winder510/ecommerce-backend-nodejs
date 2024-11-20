@@ -50,7 +50,15 @@ export class SkuService {
             })
         }));
     }
-
+    static async deleteSku({
+        spuId,
+        skuId
+    }) {
+        return await skuModel.deleteOne({
+            _id: skuId,
+            product_id: spuId
+        })
+    }
     static async getOneSku({
         sku_id,
         product_id

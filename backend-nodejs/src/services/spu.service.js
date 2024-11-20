@@ -83,7 +83,6 @@ export class SpuService {
         variations,
         sku_list = [],
     }) {
-        console.log("🚀 ~ SpuService ~ id:", id)
         const product_quantity = sku_list.reduce((acc, sku) => {
             return acc + sku?.sku_stock;
         }, 0);
@@ -112,6 +111,23 @@ export class SpuService {
         }
 
         return updatedSpu;
+    }
+
+    static async deleteSpu({
+        spuId
+    }) {
+        const foundSpu = await spuModel.findById(spuId).lean();
+        if (!foundSpu) throw new BadRequestError("Product not exists")
+
+        await skuModel.deleteMany({
+            product_id: spuId
+        });
+
+        const deletedSpu = await spuModel.findByIdAndDelete(spuId);
+
+        //  sendDeleteMessage(spuId);
+
+        return deletedSpu;
     }
 
     static async getOneSpu({
