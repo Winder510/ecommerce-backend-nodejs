@@ -35,10 +35,9 @@ export class OrderService {
                 productId,
                 quantity
             } = products_order[i];
-            const keyLock = await acquireLock({
+            const keyLock = await acquireLockV2({
                 productId,
                 quantity,
-                cartId
             });
             acquireProduct.push(keyLock ? true : false);
 

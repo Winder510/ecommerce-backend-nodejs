@@ -62,7 +62,6 @@ const updateDefaultSku = async ({
                     $limit: 1 // Lấy sản phẩm có giá thấp nhất
                 }
             ]);
-            console.log("🚀 ~ skuWithLowestPrice:", skuWithLowestPrice)
 
             if (skuWithLowestPrice.length > 0) {
                 const skuId = skuWithLowestPrice[0]._id;
@@ -90,12 +89,32 @@ const updateDefaultSku = async ({
     }
 };
 
+const reservationSku = async ({
+    skuId,
+    quantity
+}) => {
+    const foundSku = await skuModel.findById(skuId);
+
+    if (!foundSku || foundSku.sku_stock >= quantity) {
+        return await skuModel.updateOne({
+            _id: skuId
+        }, {
+            $inc: {
+                sku_stock: -quantity,
+            }
+        });
+    } else {
+        return null;
+    }
+
+}
 export {
     findSkuById,
     createSkuName,
     lowestPriceSKU,
     getSpuIdBySku,
     getQuantityBySpus,
-    updateDefaultSku
+    updateDefaultSku,
+    reservationSku
 
 };

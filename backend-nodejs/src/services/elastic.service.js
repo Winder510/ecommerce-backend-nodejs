@@ -6,6 +6,7 @@ import {
     getSpuByIds
 } from '../models/repositories/spu.repo.js';
 class ElasticService {
+
     static searchProduct = async ({
         textSearch,
         page = 1,

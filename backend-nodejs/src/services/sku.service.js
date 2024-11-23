@@ -35,6 +35,7 @@ export class SkuService {
         await updateDefaultSku({
             spuId: spu_id
         })
+
         return newSkus;
     }
     static async updateSku({
