@@ -84,5 +84,6 @@ const acquireLockV2 = async ({
 
 export {
     releaseLock,
-    acquireLock
+    acquireLock,
+    acquireLockV2
 };

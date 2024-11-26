@@ -100,7 +100,7 @@ const reservationSku = async ({
             _id: skuId
         }, {
             $inc: {
-                sku_stock: -quantity,
+                sku_stock: - quantity,
             }
         });
     } else {
@@ -116,5 +116,4 @@ export {
     getQuantityBySpus,
     updateDefaultSku,
     reservationSku
-
 };
