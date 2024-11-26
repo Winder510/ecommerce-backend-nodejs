@@ -44,6 +44,10 @@ const consumerQueue = async (channel, queueName) => {
 
         channel.consume(queueName, (msg) => {
             console.log(`Received ${msg.content.toString()}`);
+            // find user ,send msg to user 
+
+
+
             channel.ack(msg);
         }, {
             noAck: false

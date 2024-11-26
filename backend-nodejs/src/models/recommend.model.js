@@ -10,11 +10,11 @@ var recommendSchema = new mongoose.Schema({
         type: Schema.Types.ObjectId(),
         required: true,
     },
-    src_slug: {
+    rec_viewedProduct: {
         type: String,
         required: true,
     },
-    src_description: {
+    rec_purchasedProduct: {
         type: String,
         required: true,
     },
