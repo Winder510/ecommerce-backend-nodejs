@@ -1,7 +1,7 @@
 // productSync.js
 import {
     esClient
-} from '../../dbs/init.elastic.js';
+} from '../dbs/init.elastic.js';
 import _ from 'lodash';
 
 class ElasticService {

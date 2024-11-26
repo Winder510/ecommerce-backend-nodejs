@@ -1,7 +1,7 @@
 import {
     consumerQueue,
     connectToRabbitMQ
-} from '../../dbs/init.rabbitmq.js';
+} from '../dbs/init.rabbitmq.js';
 import ElasticService from './elastic.service.js';
 
 class MessageService {
