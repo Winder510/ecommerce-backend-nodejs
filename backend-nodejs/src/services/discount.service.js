@@ -46,7 +46,7 @@ export default class DiscountService {
             throw new BadRequestError('Discount exists');
         }
 
-        const newDiscount = discountModel.create({
+        const newDiscount = await discountModel.create({
             discount_name: name,
             discount_description: description,
             discount_type: type,
@@ -65,17 +65,15 @@ export default class DiscountService {
             discount_product_ids: applies_to === 'all' ? [] : product_ids,
         });
 
-
-        sendNotifitoQueue(SEND_NOTIFICATION_TYPE.BROADCAST, {
-            type: TYPE_NOTIFICATION.PROMOTION_NEW,
-            senderId: 'system',
-            options: {
-                discount_name: name
-            }
-        })
-
-
-
+        if ((newDiscount).discount_isPublic) {
+            sendNotifitoQueue(SEND_NOTIFICATION_TYPE.BROADCAST, {
+                type: TYPE_NOTIFICATION.PROMOTION_NEW,
+                senderId: 'system',
+                options: {
+                    discount_name: name
+                }
+            })
+        }
         return newDiscount;
     }
 
