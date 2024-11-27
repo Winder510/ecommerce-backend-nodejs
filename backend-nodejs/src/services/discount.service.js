@@ -1,4 +1,8 @@
 import {
+    SEND_NOTIFICATION_TYPE,
+    TYPE_NOTIFICATION
+} from '../constant/index.js';
+import {
     BadRequestError,
     NotFoundError
 } from '../core/error.response.js';
@@ -10,6 +14,9 @@ import {
 import {
     findAllProducts
 } from '../models/repositories/product.repo.js';
+import {
+    sendNotifitoQueue
+} from './rabbitmq.service.js';
 
 export default class DiscountService {
     static async createDisCountCode(payload) {
@@ -57,6 +64,18 @@ export default class DiscountService {
             discount_applies_to: applies_to,
             discount_product_ids: applies_to === 'all' ? [] : product_ids,
         });
+
+
+        sendNotifitoQueue(SEND_NOTIFICATION_TYPE.BROADCAST, {
+            type: TYPE_NOTIFICATION.PROMOTION_NEW,
+            senderId: 'system',
+            options: {
+                discount_name: name
+            }
+        })
+
+
+
         return newDiscount;
     }
 

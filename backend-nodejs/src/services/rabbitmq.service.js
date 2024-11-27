@@ -1,4 +1,4 @@
-import connectToRabbitMQ from "../dbs/init.rabbitmq";
+import connectToRabbitMQ from "../dbs/init.rabbitmq.js";
 
 const sendSyncMessage = async ({
     action,
@@ -39,11 +39,10 @@ const sendSyncMessage = async ({
     await channel.close();
     await connection.close();
 }
-const sendNotifi = async ({
+const sendNotifitoQueue = async (typeSend, {
     type,
     recipientId,
     senderId,
-    content,
     options = {}
 }) => {
     const {
@@ -78,12 +77,14 @@ const sendNotifi = async ({
         notificationRoutingKey,
         Buffer.from(
             JSON.stringify({
-                type,
-                recipientId,
-                senderId,
-                content,
-                options,
-                timestamp: new Date().toISOString(),
+                typeSend,
+                notifi_data: {
+                    type,
+                    recipientId,
+                    senderId,
+                    options,
+                    timestamp: new Date().toISOString(),
+                }
             })
         )
     );
@@ -95,4 +96,7 @@ const sendNotifi = async ({
 
 
 
-export default sendSyncMessage;
+export {
+    sendNotifitoQueue,
+    sendSyncMessage
+}

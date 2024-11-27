@@ -4,24 +4,24 @@ import {
 } from '../models/repositories/notification.repo.js';
 
 class NotificationService {
-    static pushNotifiToSystem = async ({
-        type,
-        recievedId,
-        senderId,
-        options = {}
-    }) => {
-        let noti_content = getNotificationContent(type);
+    // static pushNotifiToSystem = async ({
+    //     type,
+    //     receivedId,
+    //     senderId,
+    //     options = {}
+    // }) => {
+    //     let noti_content = getNotificationContent(type);
 
-        const newNoti = await notificationModel.create({
-            noti_type: type,
-            noti_receivedId: recievedId,
-            noti_options: options,
-            noti_senderId: senderId,
-            noti_content,
-        });
+    //     const newNoti = await notificationModel.create({
+    //         noti_type: type,
+    //         noti_receivedId: receivedId,
+    //         noti_options: options,
+    //         noti_senderId: senderId,
+    //         noti_content,
+    //     });
 
-        return newNoti;
-    };
+    //     return newNoti;
+    // };
 
     static listNotiUser = async ({
         userId = 1,
