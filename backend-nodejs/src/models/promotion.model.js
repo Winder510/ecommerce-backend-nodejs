@@ -9,15 +9,19 @@ var promotionSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    products: [{
+    prom_banner: {
+        type: String,
+        required: true,
+    },
+    appliedProduct: [{
         productId: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'sku',
+            ref: 'spu',
             required: true
         },
         discountType: {
             type: String,
-            enum: ['percentage', 'fixed'],
+            enum: ['PERCENTAGE', 'FIXED'],
             required: true
         },
         discountValue: {
@@ -28,6 +32,10 @@ var promotionSchema = new mongoose.Schema({
             type: Number,
             required: true, // Giới hạn số lượng giảm giá
             min: 1
+        },
+        maxDiscountValue: {
+            type: Number,
+            required: true
         },
         appliedQuantity: {
             type: Number,

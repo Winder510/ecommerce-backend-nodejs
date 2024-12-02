@@ -100,13 +100,70 @@ const reservationSku = async ({
             _id: skuId
         }, {
             $inc: {
-                sku_stock: - quantity,
+                sku_stock: -quantity,
             }
         });
     } else {
         return null;
     }
 
+}
+
+const getPriceSku = async (skuId) => {
+    const spuId = getSpuIdBySku(skuId);
+    const sku = skuModel.findById(skuId).lean();
+    const spu = await spuModel.findById(spuId).lean();
+    if (!spu) throw new BadRequestError("Not found product")
+
+    const promotionEvent = await promotionModel.find({
+        status: "active"
+    })
+
+    if (!promotionEvent) {
+        return {
+            orignalPrice: sku.sku_price,
+            discountValue: 0,
+            priceAfterDiscount: sku.sku_price
+        }
+    }
+
+    // Tìm chi tiết giảm giá của sản phẩm trong chương trình
+    const productPromotion = promotionEvent.appliedDiscount.find(p => p.productId.toString() === spuId)
+
+    // Nếu sản phẩm không có trong chương trình
+    if (!productPromotion) {
+        return {
+            orignalPrice: sku.sku_price,
+            discountValue: 0,
+            priceAfterDiscount: sku.sku_price
+        }
+    }
+
+    let orignalPrice = sku.sku_price;
+    let discountValue = 0;
+    let priceAfterDiscount = orignalPrice;
+
+    if (productPromotion.discountType === 'PERCENTAGE') {
+        discountValue = orignalPrice * (productPromotion.discountValue / 100);
+
+        // Giới hạn mức giảm nếu có
+        if (productPromotion.maxDiscountAmount) {
+            discountValue = Math.min(
+                discountValue,
+                productPromotion.maxDiscountAmount
+            );
+        }
+    } else {
+        // Giảm giá cố định
+        discountValue = productPromotion.discountValue;
+    }
+    priceAfterDiscount -= discountValue;
+
+    return {
+        orignalPrice: sku.sku_price,
+        discountValue,
+        priceAfterDiscount,
+    }
 }
 export {
     findSkuById,
@@ -115,5 +172,6 @@ export {
     getSpuIdBySku,
     getQuantityBySpus,
     updateDefaultSku,
-    reservationSku
+    reservationSku,
+    getPriceSku
 };

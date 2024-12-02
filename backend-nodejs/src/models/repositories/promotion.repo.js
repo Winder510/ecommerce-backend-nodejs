@@ -30,13 +30,7 @@ export const isTimeSlotAvailable = async (startTime, endTime) => {
 };
 
 export const getListAppliedSpu = async (promotionId) => {
-    const skus = await promotionModel.findById(promotionId).select("products.productId -_id");
-    const skuIds = skus.products?.map(product => product.productId);
-    const data = await Promise.all(skuIds.map(async (skuId) => {
-        return await getSpuIdBySku(skuId);
-    }))
-    const spuIds = data.map(spu => spu.product_id);
-    const uniqueSpuIds = [...new Set(spuIds.map(id => id.toString().trim()))];
-    return uniqueSpuIds
-
+    const spus = await promotionModel.findById(promotionId).select("appliedProduct.productId -_id");
+    const spuIds = spus.appliedProduct?.map(product => product.productId);
+    return spuIds;
 }

@@ -7,7 +7,7 @@ import {
     addNewProductToCart,
     checkExistProduct,
     createUserCart,
-    getProductInfor,
+    getProductInforForCart,
     replaceItemsInCart,
     updateUserCartQuantity,
 } from '../models/repositories/cart.repo.js';
@@ -147,7 +147,7 @@ export class CartService {
                 quantity
             } = item
 
-            let data = await getProductInfor(skuId)
+            let data = await getProductInforForCart(skuId)
 
             return {
                 ...data,

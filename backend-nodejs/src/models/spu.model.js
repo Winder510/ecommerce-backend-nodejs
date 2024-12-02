@@ -28,9 +28,6 @@ const productSchema = new Schema({
         type: Number,
         required: true,
     },
-    product_discount_price: {
-        type: Number,
-    },
     product_quantity: {
         type: Number,
         required: true,

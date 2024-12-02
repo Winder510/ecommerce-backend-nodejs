@@ -28,9 +28,6 @@ const skuSchema = new Schema({
         type: Number,
         required: true,
     },
-    sku_discount_price: {
-        type: Number,
-    },
     sku_stock: {
         type: Number,
         default: 0,

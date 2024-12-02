@@ -1,5 +1,5 @@
 import {
-    getProductInfor
+    getProductInforForCart
 } from './cart.repo.js';
 
 const checkSkuByServer = async (products) => {
@@ -7,7 +7,7 @@ const checkSkuByServer = async (products) => {
         products.map(async (product) => {
             try {
                 let foundProduct;
-                foundProduct = await getProductInfor(product.productId);
+                foundProduct = await getProductInforForCart(product.productId);
                 if (foundProduct) {
                     return {
                         price: foundProduct.originalPrice,
