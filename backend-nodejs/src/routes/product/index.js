@@ -21,7 +21,7 @@ router.delete('/spu/delete/:id', asyncErrorHandler(productController.deleteSpu))
 router.get('/spu', asyncErrorHandler(productController.findOneSpu));
 router.get('/sku/select', asyncErrorHandler(productController.findOneSku));
 router.post('/sku/set-default', asyncErrorHandler(productController.setDefaultSku));
-router.get('/sku/selectAll', asyncErrorHandler(productController.findOneSku));
+router.get('/sku/select-all', asyncErrorHandler(productController.findOneSku));
 router.get('/best-sold', asyncErrorHandler(productController.getBestSoldSpuEachCategory));
 
 //router.use(authenticationV2);
@@ -36,4 +36,4 @@ router.get('/published/all', asyncErrorHandler(productController.getListPublishS
 router.get('/top-products', asyncErrorHandler(productController.getBestSoldSpuEachCategory));
 router.get('/management/spu', asyncErrorHandler(productController.findAllSpuWithCondition));
 
-export default router;
+export default router

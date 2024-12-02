@@ -23,6 +23,7 @@ import sendSyncMessage from '../../test/rabbitmq/sync-data.producerDLX.js';
 import skuModel from '../models/sku.model.js';
 
 export class SpuService {
+
     static async newSPu({
         name,
         description,
@@ -165,8 +166,10 @@ export class SpuService {
         limit = 10,
         skip = 0
     }) {
+        console.log("🚀 ~ SpuService ~ categoryId:", categoryId)
+
         const query = {
-            isPublished: true,
+            isPublished: false,
             ...(categoryId && {
                 product_category: {
                     $elemMatch: {

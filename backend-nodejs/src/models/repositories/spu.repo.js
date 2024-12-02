@@ -51,7 +51,7 @@ const querySpu = async ({
     limit,
     skip,
 }) => {
-    return await spuModel
+    const spus = await spuModel
         .find(query)
         .sort(sort)
         .skip(skip)
@@ -59,6 +59,15 @@ const querySpu = async ({
         .select('-isDraft -isPublished -isDeleted -updatedAt -__v')
         .lean()
         .exec();
+
+    const spuswithPrice = Promise.all(spus.map(async spu => {
+        return {
+            ...spu,
+            product_price: await getPriceSpu(spu._id)
+        }
+    }))
+
+    return spuswithPrice
 };
 
 const publishSpu = async ({
@@ -235,11 +244,12 @@ const getSpuByIds = async (productIds, filter = {}, sort = {}) => {
         throw new Error('Failed to fetch products');
     }
 }
+
 const getPriceSpu = async (spuId) => {
     const spu = await spuModel.findById(spuId);
     if (!spu) throw new BadRequestError("Not found product")
 
-    const promotionEvent = await promotionModel.find({
+    const promotionEvent = await promotionModel.findOne({
         status: "active"
     })
 
@@ -252,7 +262,7 @@ const getPriceSpu = async (spuId) => {
     }
 
     // Tìm chi tiết giảm giá của sản phẩm trong chương trình
-    const productPromotion = promotionEvent.appliedDiscount.find(p => p.productId.toString() === spuId)
+    const productPromotion = promotionEvent.appliedProduct.find(p => p.productId.toString() === spuId)
 
     // Nếu sản phẩm không có trong chương trình
     if (!productPromotion) {

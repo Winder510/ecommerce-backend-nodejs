@@ -128,7 +128,7 @@ const getPriceSku = async (skuId) => {
     }
 
     // Tìm chi tiết giảm giá của sản phẩm trong chương trình
-    const productPromotion = promotionEvent.appliedDiscount.find(p => p.productId.toString() === spuId)
+    const productPromotion = promotionEvent.appliedProduct.find(p => p.productId.toString() === spuId)
 
     // Nếu sản phẩm không có trong chương trình
     if (!productPromotion) {
