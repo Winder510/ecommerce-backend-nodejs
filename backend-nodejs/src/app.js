@@ -20,6 +20,9 @@ import {
 initElastic();
 
 // init middleware
+app.use('/api/v1/payment/webhook', express.raw({
+    type: 'application/json'
+}));
 app.use(morgan('dev'));
 app.use(helmet());
 app.use(compression());

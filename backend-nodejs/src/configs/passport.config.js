@@ -1,9 +1,15 @@
 import passport from 'passport';
-import { Strategy as FacebookStrategy } from 'passport-facebook';
+import {
+    Strategy as FacebookStrategy
+} from 'passport-facebook';
 import crypto from 'crypto';
 import dotenv from 'dotenv';
-import { createUserRepo } from '../models/repositories/user.repository.js';
-import { createTokenPair } from '../auth/authUtils.js';
+import {
+    createUserRepo
+} from '../models/repositories/user.repository.js';
+import {
+    createTokenPair
+} from '../auth/authUtils.js';
 import KeyTokenService from '../services/keyToken.service.js';
 
 dotenv.config();
@@ -13,8 +19,7 @@ const FACEBOOK_APP_SECRET = process.env.FACEBOOK_APP_SECRET;
 
 // Cấu hình Facebook Strategy
 passport.use(
-    new FacebookStrategy(
-        {
+    new FacebookStrategy({
             clientID: FACEBOOK_APP_ID,
             clientSecret: FACEBOOK_APP_SECRET,
             callbackURL: '/auth/facebook/callback',
@@ -22,7 +27,11 @@ passport.use(
         },
         async (accessToken, refreshToken, profile, done) => {
             try {
-                const { id, name, email } = profile._json;
+                const {
+                    id,
+                    name,
+                    email
+                } = profile._json;
 
                 const newUser = await createUserRepo({
                     usr_name: name,
@@ -34,7 +43,10 @@ passport.use(
                 let token = '';
 
                 if (newUser) {
-                    const { publicKey, privateKey } = crypto.generateKeyPairSync('rsa', {
+                    const {
+                        publicKey,
+                        privateKey
+                    } = crypto.generateKeyPairSync('rsa', {
                         modulusLength: 4096,
                         publicKeyEncoding: {
                             type: 'pkcs1',
@@ -46,8 +58,7 @@ passport.use(
                         },
                     });
 
-                    const tokens = await createTokenPair(
-                        {
+                    const tokens = await createTokenPair({
                             userId: newUser._id,
                             email,
                         },
