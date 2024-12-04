@@ -11,6 +11,9 @@ const router = express.Router();
 //sign up
 router.post('/sign-in', asyncErrorHandler(accessController.signin));
 router.post('/sign-up', asyncErrorHandler(accessController.signup));
+router.get('/google', asyncErrorHandler(accessController.googleLogin));
+router.get('/google/callback', asyncErrorHandler(accessController.googleCallback));
+
 
 
 // authentication

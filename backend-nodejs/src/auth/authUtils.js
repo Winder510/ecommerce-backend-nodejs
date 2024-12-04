@@ -1,6 +1,11 @@
 import jwt from 'jsonwebtoken';
-import { asyncErrorHandler } from '../helpers/asyncHandler.js';
-import { AuthFailureError, NotFoundError } from '../core/error.response.js';
+import {
+    asyncErrorHandler
+} from '../helpers/asyncHandler.js';
+import {
+    AuthFailureError,
+    NotFoundError
+} from '../core/error.response.js';
 import KeyTokenService from '../services/keyToken.service.js';
 
 export const createTokenPair = async (payload, publicKey, privateKey) => {
@@ -67,7 +72,7 @@ export const authenticationV2 = asyncErrorHandler(async (req, res, next) => {
     const keyStore = await KeyTokenService.findByUserId(userId);
     if (!keyStore) throw new NotFoundError('Not found key store');
 
-    if (req.originalUrl === '/api/v1/handleRefreshToken' && req.headers['refreshtoken']) {
+    if (req.originalUrl === '/api/v1/auth/handleRefreshToken' && req.headers['refreshtoken']) {
         try {
             const refreshToken = req.headers['refreshtoken'];
             const decodeUser = jwt.verify(refreshToken, keyStore.publicKey);

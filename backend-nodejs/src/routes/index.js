@@ -44,8 +44,8 @@ router.use('/api/v1/checkout', checkoutRouter);
 router.use('/api/v1/cart', cartRouter);
 router.use('/api/v1/discount', discountRouter);
 router.use('/api/v1/payment', paymentRouter);
-router.use('/api/v1', passportRouter);
-router.use('/api/v1', accessRouter);
+//router.use('/api/v1', passportRouter);
+router.use('/api/v1/auth', accessRouter);
 
 
 export default router;

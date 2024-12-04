@@ -11,6 +11,9 @@ var userSchema = new mongoose.Schema({
     usr_slug: {
         type: String,
     },
+    usr_img: {
+        type: String,
+    },
     usr_name: {
         type: String,
         required: true,
@@ -37,6 +40,9 @@ var userSchema = new mongoose.Schema({
         type: Date,
         default: null,
     },
+    googleId: {
+        type: String,
+    },
     usr_role: {
         type: Schema.Types.ObjectId,
         ref: 'Role',
@@ -47,7 +53,7 @@ var userSchema = new mongoose.Schema({
     },
     usr_status: {
         type: String,
-        default: 'pending',
+        default: 'active',
         enum: ['pending', 'active', 'block'],
     },
 }, {

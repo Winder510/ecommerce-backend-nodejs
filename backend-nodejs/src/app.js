@@ -18,7 +18,6 @@ import {
     initElastic
 } from './dbs/init.elastic.js';
 initElastic();
-
 // init middleware
 app.use('/api/v1/payment/webhook', express.raw({
     type: 'application/json'

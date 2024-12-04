@@ -178,9 +178,42 @@ const changePassWordService = async ({
         usr_isDefaultPassword: false,
     }, );
 };
+const findOrCreateUser = async ({
+    googleId,
+    email,
+    name,
+    img
+}) => {
+    try {
+        // Logic tìm kiếm người dùng hoặc tạo người dùng mới
+        const user = await userModel.findOne({
+            googleId
+        });
+
+        if (user) {
+            return user;
+        }
+
+        const newUser = await userModel.create({
+            googleId: googleId,
+            usr_email: email,
+            usr_name: name,
+            usr_avatar: img,
+            usr_password: 'none', // Không có password khi đăng nhập bằng Google
+            usr_role: '6704099fb8583f3dc7342d12', // Có thể thay bằng quyền phù hợp
+        });
+
+        return newUser;
+    } catch (err) {
+        console.error('Error in findOrCreateUser:', err);
+        throw err; // Ném lại lỗi để catch trong hàm gọi
+    }
+}
+
 
 export {
     newUserService,
     checkLoginEmailTokenService,
-    changePassWordService
+    changePassWordService,
+    findOrCreateUser
 };
