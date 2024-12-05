@@ -14,10 +14,10 @@ class UserController {
             res,
         });
 
-        return new SuccessResponse({
-            message: 'create new user',
-            metadata: respond,
-        }).send(res);
+        // return new SuccessResponse({
+        //     message: 'create new user',
+        //     metadata: respond,
+        // }).send(res);
     };
 
     getListUser = async (req, res, next) => {};
