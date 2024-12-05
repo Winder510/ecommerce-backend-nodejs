@@ -1,6 +1,11 @@
 import userModel from '../user.model.js';
 
-const createUserRepo = async ({ usr_name, usr_email, usr_password, usr_role }) => {
+const createUserRepo = async ({
+    usr_name,
+    usr_email,
+    usr_password,
+    usr_role
+}) => {
     return await userModel.create({
         usr_name,
         usr_email,
@@ -8,7 +13,9 @@ const createUserRepo = async ({ usr_name, usr_email, usr_password, usr_role }) =
         usr_role,
     });
 };
-const findByEmail = async ({ email }) => {
+const findByEmail = async ({
+    email
+}) => {
     return await userModel
         .findOne({
             usr_email: email,
@@ -19,7 +26,11 @@ const findByEmail = async ({ email }) => {
             usr_name: 1,
             usr_status: 1,
             usr_role: 1,
+            usr_avater: 1
         })
         .lean();
 };
-export { createUserRepo, findByEmail };
+export {
+    createUserRepo,
+    findByEmail
+};
