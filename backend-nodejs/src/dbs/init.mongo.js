@@ -1,6 +1,7 @@
 import mongoose from 'mongoose'
-
-const connectString = 'mongodb://appleshop:123456789@localhost:27017/appleshop?authSource=admin';
+import dotenv from 'dotenv'
+dotenv.config()
+const connectString = process.env.MONGO_CLOUD_URL;
 //'mongodb://appleshop:123456789@mongodb:27017/appleshop?authSource=admin';
 class Database {
     constructor() {
