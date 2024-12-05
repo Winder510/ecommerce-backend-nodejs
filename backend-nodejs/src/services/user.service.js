@@ -32,6 +32,7 @@ const newUserService = async ({
     const user = await userModel
         .findOne({
             usr_email: email,
+            googleId: null
         })
         .lean();
 
