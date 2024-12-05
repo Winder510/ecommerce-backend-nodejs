@@ -12,7 +12,8 @@ import {
     BadRequestError
 } from '../core/error.response.js';
 import {
-    findByEmail
+    findByEmail,
+    findUserById
 } from '../models/repositories/user.repository.js';
 
 class AccessService {
@@ -133,6 +134,12 @@ class AccessService {
             // accessToken: tokens.accessToken
             tokens,
         };
+    }
+    static async getAccount({
+        userId
+    }) {
+        const foundUser = await findUserById(userId);
+        return foundUser
     }
 }
 export default AccessService;

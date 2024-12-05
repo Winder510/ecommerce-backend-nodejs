@@ -121,6 +121,12 @@ class AccessController {
         });
     }
 
+    getAccount = async (req, res, next) => {
+        new SuccessResponse({
+            message: 'login success',
+            metadata: await AccessService.getAccount(req.user),
+        }).send(res);
+    };
 
 }
 export default new AccessController();

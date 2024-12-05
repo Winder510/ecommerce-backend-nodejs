@@ -18,7 +18,7 @@ router.get('/google/callback', asyncErrorHandler(accessController.googleCallback
 
 // authentication
 router.use(authenticationV2);
-
+router.get('/account', asyncErrorHandler(accessController.getAccount));
 router.post('/log-out', asyncErrorHandler(accessController.logout));
 router.post('/handleRefreshToken', asyncErrorHandler(accessController.handleRefreshToken));
 

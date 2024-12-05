@@ -26,11 +26,30 @@ const findByEmail = async ({
             usr_name: 1,
             usr_status: 1,
             usr_role: 1,
-            usr_avater: 1
+            usr_avatar: 1
+        })
+        .lean();
+};
+
+const findUserById = async (
+    userId
+) => {
+    return await userModel
+        .findById(
+            userId
+        )
+        .select({
+            usr_email: 1,
+            usr_password: 1,
+            usr_name: 1,
+            usr_status: 1,
+            usr_role: 1,
+            usr_avatar: 1
         })
         .lean();
 };
 export {
     createUserRepo,
-    findByEmail
+    findByEmail,
+    findUserById
 };
