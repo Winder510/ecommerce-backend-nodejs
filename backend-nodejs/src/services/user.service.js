@@ -125,17 +125,15 @@ const checkLoginEmailTokenService = async ({
             2 * 60 * 60 * 1000,
         ); // 2 tiếng
 
-        return {
-            user: getInfoData({
-                fields: ['_id', 'usr_name', 'usr_email'],
-                object: newUser,
-            }),
-            accessToken: tokens.accessToken,
-        };
+        // return {
+        //     user: getInfoData({
+        //         fields: ['_id', 'usr_name', 'usr_email'],
+        //         object: newUser,
+        //     }),
+        //     accessToken: tokens.accessToken,
+        // };
+        return res.redirect(`http://localhost:5173/?user=${newUser._id}&token=${tokens.accessToken}`);
     }
-    return {
-        metadata: null,
-    };
 };
 
 const deleteUserIfNotChangedPassword = async (userId) => {

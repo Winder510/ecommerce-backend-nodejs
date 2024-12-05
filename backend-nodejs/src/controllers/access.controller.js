@@ -107,15 +107,17 @@ class AccessController {
                     refreshToken: tokens.refreshToken,
                 });
 
-                return res.json({
-                    user: getInfoData({
-                        fields: ['_id', 'usr_name', 'usr_email'],
-                        object: foundUser,
-                    }),
-                    tokens,
-                });
+                // return res.json({
+                //     user: getInfoData({
+                //         fields: ['_id', 'usr_name', 'usr_email'],
+                //         object: foundUser,
+                //     }),
+                //     tokens,
+                // });
+
+                return res.redirect(`http://localhost:5173/?user=${foundUser._id}&token=${tokens.accessToken}`);
+
             } catch (err) {
-                console.log("🚀 ~ AccessController ~ googleCallback ~ err:", err)
                 res.status(500).send('Something went wrong');
             }
         });
