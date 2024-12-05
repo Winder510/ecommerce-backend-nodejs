@@ -77,7 +77,7 @@ export class CategoryService {
             .find({
                 category_parentId: null,
             })
-            .select('category_name category_description category_slug');
+            .select('category_name category_description category_slug category_img');
 
         return Promise.all(
             categories.map(async (category) => {

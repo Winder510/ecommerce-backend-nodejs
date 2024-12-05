@@ -14,7 +14,7 @@ const COLLECTION_NAME = 'Categories';
 var categorySchema = new mongoose.Schema({
     category_name: {
         type: String,
-        required: true, // unique
+        required: true,
     },
     category_description: {
         type: String,
@@ -25,6 +25,10 @@ var categorySchema = new mongoose.Schema({
     category_parent_Id: {
         type: Schema.Types.ObjectId,
     },
+    category_img: {
+        type: String,
+        require: true
+    }
 }, {
     timestamps: true,
     collection: COLLECTION_NAME,
