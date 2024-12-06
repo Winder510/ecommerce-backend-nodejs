@@ -32,7 +32,7 @@ router.post('/unpublish/:id', asyncErrorHandler(productController.unPublishProdu
 
 // for admin
 router.get('/draft/all', asyncErrorHandler(productController.getAllDraftSpu))
-router.get('/published/all', asyncErrorHandler(productController.getListPublishSpuByCategory));
+router.post('/published/all', asyncErrorHandler(productController.getListPublishSpuByCategory));
 router.get('/top-products', asyncErrorHandler(productController.getBestSoldSpuEachCategory));
 router.get('/management/spu', asyncErrorHandler(productController.findAllSpuWithCondition));
 

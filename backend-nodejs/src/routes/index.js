@@ -14,7 +14,7 @@ import userRouter from './user/index.js';
 import commentRouter from './comment/index.js';
 import categoryRouter from './category/index.js';
 import attributeGroupRouter from './attributeGroup/index.js';
-import passportRouter from './passport/index.js';
+import productRouter from './product/index.js';
 import promotionRouter from './promotion/index.js';
 import ESRouter from './elasticSearch/index.js';
 import orderRouter from './order/index.js';
@@ -28,6 +28,7 @@ const router = express.Router();
 
 //check permission
 router.use('/api/v1/order', orderRouter);
+router.use('/api/v1/product', productRouter);
 router.use('/api/v1/attribute', attributeGroupRouter);
 router.use('/api/v1/full-text-search', ESRouter);
 router.use('/api/v1/promotion', promotionRouter);
