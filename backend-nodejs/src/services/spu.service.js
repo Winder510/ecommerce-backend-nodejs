@@ -21,6 +21,7 @@ import {
 } from '../models/repositories/sku.repo.js';
 import sendSyncMessage from '../../test/rabbitmq/sync-data.producerDLX.js';
 import skuModel from '../models/sku.model.js';
+import categoryModel from '../models/category.model.js';
 
 export class SpuService {
 
@@ -162,11 +163,15 @@ export class SpuService {
     }
 
     static async getListPublishSpuByCategory({
-        categoryId = null,
+        categorySlug = null,
         limit = 10,
         skip = 0
     }) {
-        console.log("🚀 ~ SpuService ~ categoryId:", categoryId)
+        const category = await categoryModel.findOne({
+            category_slug: categorySlug
+        })
+        if (!category) throw new BadRequestError("Không tìm thấy category")
+        const categoryId = category._id;
 
         const query = {
             isPublished: false,
