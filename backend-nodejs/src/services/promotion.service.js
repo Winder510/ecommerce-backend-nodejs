@@ -11,13 +11,15 @@ import {
 class PromotionService {
     static async createNewProduct({
         prom_name,
-        products,
+        prom_banner = '',
+        appliedProduct,
         startTime,
         endTime,
     }) {
         const newPromotion = new promotionModel({
             prom_name,
-            products,
+            prom_banner,
+            appliedProduct,
             startTime,
             endTime,
         });

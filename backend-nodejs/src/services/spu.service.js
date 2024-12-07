@@ -32,12 +32,13 @@ export class SpuService {
         category,
         attributes,
         variations,
+        tags,
         sku_list = [],
         // sku_list = [  "sku_index": [
         //         1,
         //         2
         //     ],
-        //     "sku_thumb":   "https://example.com/images/macbook-silver.jpg",
+        //    
         //     "sku_price": 2900,
         //     "sku_stock": 2
         //     ]
@@ -47,8 +48,6 @@ export class SpuService {
             return acc + sku?.sku_stock;
         }, 0);
         const lowestSku = lowestPriceSKU(sku_list);
-
-
         const newSpu = await spuModel.create({
             product_name: name,
             product_description: description,
@@ -58,6 +57,7 @@ export class SpuService {
             product_attributes: attributes,
             product_quantity,
             product_variations: variations,
+            product_tags: tags
         });
 
         if (newSpu && sku_list.length) {

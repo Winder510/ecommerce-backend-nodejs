@@ -24,6 +24,7 @@ var categorySchema = new mongoose.Schema({
     },
     category_parent_Id: {
         type: Schema.Types.ObjectId,
+        index: true,
     },
     category_img: {
         type: String,

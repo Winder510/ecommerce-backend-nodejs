@@ -224,26 +224,49 @@ const updateQuantitySpu = async (spuId, quantity) => {
     })
 }
 
-const getSpuByIds = async (productIds, filter = {}, sort = {}) => {
+const getSpuByIds = async (productIds = [], filter = {}, sort = {}) => {
     try {
-        const products = await spuModel.find({
+        if (!Array.isArray(productIds) || productIds.length === 0) {
+            return {
+                products: [],
+                totalResult: 0,
+            };
+        }
+
+        const products = await spuModel
+            .find({
                 _id: {
                     $in: productIds
                 },
-                ...filter
-            }).sort(sort)
+                ...filter,
+            })
+            .sort(sort)
             .lean();
 
         if (!products.length) {
-            throw new Error('No products found for the given IDs.');
+            return {
+                products: [],
+                totalResult: 0,
+            };
         }
 
-        return products;
+        const spusWithPrice = await Promise.all(
+            products.map(async (spu) => ({
+                ...spu,
+                product_price: await getPriceSpu(spu._id),
+            }))
+        );
+
+        return {
+            products: spusWithPrice,
+            totalResult: spusWithPrice.length,
+        };
     } catch (error) {
         console.error("Error fetching products:", error);
-        throw new Error('Failed to fetch products');
+        throw new Error("Failed to fetch products");
     }
-}
+};
+
 
 const getPriceSpu = async (spuId) => {
     const spu = await spuModel.findById(spuId);
@@ -261,8 +284,9 @@ const getPriceSpu = async (spuId) => {
         }
     }
 
-    // Tìm chi tiết giảm giá của sản phẩm trong chương trình
-    const productPromotion = promotionEvent.appliedProduct.find(p => p.productId.toString() === spuId)
+    const productPromotion = promotionEvent.appliedProduct.find(p => {
+        return p.productId.toString() === spuId.toString()
+    })
 
     // Nếu sản phẩm không có trong chương trình
     if (!productPromotion) {

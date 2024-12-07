@@ -30,14 +30,14 @@ class ElasticService {
                                     multi_match: {
                                         query: textSearch,
                                         fields: ['name^3', 'description'],
-                                        fuzziness: 2, // Allow up to 2 character changes
-                                        prefix_length: 1, // Require at least 1 exact character at the beginning
+                                        fuzziness: 2,
+                                        prefix_length: 1,
                                     }
                                 },
                                 {
                                     wildcard: {
                                         name: {
-                                            value: `*${textSearch.toLowerCase()}*` // Wildcard query for partial matches
+                                            value: `*${textSearch.toLowerCase()}*`
                                         }
                                     }
                                 }
@@ -52,9 +52,9 @@ class ElasticService {
             const productIds = hits.map(hit => {
                 return hit._id
             })
-            if (productIds.length > 0) {
-                return await getSpuByIds(productIds, filter, sort);
-            } else return []
+
+            return await getSpuByIds(productIds, filter, sort);
+
 
         } catch (error) {
             console.error('Error searching for product:', error);
@@ -93,7 +93,6 @@ class ElasticService {
             return []; // Trả về mảng rỗng nếu có lỗi
         }
     }
-
 }
 
 export default ElasticService;

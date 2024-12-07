@@ -13,13 +13,21 @@ const productSchema = new Schema({
     product_name: {
         type: String,
         required: true,
+        unique: true
     },
     product_thumb: {
         type: String,
         required: true,
     },
+    product_imgs: {
+        type: Array,
+    },
     product_slug: {
         type: String,
+    },
+    product_tags: {
+        type: Array,
+        default: []
     },
     product_description: {
         type: String,

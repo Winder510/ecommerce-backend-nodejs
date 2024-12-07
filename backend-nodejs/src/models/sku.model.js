@@ -9,9 +9,6 @@ const skuSchema = new Schema({
     sku_name: {
         type: String,
     },
-    sku_thumb: {
-        type: String
-    },
     sku_index: {
         type: Array,
         default: [0],

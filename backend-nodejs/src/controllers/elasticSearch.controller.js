@@ -21,5 +21,7 @@ class ElasticSeachController {
         }).send(res);
     };
 
+
+
 }
 export default new ElasticSeachController();
