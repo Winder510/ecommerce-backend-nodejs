@@ -13,7 +13,6 @@ class UserController {
             token: req.query.token,
             res,
         });
-
         // return new SuccessResponse({
         //     message: 'create new user',
         //     metadata: respond,

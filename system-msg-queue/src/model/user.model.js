@@ -40,6 +40,10 @@ var userSchema = new mongoose.Schema({
         type: Schema.Types.ObjectId,
         ref: 'Role',
     },
+    uer_favorite: {
+        type: Array,
+        default: []
+    },
     usr_isDefaultPassword: {
         type: Boolean,
         default: true,
