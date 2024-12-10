@@ -41,5 +41,6 @@ class CartController {
             metadata: await CartService.replaceItemInCart(req.body),
         }).send(res);
     };
+
 }
 export default new CartController();

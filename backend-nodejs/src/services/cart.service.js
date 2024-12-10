@@ -104,6 +104,7 @@ export class CartService {
 
         });
     }
+
     static async deleteUserCart({
         userId,
         skuId
@@ -128,6 +129,9 @@ export class CartService {
     static async showCart({
         userId
     }) {
+        if (!userId) {
+            throw new BadRequestError("You have signed out")
+        }
         const cart = await cartModel
             .findOne({
                 cart_userId: userId,
@@ -189,6 +193,22 @@ export class CartService {
             newSkuId,
         })
 
+    }
+
+    static async clearCart({
+        userId
+    }) {
+        const cart = await cartModel.find({
+            cart_userId: userId
+        })
+
+        cart.cart_products = []
+
+        cart.save()
+
+        return {
+            success: true
+        }
     }
 
 

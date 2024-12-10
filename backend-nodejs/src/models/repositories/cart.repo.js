@@ -1,13 +1,8 @@
-import mongoose from 'mongoose';
 import cartModel from '../cart.model.js';
-import promotionModel from '../promotion.model.js';
 import {
     findSkuById,
     getPriceSku
 } from './sku.repo.js';
-import {
-    DISCOUNT_TYPE
-} from '../../constant/index.js';
 
 export const createUserCart = async ({
     userId,
@@ -135,10 +130,9 @@ export const findCartById = async ({
 export const getProductInforForCart = async (skuId) => {
     const sku = await findSkuById(skuId);
     const {
-        originalPrice,
         discountValue,
         priceAfterDiscount
-    } = getPriceSku(skuId)
+    } = await getPriceSku(skuId)
 
     return {
         skuId,
