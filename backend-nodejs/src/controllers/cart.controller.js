@@ -42,5 +42,13 @@ class CartController {
         }).send(res);
     };
 
+    getCartBUserId = async (req, res, next) => {
+        new SuccessResponse({
+            message: 'success',
+            metadata: await CartService.getCartByUserId(req.body),
+        }).send(res);
+    };
+
+
 }
 export default new CartController();

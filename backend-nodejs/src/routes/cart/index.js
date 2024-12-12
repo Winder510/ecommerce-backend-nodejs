@@ -6,11 +6,13 @@ import {
 
 const router = express.Router();
 
-// get amount a discount
+
 router.post('', asyncErrorHandler(cartController.addToCart));
 router.delete('', asyncErrorHandler(cartController.delete));
 router.post('/update', asyncErrorHandler(cartController.update));
 router.get('', asyncErrorHandler(cartController.showCart));
 router.post('/replace-item', asyncErrorHandler(cartController.replaceItem));
+router.post('/get-cart', asyncErrorHandler(cartController.getCartBUserId));
+
 
 export default router;

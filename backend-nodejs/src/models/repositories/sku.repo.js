@@ -189,6 +189,43 @@ const getPriceSku = async (skuId) => {
         priceAfterDiscount,
     };
 };
+const getThumbFromSpu = async (skuId) => {
+    // Lấy SPU ID từ SKU ID
+    const obj = await getSpuIdBySku(skuId);
+    const spuId = obj.product_id;
+
+    // Đồng thời lấy dữ liệu SKU và SPU
+    const [sku, spu] = await Promise.all([
+        skuModel.findById(skuId).lean(),
+        spuModel.findById(spuId).lean(),
+    ]);
+
+    const {
+        product_variations
+    } = spu;
+    const {
+        sku_index
+    } = sku;
+
+    // Kiểm tra tính hợp lệ
+    if (!product_variations || !sku_index || sku_index.length !== product_variations.length) {
+        throw new Error("Dữ liệu không hợp lệ!");
+    }
+
+    // Duyệt qua các variation để tìm ảnh thumbnail
+    for (let i = 0; i < sku_index.length; i++) {
+        const variation = product_variations[i];
+        const index = sku_index[i];
+
+        // Kiểm tra nếu variation có hình ảnh
+        if (variation.images && variation.images.length > 0) {
+            return variation.images[index] || null; // Lấy ảnh tại chỉ số index
+        }
+    }
+
+    // Nếu không tìm thấy ảnh, trả về null
+    return null;
+};
 
 export {
     findSkuById,
@@ -198,5 +235,6 @@ export {
     getQuantityBySpus,
     updateDefaultSku,
     reservationSku,
-    getPriceSku
+    getPriceSku,
+    getThumbFromSpu
 };

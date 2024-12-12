@@ -6,7 +6,7 @@ import {
 
 const router = express.Router();
 
-router.get('/review', asyncErrorHandler(checkoutController.checkoutPreview));
+router.post('/review', asyncErrorHandler(checkoutController.checkoutPreview));
 
 
 

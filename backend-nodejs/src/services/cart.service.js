@@ -1,4 +1,7 @@
 import {
+    Types
+} from 'mongoose';
+import {
     BadRequestError,
     NotFoundError
 } from '../core/error.response.js';
@@ -211,5 +214,12 @@ export class CartService {
         }
     }
 
+    static async getCartByUserId({
+        userId
+    }) {
+        return cartModel.findOne({
+            cart_userId: new Types.ObjectId(userId)
+        })
+    }
 
 }

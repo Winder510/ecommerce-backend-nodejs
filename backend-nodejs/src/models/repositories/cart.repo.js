@@ -1,7 +1,8 @@
 import cartModel from '../cart.model.js';
 import {
     findSkuById,
-    getPriceSku
+    getPriceSku,
+    getThumbFromSpu
 } from './sku.repo.js';
 
 export const createUserCart = async ({
@@ -129,6 +130,7 @@ export const findCartById = async ({
 
 export const getProductInforForCart = async (skuId) => {
     const sku = await findSkuById(skuId);
+
     const {
         discountValue,
         priceAfterDiscount
@@ -137,7 +139,7 @@ export const getProductInforForCart = async (skuId) => {
     return {
         skuId,
         name: sku.sku_name,
-        thumb: sku.sku_thumb,
+        thumb: await getThumbFromSpu(skuId),
         originalPrice: sku.sku_price,
         discount: discountValue,
         priceAfterDiscount,

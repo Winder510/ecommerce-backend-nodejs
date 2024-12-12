@@ -7,11 +7,11 @@ const checkSkuByServer = async (products) => {
         products.map(async (product) => {
             try {
                 let foundProduct;
-                foundProduct = await getProductInforForCart(product.productId);
+                foundProduct = await getProductInforForCart(product.skuId);
                 if (foundProduct) {
                     return {
                         price: foundProduct.originalPrice,
-                        loyalPoint: foundProduct.loyalPoint,
+                        loyalPoint: foundProduct.loyalPoint * product.quantity,
                         priceAfterDiscount: foundProduct.originalPrice,
                         discount: foundProduct.discount,
                         quantity: product.quantity,
