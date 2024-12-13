@@ -11,6 +11,7 @@ import {
 import {
     createSkuName,
     findSkuById,
+    getPriceSku,
     updateDefaultSku
 } from '../models/repositories/sku.repo.js';
 import slugify from 'slugify';
@@ -25,8 +26,8 @@ export class SkuService {
         const convert_sku_list = sku_list.map((sku) => {
             return {
                 ...sku,
-                sku_name: product_name + createSkuName(product_variations, sku),
-                sku_slug: slugify(product_name + createSkuName(product_variations, sku)),
+                sku_name: product_name + " " + createSkuName(product_variations, sku),
+                sku_slug: slugify(product_name + " " + createSkuName(product_variations, sku)),
                 product_id: spu_id,
             };
         });
@@ -88,21 +89,25 @@ export class SkuService {
     static async allSkuBySpu({
         product_id
     }) {
-        const foundProduct = await spuModel
-            .findOne({
-                _id: product_id,
-            })
-            .lean();
-        console.log(product_id);
+        // Use Promise.all for concurrent checks and avoid separate database queries
+        const [foundProduct, allSku] = await Promise.all([
+            spuModel.findOne({
+                _id: product_id
+            }).lean(),
+            skuModel.find({
+                product_id
+            }).lean()
+        ]);
+
         if (!foundProduct) throw new BadRequestError('Spu not exists');
 
-        const allSku = await skuModel
-            .find({
-                product_id,
-            })
-            .lean();
+        // Use Promise.all with concurrent price fetching
+        const skus = await Promise.all(allSku.map(async (sku) => ({
+            ...sku,
+            sku_price: await getPriceSku(sku._id)
+        })));
 
-        return allSku;
+        return skus;
     }
 
     static async setDefaultSku({

@@ -17,6 +17,10 @@ const skuSchema = new Schema({
         type: Boolean,
         default: false,
     },
+    sku_imgs: {
+        type: Array,
+        default: [],
+    },
     sku_slug: {
         type: String,
         default: '',
