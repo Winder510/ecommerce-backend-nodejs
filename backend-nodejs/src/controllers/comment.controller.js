@@ -1,4 +1,6 @@
-import { SuccessResponse } from '../core/success.response.js';
+import {
+    SuccessResponse
+} from '../core/success.response.js';
 import commentService from '../services/comment.service.js';
 
 class CommentController {
@@ -28,5 +30,17 @@ class CommentController {
             }),
         }).send(res);
     };
+
+    likeComment = async (req, res, next) => {
+        const {
+            commentId
+        } = req.params;
+        console.log("🚀 ~ CommentController ~ likeComment= ~ commentId:", commentId)
+        new SuccessResponse({
+            message: 'like comment success',
+            metadata: await commentService.likeComment(req, commentId),
+        }).send(res);
+    };
+
 }
 export default new CommentController();
