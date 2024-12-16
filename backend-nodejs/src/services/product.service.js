@@ -1,7 +1,17 @@
-import { error } from 'console';
-import { TYPE_NOTIFICATION } from '../constant/index.js';
-import { BadRequestError } from '../core/error.response.js';
-import { iPhoneModel, macModel, productModel } from '../models/product.model.js';
+import {
+    error
+} from 'console';
+import {
+    TYPE_NOTIFICATION
+} from '../constant/index.js';
+import {
+    BadRequestError
+} from '../core/error.response.js';
+import {
+    iPhoneModel,
+    macModel,
+    productModel
+} from '../models/product.model.js';
 import {
     findAllDraftProductForShop,
     findAllProducts,
@@ -12,7 +22,9 @@ import {
     unPublishProduct,
     updateProductById,
 } from '../models/repositories/product.repo.js';
-import { removeUndefinedNullObject } from '../utils/index.js';
+import {
+    removeUndefinedNullObject
+} from '../utils/index.js';
 import InventoryService from './inventory.service.js';
 import NotificationService from './notification.service.js';
 
@@ -63,19 +75,25 @@ export default class ProductFactory {
         });
     }
 
-    static async publishProduct({ product_id }) {
+    static async publishProduct({
+        product_id
+    }) {
         return await publishProduct({
             product_id,
         });
     }
 
-    static async unPublishProduct({ product_id }) {
+    static async unPublishProduct({
+        product_id
+    }) {
         return await unPublishProduct({
             product_id,
         });
     }
 
-    static async searchProduct({ keySearch }) {
+    static async searchProduct({
+        keySearch
+    }) {
         return await searchProductByUser({
             keySearch,
         });
@@ -98,7 +116,9 @@ export default class ProductFactory {
             select: ['product_name', 'product_description', 'product_price'],
         });
     }
-    static async findProduct({ product_id }) {
+    static async findProduct({
+        product_id
+    }) {
         return await findProduct({
             product_id,
             unSelect: ['__v'],
@@ -148,16 +168,18 @@ class Product {
 
         // push notifi to system
         NotificationService.pushNotifiToSystem({
-            type: TYPE_NOTIFICATION.ORDER_001,
-            recievedId: 1,
-            options: {
-                product_name: this.product_name,
-            },
-        })
+                type: TYPE_NOTIFICATION.ORDER_001,
+                recievedId: 1,
+                options: {
+                    product_name: this.product_name,
+                },
+            })
             .then()
             .catch(console.log(error));
 
+
         return newProduct;
+
     }
 
     //update product

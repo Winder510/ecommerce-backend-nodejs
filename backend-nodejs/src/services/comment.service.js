@@ -1,4 +1,7 @@
 import {
+    TYPE_NOTIFICATION
+} from '../constant/index.js';
+import {
     BadRequestError,
     NotFoundError
 } from '../core/error.response.js';
@@ -6,6 +9,9 @@ import commentModel from '../models/comment.model.js';
 import {
     findProduct
 } from '../models/repositories/product.repo.js';
+import {
+    sendNotifitoQueue
+} from './rabbitmq.service.js';
 
 /*
 {
@@ -83,6 +89,13 @@ export default class CommentService {
         comment.comment_right = rightValue + 1;
 
         await comment.save();
+
+        // if(comment){
+        //     sendNotifitoQueue("INDIVIDUAL",{
+        //         type: TYPE_NOTIFICATION.
+        //     })
+        // }
+
         return comment;
     }
 

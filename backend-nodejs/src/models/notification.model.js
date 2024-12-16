@@ -12,12 +12,12 @@ var notificationSchema = new mongoose.Schema({
         enum: [TYPE_NOTIFICATION.PROMOTION_EXPIRE, TYPE_NOTIFICATION.PROMOTION_NEW, TYPE_NOTIFICATION.ORDER_CANCELLED, TYPE_NOTIFICATION.ORDER_CONFIRMED, TYPE_NOTIFICATION.ORDER_PENDING, TYPE_NOTIFICATION.ORDER_SHIPPED, TYPE_NOTIFICATION.ORDER_SUCCESS, TYPE_NOTIFICATION.ORDER_FAIL],
         required: true,
     },
-    noti_receivedId: {
+    noti_receivedId: { // = "system" nếu admin là người nhận
         type: String,
         required: true,
     },
     noti_senderId: {
-        type: String,
+        type: String, // = "system" nếu admin là người gửi
         required: true,
     },
     noti_content: {
