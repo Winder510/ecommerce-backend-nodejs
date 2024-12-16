@@ -99,6 +99,7 @@ export default class CommentService {
             const comments = await commentModel
                 .find({
                     comment_productId: productId,
+                    comment_parentId: parentCommentId,
                     comment_left: {
                         $gt: parent.comment_left,
                     },
@@ -112,6 +113,7 @@ export default class CommentService {
                 .sort({
                     comment_left: 1,
                 });
+
             return comments;
         }
 
