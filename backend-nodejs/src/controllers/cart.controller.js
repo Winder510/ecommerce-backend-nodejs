@@ -59,7 +59,7 @@ class CartController {
     addToCartFromLocal = async (req, res, next) => {
         new SuccessResponse({
             message: 'success',
-            metadata: await CartService.getProductInforForLocal(req.body),
+            metadata: await CartService.addToCartFromLocal(req.body),
         }).send(res);
     };
 
