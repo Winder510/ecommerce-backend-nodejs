@@ -25,10 +25,6 @@ var cartSchema = new mongoose.Schema({
             default: 1,
         },
     }, ],
-    cart_count_product: {
-        type: Number,
-        default: 0,
-    },
     cart_userId: {
         type: Schema.Types.ObjectId,
         required: true,

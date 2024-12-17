@@ -20,6 +20,45 @@ import {
 
 
 export class CartService {
+    static async addToCartFromLocal({
+        userId,
+        carts = []
+    }) {
+        if (!carts.length) {
+            throw new BadRequestError("Local cart is empty");
+        }
+
+        const results = [];
+
+        for (const cartItem of carts) {
+            const {
+                skuId,
+                quantity
+            } = cartItem;
+
+            try {
+                const result = await this.addToCart({
+                    userId,
+                    skuId,
+                    quantity
+                });
+                results.push({
+                    skuId,
+                    status: 'success',
+                    message: 'Added successfully',
+                    data: result
+                });
+            } catch (error) {
+                results.push({
+                    skuId,
+                    status: 'error',
+                    message: error.message
+                });
+            }
+        }
+
+        return results;
+    }
     static async addToCart({
         userId,
         skuId,
@@ -61,7 +100,6 @@ export class CartService {
             quantity
         });
     }
-
     /**
                      * update cart
                      * 
@@ -204,11 +242,8 @@ export class CartService {
         const cart = await cartModel.find({
             cart_userId: userId
         })
-
         cart.cart_products = []
-
         cart.save()
-
         return {
             success: true
         }
@@ -221,5 +256,26 @@ export class CartService {
             cart_userId: new Types.ObjectId(userId)
         })
     }
+
+    static getProductInforForLocal = async ({
+        carts
+    }) => {
+        const items = await Promise.all(carts.map(async (item) => {
+            const {
+                skuId,
+                quantity
+            } = item
+
+            let data = await getProductInforForCart(skuId)
+
+            return {
+                ...data,
+                quantity,
+            }
+        }));
+
+        return items
+    }
+
 
 }

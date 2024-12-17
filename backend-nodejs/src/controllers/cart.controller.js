@@ -49,6 +49,19 @@ class CartController {
         }).send(res);
     };
 
+    getCartForLocal = async (req, res, next) => {
+        new SuccessResponse({
+            message: 'success',
+            metadata: await CartService.getProductInforForLocal(req.body),
+        }).send(res);
+    };
+
+    addToCartFromLocal = async (req, res, next) => {
+        new SuccessResponse({
+            message: 'success',
+            metadata: await CartService.getProductInforForLocal(req.body),
+        }).send(res);
+    };
 
 }
 export default new CartController();
