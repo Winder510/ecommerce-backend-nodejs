@@ -327,6 +327,9 @@ export class SpuService {
         return data;
     }
 
+
+
+
     static async findAlLDraftSpu({
         limit = 10,
         skip = 0
@@ -339,6 +342,35 @@ export class SpuService {
             query,
             limit,
             skip,
+        });
+    }
+
+    static async findAllPublishSpu({
+        limit = 10,
+        skip = 0
+    }) {
+        const query = {
+            isDraft: false,
+            isPublished: true,
+        };
+
+        return await findListPublishSpuByCategory({
+            query,
+            limit,
+            skip,
+        });
+    }
+
+    static async findAllSpu({
+        limit = 10,
+        skip = 0
+    }) {
+        const query = {};
+
+        return await findListPublishSpuByCategory({
+            query,
+            limit,
+            skip
         });
     }
 

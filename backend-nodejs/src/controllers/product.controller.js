@@ -1,5 +1,4 @@
 import {
-    CREATED,
     SuccessResponse
 } from '../core/success.response.js';
 import {
@@ -129,14 +128,21 @@ class ProductController {
     getAllPublishedSpu = async (req, res, next) => {
         new SuccessResponse({
             message: 'Get list publish spu',
-            metadata: await SpuService.findAllPublishSpu(),
+            metadata: await SpuService.findAllPublishSpu({}),
+        }).send(res);
+    };
+
+    getAllSpu = async (req, res, next) => {
+        new SuccessResponse({
+            message: 'Get list  spu',
+            metadata: await SpuService.findAllSpu({}),
         }).send(res);
     };
 
     getAllDraftSpu = async (req, res, next) => {
         new SuccessResponse({
             message: 'Get list draft spu ',
-            metadata: await SpuService.findAlLDraftSpu(req.query),
+            metadata: await SpuService.findAlLDraftSpu({}),
         }).send(res);
     };
 

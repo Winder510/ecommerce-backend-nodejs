@@ -5,6 +5,7 @@ import compression from 'compression';
 import router from './routes/index.js';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
+import './services/cronJob.service.js'
 const app = express();
 //init db
 import './dbs/init.mongo.js';

@@ -42,6 +42,19 @@ var promotionSchema = new mongoose.Schema({
             default: 0 // Số lượng giảm giá đã được áp dụng
         }
     }],
+    eventType: {
+        type: String,
+        enum: ['Tet', 'TeachersDay', 'BlackFriday', 'Custom'],
+        default: 'Custom',
+    },
+    applyToAllProducts: {
+        type: Boolean,
+        default: false,
+    },
+    applyToCategories: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'category',
+    }],
     startTime: {
         type: Date,
         required: true
