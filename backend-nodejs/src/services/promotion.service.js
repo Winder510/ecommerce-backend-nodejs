@@ -9,7 +9,7 @@ import {
     isTimeSlotAvailable
 } from '../models/repositories/promotion.repo.js'
 class PromotionService {
-    static async createNewProduct({
+    static async createNewPromotion({
         prom_name,
         prom_banner = '',
         appliedProduct,
@@ -30,7 +30,7 @@ class PromotionService {
 
     static async deletePromotion(promotionId) {
 
-        const deletedPromotion = await Promotion.findByIdAndDelete(promotionId);
+        const deletedPromotion = await promotionModel.findByIdAndDelete(promotionId);
 
         if (!deletedPromotion) {
             throw new NotFoundError('Promotion not found');
@@ -52,6 +52,44 @@ class PromotionService {
         }
 
         return [];
+    }
+
+    static async createNewFlashSale({
+        prom_name,
+        prom_banner = '',
+        event_type = 'Flash sale',
+        appliedProduct,
+        startTime,
+        endTime,
+    }) {
+        const newPromotion = new promotionModel({
+            prom_name,
+            prom_banner,
+            appliedProduct,
+            startTime,
+            endTime,
+            event_type
+        });
+
+        const savedPromotion = await newPromotion.save();
+        return savedPromotion;
+    }
+
+    static async deleteFlashSale(promotionId) {
+        const deletedPromotion = await promotionModel.findByIdAndDelete(promotionId);
+
+        if (!deletedPromotion) {
+            throw new NotFoundError('Promotion not found');
+        }
+
+        return deletedPromotion;
+
+    }
+
+    static async getListFlashSale() {
+        return await promotionModel.find({
+            event_type: 'Flash sale'
+        })
     }
 }
 export default PromotionService;

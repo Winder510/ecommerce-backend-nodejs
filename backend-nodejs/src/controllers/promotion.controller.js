@@ -7,7 +7,7 @@ class PromotionController {
     createNew = async (req, res, next) => {
         new SuccessResponse({
             message: 'Update product',
-            metadata: await PromotionService.createNewProduct(req.body),
+            metadata: await PromotionService.createNewPromotion(req.body),
         }).send(res);
     };
 

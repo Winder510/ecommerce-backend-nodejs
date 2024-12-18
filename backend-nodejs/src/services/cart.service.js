@@ -170,6 +170,7 @@ export class CartService {
     static async showCart({
         userId
     }) {
+        console.log("🚀 ~ CartService ~ userId:", userId)
         if (!userId) {
             throw new BadRequestError("You have signed out")
         }

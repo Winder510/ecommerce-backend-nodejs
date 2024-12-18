@@ -42,10 +42,17 @@ var promotionSchema = new mongoose.Schema({
             default: 0 // Số lượng giảm giá đã được áp dụng
         }
     }],
+
     eventType: {
         type: String,
-        enum: ['Tet', 'TeachersDay', 'BlackFriday', 'Custom'],
-        default: 'Custom',
+        enum: ['Flash sale', 'Custom'],
+    },
+    discountType: {
+        type: String,
+        enum: ['PERCENTAGE', 'FIXED'],
+    },
+    discountValue: {
+        type: Number,
     },
     applyToAllProducts: {
         type: Boolean,
@@ -67,6 +74,10 @@ var promotionSchema = new mongoose.Schema({
         type: String,
         enum: ['active', 'inactive'],
         default: 'active'
+    },
+    disable: {
+        type: Boolean,
+        default: false
     },
     createdAt: {
         type: Date,
