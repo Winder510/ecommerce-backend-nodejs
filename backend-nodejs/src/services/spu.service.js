@@ -30,7 +30,7 @@ export class SpuService {
         description,
         thumb,
         category,
-        attributes,
+        attributes = [],
         variations,
         tags,
         sku_list = [],
@@ -167,24 +167,23 @@ export class SpuService {
         limit = 10,
         skip = 0
     }) {
-        console.log("🚀 ~ SpuService ~ categorySlug:", categorySlug)
         const category = await categoryModel.findOne({
             category_slug: categorySlug
         })
         if (!category) throw new BadRequestError("Không tìm thấy category")
-        const categoryId = category._id.toString();
+        const categoryId = category._id;
         console.log("🚀 ~ SpuService ~ categoryId:", categoryId)
 
         const query = {
-            isPublished: false,
+            isPublished: true,
+            isDraft: false,
             ...(categoryId && {
                 product_category: {
-                    $elemMatch: {
-                        $eq: categoryId,
-                    },
+                    $in: [categoryId], // Thay đổi từ $elemMatch sang $in
                 },
             }),
         };
+
         return await findListPublishSpuByCategory({
             query,
             limit,
@@ -262,6 +261,7 @@ export class SpuService {
         return data;
     }
 
+
     // admin
     static async findAllSpuWithCondition({
         product_status,
@@ -326,8 +326,6 @@ export class SpuService {
 
         return data;
     }
-
-
 
 
     static async findAlLDraftSpu({

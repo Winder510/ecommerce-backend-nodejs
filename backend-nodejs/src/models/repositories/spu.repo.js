@@ -56,19 +56,24 @@ const querySpu = async ({
         .sort(sort)
         .skip(skip)
         .limit(limit)
+        .populate({
+            path: 'product_category',
+            select: 'category_name',
+        })
         .select('-isDraft -isPublished -isDeleted -updatedAt -__v')
         .lean()
         .exec();
 
-    const spuswithPrice = Promise.all(spus.map(async spu => {
+    const spuswithPrice = await Promise.all(spus.map(async spu => {
         return {
             ...spu,
             product_price: await getPriceSpu(spu._id)
         }
-    }))
+    }));
 
-    return spuswithPrice
+    return spuswithPrice;
 };
+
 
 const publishSpu = async ({
     product_id

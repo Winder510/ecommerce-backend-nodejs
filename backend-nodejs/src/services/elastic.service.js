@@ -6,7 +6,6 @@ import {
     getSpuByIds
 } from '../models/repositories/spu.repo.js';
 class ElasticService {
-
     static searchProduct = async ({
         textSearch,
         page = 1,
@@ -15,7 +14,6 @@ class ElasticService {
             product_quantitySold: -1
         },
         filter = ""
-
     }) => {
         try {
             const from = (page - 1) * size;
@@ -25,39 +23,26 @@ class ElasticService {
                     from,
                     size,
                     query: {
-                        bool: {
-                            should: [{
-                                    multi_match: {
-                                        query: textSearch,
-                                        fields: ['name^3', 'description'],
-                                        fuzziness: 2,
-                                        prefix_length: 1,
-                                    }
-                                },
-                                {
-                                    wildcard: {
-                                        name: {
-                                            value: `*${textSearch.toLowerCase()}*`
-                                        }
-                                    }
-                                }
-                            ]
+                        multi_match: {
+                            query: textSearch,
+                            fields: ["name"], // Tìm kiếm trong trường 'name'
+                            fuzziness: "AUTO", // Hỗ trợ tìm kiếm với lỗi chính tả
+                            operator: "and", // Tìm kiếm chính xác các từ trong chuỗi
+                            type: "best_fields" // Ưu tiên trường có kết quả khớp tốt nhất
                         }
-                    }
+                    },
+
                 }
             });
 
             const hits = response.body.hits.hits;
 
-            const productIds = hits.map(hit => {
-                return hit._id
-            })
+            const productIds = hits.map(hit => hit._id);
 
             return await getSpuByIds(productIds, filter, sort);
-
-
         } catch (error) {
             console.error('Error searching for product:', error);
+            return []; // Trả về mảng rỗng nếu có lỗi
         }
     };
 
@@ -72,9 +57,10 @@ class ElasticService {
                     query: {
                         multi_match: {
                             query: textSearch,
-                            fields: ["name"], // Tìm kiếm theo trường 'name'
+                            fields: ["name"], // Tìm kiếm trong trường 'name'
                             fuzziness: "AUTO", // Hỗ trợ tìm kiếm với lỗi chính tả
-                            type: "best_fields", // Ưu tiên trường có kết quả khớp tốt nhất
+                            operator: "and", // Tìm kiếm chính xác các từ trong chuỗi
+                            type: "best_fields" // Ưu tiên trường có kết quả khớp tốt nhất
                         }
                     }
                 }
@@ -86,13 +72,15 @@ class ElasticService {
                 score: hit._score // Điểm số của gợi ý
             }));
 
-
             return suggestions;
         } catch (error) {
             console.error("Error performing autocomplete search:", error);
             return []; // Trả về mảng rỗng nếu có lỗi
         }
     }
+
+
+
 }
 
 export default ElasticService;

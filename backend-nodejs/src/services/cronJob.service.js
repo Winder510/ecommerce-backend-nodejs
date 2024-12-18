@@ -3,7 +3,6 @@ import promotionModel from '../models/promotion.model.js';
 
 cron.schedule('* * * * *', async () => {
     const now = new Date();
-
     const expiredPromotions = await promotionModel.updateMany({
         endTime: {
             $lt: now
@@ -20,7 +19,6 @@ cron.schedule('* * * * *', async () => {
 
 cron.schedule('* * * * *', async () => {
     const now = new Date();
-
     const promotionsToActivate = await promotionModel.updateMany({
         startTime: {
             $lte: now

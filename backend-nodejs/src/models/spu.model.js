@@ -41,7 +41,8 @@ const productSchema = new Schema({
         type: String,
     },
     product_category: {
-        type: Array,
+        type: [Schema.Types.ObjectId], // Mảng các ObjectId tham chiếu đến Category
+        ref: 'Category', // Tham chiếu đến mô hình Category
         default: [],
     },
     product_attributes: {
