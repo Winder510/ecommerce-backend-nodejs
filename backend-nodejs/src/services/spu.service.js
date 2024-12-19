@@ -8,8 +8,9 @@ import {
 } from '../core/error.response.js';
 import {
     buildQuery,
-    findListPublishSpuByCategory,
+    buildQueryForClient,
     publishSpu,
+    querySpu,
     searchSpuByUser,
     unPublishSpu,
 } from '../models/repositories/spu.repo.js';
@@ -184,7 +185,7 @@ export class SpuService {
             }),
         };
 
-        return await findListPublishSpuByCategory({
+        return await querySpu({
             query,
             limit,
             skip,
@@ -205,7 +206,7 @@ export class SpuService {
             },
         };
 
-        return await findListPublishSpuByCategory({
+        return await querySpu({
             query,
             limit,
             skip,
@@ -263,38 +264,7 @@ export class SpuService {
 
 
     // admin
-    static async findAllSpuWithCondition({
-        product_status,
-        stock_status,
-        categoryId,
-        sortBy, // sortBy
-        order = 'asc',
-        limit = 10,
-        skip = 0,
-    }) {
-        const query = buildQuery({
-            product_status,
-            stock_status,
-            categoryId,
-        });
-        console.log(query);
 
-        const sortOptions = {};
-        sortOptions[sortBy] = order === 'asc' ? 1 : -1;
-
-        const products = await spuModel
-            .find(query)
-            .skip(skip)
-            .limit(limit)
-            .sort(
-                sortOptions || {
-                    createdAt: -1,
-                },
-            )
-            .lean()
-            .exec();
-        return products;
-    }
 
     static async totalRevenueByCategory(categoryId) {
         const spus = await this.getListPublishSpuByCategory({
@@ -336,7 +306,7 @@ export class SpuService {
             isDraft: true,
         };
 
-        return await findListPublishSpuByCategory({
+        return await querySpu({
             query,
             limit,
             skip,
@@ -352,7 +322,7 @@ export class SpuService {
             isPublished: true,
         };
 
-        return await findListPublishSpuByCategory({
+        return await querySpu({
             query,
             limit,
             skip,
@@ -365,11 +335,60 @@ export class SpuService {
     }) {
         const query = {};
 
-        return await findListPublishSpuByCategory({
+        return await querySpu({
             query,
             limit,
-            skip
+            skip,
         });
     }
 
+
+    // filter for client in search page
+    static async findAllSpuWithCondition({
+        product_status,
+        stock_status,
+        minPrice,
+        maxPrice,
+        categoryId,
+        sortBy,
+        order = 'asc',
+        limit = 10,
+        skip = 0,
+    }) {
+        // Xây dựng query
+        const query = buildQueryForClient({
+            product_status,
+            stock_status,
+            categoryId,
+            minPrice,
+            maxPrice,
+        });
+
+        // Xử lý sort
+        let sortOptions = {};
+        switch (sortBy) {
+            case 'price_asc':
+                sortOptions.product_price = 1;
+                break;
+            case 'price_desc':
+                sortOptions.product_price = -1;
+                break;
+            case 'best_selling':
+                sortOptions.product_quantitySold = -1;
+                break;
+            default:
+                sortOptions.createdAt = -1;
+        }
+
+        // Thực hiện truy vấn
+
+        return await querySpu({
+            query,
+            limit,
+            skip,
+        });
+    }
+
+
+    // filter for admin 
 }

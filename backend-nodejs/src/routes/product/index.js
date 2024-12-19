@@ -31,16 +31,15 @@ router.post('/publish/:id', asyncErrorHandler(productController.publishProduct))
 router.post('/unpublish/:id', asyncErrorHandler(productController.unPublishProduct));
 
 // for admin
-router.get('/draft/all', asyncErrorHandler(productController.getAllDraftSpu))
+
 router.post('/published/all', asyncErrorHandler(productController.getListPublishSpuByCategory));
 router.get('/top-products', asyncErrorHandler(productController.getBestSoldSpuEachCategory));
-router.get('/management/spu', asyncErrorHandler(productController.findAllSpuWithCondition));
-
-
 
 router.get('/spu/get-all', asyncErrorHandler(productController.getAllSpu));
 router.get('/spu/get-published', asyncErrorHandler(productController.getAllPublishedSpu));
 router.get('/spu/get-draft', asyncErrorHandler(productController.getAllDraftSpu));
+
+router.get('/spu/filter', asyncErrorHandler(productController.findAllSpuWithCondition));
 
 
 export default router

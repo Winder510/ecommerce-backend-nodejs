@@ -19,30 +19,6 @@ const findSpuById = async (spuId) => {
     return await spuModel.findById(spuId).lean();
 };
 
-const findListPublishSpuByCategory = async ({
-    query,
-    limit = 10,
-    skip = 0
-}) => {
-    return await querySpu({
-        query,
-        limit,
-        skip,
-    });
-};
-
-const findListDraftSpuByCategory = async ({
-    query,
-    limit = 10,
-    skip = 0
-}) => {
-    return await querySpu({
-        query,
-        limit,
-        skip,
-    });
-};
-
 const querySpu = async ({
     query,
     sort = {
@@ -137,29 +113,6 @@ const searchSpuByUser = async ({
     return results;
 };
 
-const findAllSpu = async ({
-    limit,
-    sort,
-    skip,
-    filter,
-    select
-}) => {
-    const sortBy =
-        sort === 'ctime' ? {
-            _id: -1,
-        } : {
-            _id: 1,
-        };
-    const spus = await spuModel
-        .find(filter)
-        .sort(sortBy)
-        .skip(skip)
-        .limit(limit)
-        .select(getSelectData(select))
-        .lean();
-
-    return spus;
-};
 
 const buildQuery = ({
     product_status,
@@ -208,6 +161,7 @@ const buildQuery = ({
 
     return query;
 };
+
 const findProduct = async ({
     skuId,
     spuId
@@ -328,17 +282,52 @@ const getPriceSpu = async (spuId) => {
         priceAfterDiscount,
     }
 }
+
+const buildQueryForClient = async ({
+    product_status,
+    stock_status,
+    categoryId,
+    minPrice,
+    maxPrice
+}) => {
+
+    const query = {};
+
+    // Lọc theo trạng thái sản phẩm
+    if (product_status) {
+        query.product_status = product_status;
+    }
+
+    // Lọc theo trạng thái tồn kho
+    if (stock_status) {
+        query.stock_status = stock_status;
+    }
+
+    // Lọc theo danh mục sản phẩm
+    if (categoryId) {
+        query.categoryId = categoryId;
+    }
+
+    // Lọc theo giá
+    if (minPrice || maxPrice) {
+        query.price = {};
+        if (minPrice) query.price.$gte = parseFloat(minPrice);
+        if (maxPrice) query.price.$lte = parseFloat(maxPrice);
+    }
+
+    return query;
+}
+
 export {
     findSpuById,
-    findListPublishSpuByCategory,
-    findListDraftSpuByCategory,
     publishSpu,
     unPublishSpu,
     searchSpuByUser,
-    findAllSpu,
     buildQuery,
     findProduct,
     updateQuantitySpu,
     getSpuByIds,
-    getPriceSpu
+    getPriceSpu,
+    querySpu,
+    buildQueryForClient
 };
