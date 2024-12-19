@@ -17,10 +17,10 @@ class ElasticService {
                 name: data?.product_name,
                 thumb: data?.product_thumb,
                 description: data?.product_description,
-                price: data?.product_price,
-                quantity: data?.product_quantity,
-                slug: data?.product_slug,
+                isPublished: data?.isPublished,
+                isDraft: data?.isDraft,
             };
+
             let response;
 
             switch (action) {

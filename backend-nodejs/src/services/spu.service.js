@@ -36,6 +36,9 @@ export class SpuService {
         tags,
         ratingAverage,
         sku_list = [],
+        isDraft,
+        isPublished,
+        isDeleted
         // sku_list = [  "sku_index": [
         //         1,
         //         2
@@ -61,6 +64,9 @@ export class SpuService {
             product_variations: variations,
             product_tags: tags,
             product_ratingAverage: ratingAverage,
+            isDraft,
+            isPublished,
+            isDeleted
         });
 
         if (newSpu && sku_list.length) {
@@ -349,10 +355,10 @@ export class SpuService {
     static async findAllSpuWithCondition({
         product_status,
         stock_status,
-        minPrice,
-        maxPrice,
         categorySlug,
         sortBy,
+        minPrice,
+        maxPrice,
         limit = 10,
         skip = 0,
     }) {

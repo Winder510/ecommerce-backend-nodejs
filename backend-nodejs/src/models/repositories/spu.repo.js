@@ -15,6 +15,7 @@ import {
 import {
     BadRequestError
 } from '../../core/error.response.js'
+import sendSyncMessage from '../../../test/rabbitmq/sync-data.producerDLX.js';
 const findSpuById = async (spuId) => {
     return await spuModel.findById(spuId).lean();
 };
@@ -55,19 +56,38 @@ const publishSpu = async ({
     product_id
 }) => {
     const foundSpu = await spuModel.findOne({
-        _id: product_id,
-    });
+        _id: product_id
+    }).lean();
 
     if (!foundSpu) {
         throw new Error('Product not found');
     }
 
-    return await spuModel.updateOne({
-        _id: product_id,
+    const {
+        modifiedCount
+    } = await spuModel.updateOne({
+        _id: product_id
     }, {
         isDraft: false,
-        isPublished: true,
-    }, );
+        isPublished: true
+    });
+
+    if (modifiedCount === 0) {
+        throw new Error("Product not updated");
+    }
+
+    sendSyncMessage({
+        action: "update",
+        data: {
+            ...foundSpu,
+            isDraft: false,
+            isPublished: true
+        }
+    });
+
+    return {
+        message: "Product published successfully"
+    };
 };
 
 const unPublishSpu = async ({
@@ -75,18 +95,42 @@ const unPublishSpu = async ({
 }) => {
     const foundSpu = await spuModel.findOne({
         _id: product_id,
-    });
+    }).lean();
 
     if (!foundSpu) {
         throw new Error('Product not found');
     }
 
-    return await spuModel.updateOne({
-        _id: product_id,
+    const {
+        modifiedCount
+    } = await spuModel.updateOne({
+        _id: product_id
     }, {
         isDraft: true,
-        isPublished: false,
-    }, );
+        isPublished: false
+    });
+
+    if (modifiedCount === 0) {
+        throw new Error("Product not updated");
+    }
+    const ok = {
+        ...foundSpu,
+        isDraft: true,
+        isPublished: false
+    }
+    console.log("🚀 ~ ok:", ok)
+    sendSyncMessage({
+        action: "update",
+        data: {
+            ...foundSpu,
+            isDraft: true,
+            isPublished: false
+        }
+    });
+
+    return {
+        message: "Product unpublished successfully"
+    };
 };
 
 const searchSpuByUser = async ({
@@ -183,7 +227,13 @@ const updateQuantitySpu = async (spuId, quantity) => {
     })
 }
 
-const getSpuByIds = async (productIds = [], filter = {}, sort = {}) => {
+const getSpuByIds = async (productIds = [], {
+    minPrice,
+    maxPrice,
+    limit,
+    skip,
+    sortBy
+}) => {
     try {
         if (!Array.isArray(productIds) || productIds.length === 0) {
             return {
@@ -192,15 +242,46 @@ const getSpuByIds = async (productIds = [], filter = {}, sort = {}) => {
             };
         }
 
+        // Khai báo query để lọc các sản phẩm
+        let query = {
+            _id: {
+                $in: productIds
+            }
+        };
+
+        // Lọc theo giá nếu có minPrice và maxPrice
+        if (minPrice || maxPrice) {
+            query.product_price = {};
+            if (minPrice) query.product_price.$gte = parseFloat(minPrice);
+            if (maxPrice) query.product_price.$lte = parseFloat(maxPrice);
+        }
+
+        // Xác định các tùy chọn sắp xếp
+        let sortOptions = {};
+        switch (sortBy) {
+            case 'price_asc':
+                sortOptions.product_price = 1;
+                break;
+            case 'price_desc':
+                sortOptions.product_price = -1;
+                break;
+            case 'best_selling':
+                sortOptions.product_quantitySold = -1;
+                break;
+            case 'newest':
+                sortOptions.createdAt = -1;
+                break;
+            default:
+                sortOptions.createdAt = -1;
+        }
+
+        // Truy vấn sản phẩm từ MongoDB với các điều kiện lọc và sắp xếp
         const products = await spuModel
-            .find({
-                _id: {
-                    $in: productIds
-                },
-                ...filter,
-            })
-            .sort(sort)
-            .lean();
+            .find(query) // Lọc theo query đã xác định
+            .sort(sortOptions) // Sắp xếp theo sortOptions
+            .limit(limit) // Giới hạn số lượng kết quả
+            .skip(skip) // Bỏ qua số lượng kết quả trước đó
+            .lean(); // Trả về dữ liệu thuần (non-Mongo document)
 
         if (!products.length) {
             return {
@@ -225,6 +306,7 @@ const getSpuByIds = async (productIds = [], filter = {}, sort = {}) => {
         throw new Error("Failed to fetch products");
     }
 };
+
 
 
 const getPriceSpu = async (spuId) => {
