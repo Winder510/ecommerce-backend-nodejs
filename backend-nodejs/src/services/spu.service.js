@@ -34,6 +34,7 @@ export class SpuService {
         attributes = [],
         variations,
         tags,
+        ratingAverage,
         sku_list = [],
         // sku_list = [  "sku_index": [
         //         1,
@@ -58,7 +59,8 @@ export class SpuService {
             product_attributes: attributes,
             product_quantity,
             product_variations: variations,
-            product_tags: tags
+            product_tags: tags,
+            product_ratingAverage: ratingAverage,
         });
 
         if (newSpu && sku_list.length) {
@@ -349,20 +351,35 @@ export class SpuService {
         stock_status,
         minPrice,
         maxPrice,
-        categoryId,
+        categorySlug,
         sortBy,
-        order = 'asc',
         limit = 10,
         skip = 0,
     }) {
         // Xây dựng query
-        const query = buildQueryForClient({
+        const category = await categoryModel.findOne({
+            category_slug: categorySlug
+        })
+        if (!category) throw new BadRequestError("Không tìm thấy category")
+        const categoryId = category._id;
+
+        const query = await buildQueryForClient({
             product_status,
             stock_status,
-            categoryId,
             minPrice,
             maxPrice,
         });
+
+        const queryLast = {
+            ...query,
+            isPublished: true,
+            isDraft: false,
+            ...(categoryId && {
+                product_category: {
+                    $in: [categoryId],
+                },
+            }),
+        };
 
         // Xử lý sort
         let sortOptions = {};
@@ -376,14 +393,18 @@ export class SpuService {
             case 'best_selling':
                 sortOptions.product_quantitySold = -1;
                 break;
+            case 'newest':
+                sortOptions.createdAt = -1;
+                break;
             default:
                 sortOptions.createdAt = -1;
         }
 
-        // Thực hiện truy vấn
 
+        // Thực hiện truy vấn
         return await querySpu({
-            query,
+            query: queryLast,
+            sort: sortOptions,
             limit,
             skip,
         });

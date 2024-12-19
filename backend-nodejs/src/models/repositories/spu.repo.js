@@ -286,7 +286,6 @@ const getPriceSpu = async (spuId) => {
 const buildQueryForClient = async ({
     product_status,
     stock_status,
-    categoryId,
     minPrice,
     maxPrice
 }) => {
@@ -303,16 +302,11 @@ const buildQueryForClient = async ({
         query.stock_status = stock_status;
     }
 
-    // Lọc theo danh mục sản phẩm
-    if (categoryId) {
-        query.categoryId = categoryId;
-    }
-
     // Lọc theo giá
     if (minPrice || maxPrice) {
-        query.price = {};
-        if (minPrice) query.price.$gte = parseFloat(minPrice);
-        if (maxPrice) query.price.$lte = parseFloat(maxPrice);
+        query.product_price = {};
+        if (minPrice) query.product_price.$gte = parseFloat(minPrice);
+        if (maxPrice) query.product_price.$lte = parseFloat(maxPrice);
     }
 
     return query;
