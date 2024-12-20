@@ -57,7 +57,7 @@ export default class DiscountService {
             discount_max_uses: max_uses,
             discount_uses_count: uses_count,
             discount_user_used: [],
-            discount_max_uses_oper_user: max_uses_per_user,
+            discount_max_uses_per_user: max_uses_per_user,
             discount_min_order_value: min_order_value,
             discount_is_active: is_active,
             discount_max_value: max_value,
@@ -74,6 +74,7 @@ export default class DiscountService {
                 }
             })
         }
+
         return newDiscount;
     }
 

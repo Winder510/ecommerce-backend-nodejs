@@ -2,7 +2,6 @@
 import mongoose, {
     Schema
 } from 'mongoose'; // Erase if already required
-import mongooseDelete from 'mongoose-delete';
 
 const DOCUMENT_NAME = 'Discount';
 const COLLECTION_NAME = 'discounts';
@@ -50,13 +49,12 @@ var discountSchema = new mongoose.Schema({
         type: Array,
         default: [], // ai da su dung
     },
-    discount_max_uses_oper_user: {
+    discount_max_uses_per_user: {
         type: Number,
         required: true, // so luong su dung toi da tren 1 user
     },
     discount_max_value: {
         type: Number,
-        required: true,
     },
     discount_min_order_value: {
         type: Number,
@@ -85,9 +83,5 @@ var discountSchema = new mongoose.Schema({
     timestamps: true,
     collection: COLLECTION_NAME,
 }, );
-// discountSchema.plugin(mongooseDelete, {
-//     deletedAt: true,
-//     overrideMethods: ['all'],
-// });
-//Export the model
+
 export default mongoose.model(DOCUMENT_NAME, discountSchema);
