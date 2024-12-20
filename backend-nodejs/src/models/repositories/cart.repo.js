@@ -132,8 +132,9 @@ export const getProductInforForCart = async (skuId) => {
     const sku = await findSkuById(skuId);
 
     const {
+        originalPrice,
         discountValue,
-        priceAfterDiscount
+        priceAfterDiscount,
     } = await getPriceSku(skuId)
 
     return {

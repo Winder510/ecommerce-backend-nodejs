@@ -10,7 +10,8 @@ import {
 import promotionModel from '../promotion.model.js';
 import spuModel from '../spu.model.js';
 import {
-    findSkuById
+    findSkuById,
+    getLowestPriceSku
 } from './sku.repo.js';
 import {
     BadRequestError
@@ -310,59 +311,7 @@ const getSpuByIds = async (productIds = [], {
 
 
 const getPriceSpu = async (spuId) => {
-    const spu = await spuModel.findById(spuId);
-    if (!spu) throw new BadRequestError("Not found product")
-
-    const promotionEvent = await promotionModel.findOne({
-        status: "active"
-    })
-
-    if (!promotionEvent) {
-        return {
-            orignalPrice: spu.product_price,
-            discountValue: 0,
-            priceAfterDiscount: spu.product_price
-        }
-    }
-
-    const productPromotion = promotionEvent.appliedProduct.find(p => {
-        return p.productId.toString() === spuId.toString()
-    })
-
-    // Nếu sản phẩm không có trong chương trình
-    if (!productPromotion) {
-        return {
-            orignalPrice: spu.product_price,
-            discountValue: 0,
-            priceAfterDiscount: spu.product_price
-        }
-    }
-
-    let orignalPrice = spu.product_price;
-    let discountValue = 0;
-    let priceAfterDiscount = orignalPrice;
-
-    if (productPromotion.discountType === 'PERCENTAGE') {
-        discountValue = orignalPrice * (productPromotion.discountValue / 100);
-
-        // Giới hạn mức giảm nếu có
-        if (productPromotion.maxDiscountAmount) {
-            discountValue = Math.min(
-                discountValue,
-                productPromotion.maxDiscountAmount
-            );
-        }
-    } else {
-        // Giảm giá cố định
-        discountValue = productPromotion.discountValue;
-    }
-    priceAfterDiscount -= discountValue;
-
-    return {
-        orignalPrice: spu.product_price,
-        discountValue,
-        priceAfterDiscount,
-    }
+    return await getLowestPriceSku(spuId)
 }
 
 const buildQueryForClient = async ({

@@ -75,6 +75,7 @@ app.use((req, res, next) => {
 // The default error handler
 app.use((error, req, res, next) => {
     const statusCode = error.status || 500;
+    console.log("🚀 ~ returnres.status ~ error.stack:", error.stack)
     return res.status(statusCode).json({
         status: 'Error!!',
         code: statusCode,

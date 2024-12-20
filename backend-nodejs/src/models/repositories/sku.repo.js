@@ -114,13 +114,13 @@ const reservationSku = async ({
 const getPriceSku = async (skuId) => {
     const obj = await getSpuIdBySku(skuId);
     const spuId = obj.product_id;
-
     // Sử dụng Promise.all để tối ưu các truy vấn MongoDB
     const [sku, spu, promotionEvents] = await Promise.all([
         skuModel.findById(skuId).lean(),
         spuModel.findById(spuId).lean(),
         promotionModel.find({
-            status: "active"
+            status: "active",
+            disable: false,
         }).lean(),
     ]);
 
@@ -130,6 +130,7 @@ const getPriceSku = async (skuId) => {
 
     // Nếu không có chương trình khuyến mãi nào đang hoạt động
     if (!promotionEvents || promotionEvents.length === 0) {
+
         return {
             originalPrice: sku.sku_price,
             discountValue: 0,
@@ -137,21 +138,30 @@ const getPriceSku = async (skuId) => {
         };
     }
 
-    // Tìm chi tiết giảm giá của sản phẩm trong tất cả chương trình
-    let productPromotion = null;
+    let skuPromotion = null;
 
+    // Tìm kiếm chương trình khuyến mãi áp dụng cho SKU
     for (const event of promotionEvents) {
         const appliedProduct = event.appliedProduct?.find(
-            (p) => p.productId.toString() === spuId
+            (p) => p.spuId.toString() === spuId.toString()
         );
+        console.log("🚀 ~ getPriceSku ~ appliedProduct:", appliedProduct)
+
         if (appliedProduct) {
-            productPromotion = appliedProduct;
-            break; // Dừng lại nếu tìm thấy chương trình phù hợp
+            const skuData = appliedProduct.sku_list?.find(
+                (s) => s.skuId.toString() === skuId.toString()
+
+            );
+
+            if (skuData) {
+                skuPromotion = skuData;
+                break; // Dừng lại nếu tìm thấy chương trình phù hợp
+            }
         }
     }
 
-    // Nếu sản phẩm không có trong bất kỳ chương trình khuyến mãi nào
-    if (!productPromotion) {
+    // Nếu SKU không có trong bất kỳ chương trình khuyến mãi nào
+    if (!skuPromotion) {
         return {
             originalPrice: sku.sku_price,
             discountValue: 0,
@@ -163,19 +173,19 @@ const getPriceSku = async (skuId) => {
     let originalPrice = sku.sku_price;
     let discountValue = 0;
 
-    if (productPromotion.discountType === "PERCENTAGE") {
-        discountValue = originalPrice * (productPromotion.discountValue / 100);
+    if (skuPromotion.discountType === "PERCENTAGE") {
+        discountValue = originalPrice * (skuPromotion.discountValue / 100);
 
         // Giới hạn mức giảm nếu có
-        if (productPromotion.maxDiscountAmount) {
+        if (skuPromotion.maxDiscountValue) {
             discountValue = Math.min(
                 discountValue,
-                productPromotion.maxDiscountAmount
+                skuPromotion.maxDiscountValue
             );
         }
-    } else if (productPromotion.discountType === "FIXED") {
+    } else if (skuPromotion.discountType === "FIXED") {
         // Giảm giá cố định
-        discountValue = productPromotion.discountValue;
+        discountValue = skuPromotion.discountValue;
     }
 
     const priceAfterDiscount = Math.max(
@@ -183,12 +193,19 @@ const getPriceSku = async (skuId) => {
         0 // Đảm bảo giá không âm
     );
 
+    console.log("🚀 ~ getPriceSku ~ priceAfterDiscount:", priceAfterDiscount)
+    console.log("🚀 ~ getPriceSku ~ discountValue:", discountValue)
+    console.log("🚀 ~ getPriceSku ~ originalPrice:", originalPrice)
+
     return {
         originalPrice,
         discountValue,
         priceAfterDiscount,
     };
+
+
 };
+
 const getThumbFromSpu = async (skuId) => {
     // Lấy SPU ID từ SKU ID
     const obj = await getSpuIdBySku(skuId);
@@ -226,6 +243,91 @@ const getThumbFromSpu = async (skuId) => {
     // Nếu không tìm thấy ảnh, trả về null
     return null;
 };
+const getLowestPriceSku = async (spuId) => {
+    // Lấy thông tin SPU
+    const spu = await spuModel.findById(spuId).lean();
+    if (!spu) throw new BadRequestError("Product not found");
+
+    // Lấy danh sách các SKU của SPU
+    const skus = await skuModel.find({
+        product_id: spuId
+    }).lean();
+    if (!skus || skus.length === 0) {
+        throw new BadRequestError("No SKUs found for this product");
+    }
+
+    // Lấy các chương trình khuyến mãi đang hoạt động
+    const promotionEvents = await promotionModel.find({
+        status: "active",
+        disable: false,
+
+    }).lean();
+
+    // Nếu không có chương trình khuyến mãi nào, trả về giá thấp nhất của SKU
+    if (!promotionEvents || promotionEvents.length === 0) {
+        const lowestPriceSku = skus.reduce((minSku, currentSku) => {
+            return currentSku.sku_price < minSku.sku_price ? currentSku : minSku;
+        });
+        return {
+            skuId: lowestPriceSku._id,
+            originalPrice: lowestPriceSku.sku_price,
+            discountValue: 0,
+            priceAfterDiscount: lowestPriceSku.sku_price
+        };
+    }
+
+    // Tìm SKU có giá thấp nhất sau khi áp dụng khuyến mãi
+    let lowestPrice = Infinity;
+    let bestSku = null;
+
+    for (const sku of skus) {
+        let discountValue = 0;
+
+        // Tìm chương trình khuyến mãi áp dụng cho SKU
+        for (const event of promotionEvents) {
+            const appliedProduct = event.appliedProduct.find(
+                (p) => p.spuId.toString() === spuId.toString()
+            );
+
+            if (appliedProduct) {
+                const skuPromotion = appliedProduct.sku_list?.find(
+                    (s) => s.skuId.toString() === sku._id.toString()
+                );
+
+                if (skuPromotion) {
+                    if (skuPromotion.discountType === "PERCENTAGE") {
+                        discountValue = sku.sku_price * (skuPromotion.discountValue / 100);
+
+                        // Giới hạn mức giảm giá nếu có
+                        if (skuPromotion.maxDiscountValue) {
+                            discountValue = Math.min(
+                                discountValue,
+                                skuPromotion.maxDiscountValue
+                            );
+                        }
+                    } else if (skuPromotion.discountType === "FIXED") {
+                        discountValue = skuPromotion.discountValue;
+                    }
+                }
+            }
+        }
+
+        const priceAfterDiscount = Math.max(sku.sku_price - discountValue, 0);
+
+        // Cập nhật SKU có giá thấp nhất
+        if (priceAfterDiscount < lowestPrice) {
+            lowestPrice = priceAfterDiscount;
+            bestSku = {
+                skuId: sku._id,
+                originalPrice: sku.sku_price,
+                discountValue,
+                priceAfterDiscount
+            };
+        }
+    }
+
+    return bestSku;
+};
 
 export {
     findSkuById,
@@ -236,5 +338,6 @@ export {
     updateDefaultSku,
     reservationSku,
     getPriceSku,
-    getThumbFromSpu
+    getThumbFromSpu,
+    getLowestPriceSku
 };

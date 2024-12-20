@@ -14,35 +14,41 @@ var promotionSchema = new mongoose.Schema({
         required: true,
     },
     appliedProduct: [{
-        productId: {
+        spuId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'spu',
             required: true
         },
-        discountType: {
-            type: String,
-            enum: ['PERCENTAGE', 'FIXED'],
-            required: true
-        },
-        discountValue: {
-            type: Number,
-            required: true
-        },
-        quantityLimit: {
-            type: Number,
-            required: true, // Giới hạn số lượng giảm giá
-            min: 1
-        },
-        maxDiscountValue: {
-            type: Number,
-            required: true
-        },
-        appliedQuantity: {
-            type: Number,
-            default: 0 // Số lượng giảm giá đã được áp dụng
-        }
+        sku_list: [{
+            skuId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'sku',
+                required: true
+            },
+            discountType: {
+                type: String,
+                enum: ['PERCENTAGE', 'FIXED'],
+                required: true
+            },
+            discountValue: {
+                type: Number,
+                required: true
+            },
+            quantityLimit: {
+                type: Number,
+                required: true, // Giới hạn số lượng giảm giá
+                min: 1
+            },
+            maxDiscountValue: {
+                type: Number,
+                required: true
+            },
+            appliedQuantity: {
+                type: Number,
+                default: 0 // Số lượng giảm giá đã được áp dụng
+            }
+        }]
     }],
-
     eventType: {
         type: String,
         enum: ['Flash sale', 'Custom'],

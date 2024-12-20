@@ -23,28 +23,30 @@ class ElasticService {
                     query: {
                         bool: {
                             must: [{
-                                    multi_match: {
-                                        query: textSearch,
-                                        fields: ["name"], // Tìm kiếm trong trường 'name'
-                                        fuzziness: "AUTO", // Hỗ trợ tìm kiếm với lỗi chính tả
-                                        operator: "and", // Tìm kiếm chính xác các từ trong chuỗi
-                                        type: "best_fields" // Ưu tiên trường có kết quả khớp tốt nhất
+                                multi_match: {
+                                    query: textSearch,
+                                    fields: [
+                                        "name^3", // Ưu tiên trường 'name' (tăng trọng số lên 3)
+                                        "description" // Trường 'description' có trọng số mặc định
+                                    ],
+                                    fuzziness: "AUTO", // Hỗ trợ tìm kiếm với lỗi chính tả
+                                    operator: "and", // Yêu cầu tất cả các từ trong chuỗi tìm kiếm khớp
+                                    type: "best_fields" // Chọn trường có kết quả khớp tốt nhất
+                                }
+                            }],
+                            filter: [{
+                                    term: {
+                                        isPublished: true // Lọc sản phẩm đã công bố
                                     }
                                 },
                                 {
                                     term: {
-                                        isPublished: true // Điều kiện lọc: sản phẩm đã được công bố
-                                    }
-                                },
-                                {
-                                    term: {
-                                        isDraft: false // Điều kiện lọc: sản phẩm không phải là bản nháp
+                                        isDraft: false // Lọc sản phẩm không phải bản nháp
                                     }
                                 }
                             ]
                         }
                     }
-
                 }
             });
 
@@ -76,22 +78,25 @@ class ElasticService {
                     query: {
                         bool: {
                             must: [{
-                                    multi_match: {
-                                        query: textSearch,
-                                        fields: ["name"], // Tìm kiếm trong trường 'name'
-                                        fuzziness: "AUTO", // Hỗ trợ tìm kiếm với lỗi chính tả
-                                        operator: "and", // Tìm kiếm chính xác các từ trong chuỗi
-                                        type: "best_fields" // Ưu tiên trường có kết quả khớp tốt nhất
+                                multi_match: {
+                                    query: textSearch,
+                                    fields: [
+                                        "name^3", // Ưu tiên trường 'name' (tăng trọng số lên 3)
+                                        "description" // Trường 'description' có trọng số mặc định
+                                    ],
+                                    fuzziness: "AUTO", // Hỗ trợ tìm kiếm với lỗi chính tả
+                                    operator: "and", // Yêu cầu tất cả các từ trong chuỗi tìm kiếm khớp
+                                    type: "best_fields" // Chọn trường có kết quả khớp tốt nhất
+                                }
+                            }],
+                            filter: [{
+                                    term: {
+                                        isPublished: true // Lọc sản phẩm đã công bố
                                     }
                                 },
                                 {
                                     term: {
-                                        isPublished: true
-                                    }
-                                },
-                                {
-                                    term: {
-                                        isDraft: false
+                                        isDraft: false // Lọc sản phẩm không phải bản nháp
                                     }
                                 }
                             ]
