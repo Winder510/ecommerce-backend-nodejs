@@ -8,6 +8,9 @@ const router = express.Router();
 
 router.post('', asyncErrorHandler(promotionController.createNew));
 router.get('/check-overlap', asyncErrorHandler(promotionController.getSpuInPromotionIfOverLap));
+router.get('/active-flash-sale', asyncErrorHandler(promotionController.getActivePromotion));
+router.get('/find-one/:promotionId', asyncErrorHandler(promotionController.findOne));
+
 
 
 export default router;

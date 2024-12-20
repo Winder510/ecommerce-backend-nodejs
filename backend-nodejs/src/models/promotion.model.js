@@ -36,7 +36,7 @@ var promotionSchema = new mongoose.Schema({
             },
             quantityLimit: {
                 type: Number,
-                required: true, // Giới hạn số lượng giảm giá
+                required: true,
                 min: 1
             },
             maxDiscountValue: {
@@ -45,7 +45,7 @@ var promotionSchema = new mongoose.Schema({
             },
             appliedQuantity: {
                 type: Number,
-                default: 0 // Số lượng giảm giá đã được áp dụng
+                default: 0
             }
         }]
     }],

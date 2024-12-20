@@ -6,7 +6,7 @@ import PromotionService from "../services/promotion.service.js";
 class PromotionController {
     createNew = async (req, res, next) => {
         new SuccessResponse({
-            message: 'Update product',
+            message: 'Create promotion successfully',
             metadata: await PromotionService.createNewPromotion(req.body),
         }).send(res);
     };
@@ -18,6 +18,18 @@ class PromotionController {
         }).send(res);
     };
 
+    getActivePromotion = async (req, res, next) => {
+        new SuccessResponse({
+            message: 'Get active promotion',
+            metadata: await PromotionService.getActivePromotion(),
+        }).send(res);
+    };
 
+    findOne = async (req, res, next) => {
+        new SuccessResponse({
+            message: 'Find one promotion',
+            metadata: await PromotionService.findOnePromotion(req.params),
+        }).send(res);
+    };
 }
 export default new PromotionController();
