@@ -425,7 +425,7 @@ export class SpuService {
             if (!foundSpu) throw new BadRequestError('Spu not exists');
 
             const sku_list = await SkuService.allSkuBySpuForAdmin({
-                product_id: _id,
+                product_id: spuId,
             });
 
             return {
