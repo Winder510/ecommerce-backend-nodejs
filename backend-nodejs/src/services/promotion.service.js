@@ -90,11 +90,29 @@ class PromotionService {
                 startTime: startDate.toISOString(), // Định dạng lại thời gian theo ISO
                 endTime: endDate.toISOString(),
                 appliedProductLength: appliedProduct.length, // Tính độ dài của appliedProduct
-                status, // Thêm trường trạng thái
+                status,
             };
         });
 
         return modifiedPromotions;
+    }
+
+    static async toggleUpdateDisable(id) {
+        const promotion = await promotionModel.findById(id);
+
+        if (!promotion) {
+            throw new Error("Promotion not found");
+        }
+
+        promotion.disable = !promotion.disable;
+
+        // Lưu lại thay đổi
+        await promotion.save();
+
+        return {
+            message: `Promotion is now ${promotion.disable ? "disabled" : "enabled"}`,
+            updatedPromotion: promotion,
+        };
     }
 
 

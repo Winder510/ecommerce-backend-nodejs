@@ -13,23 +13,35 @@ class PromotionController {
 
     updatePromotion = async (req, res, next) => {
         new SuccessResponse({
-            message: 'Create promotion successfully',
+            message: 'Update promotion successfully',
             metadata: await PromotionService.updatePromotion(req.body),
         }).send(res);
     };
 
     getListPromotions = async (req, res, next) => {
         new SuccessResponse({
-            message: 'Create promotion successfully',
+            message: 'Get list successfully',
             metadata: await PromotionService.getListPromotions(),
         }).send(res);
     };
 
     getOnePromotion = async (req, res, next) => {
         new SuccessResponse({
-            message: 'Create promotion successfully',
+            message: 'Get one successfully',
             metadata: await PromotionService.getOnePromotion(req.params.id),
         }).send(res);
+    };
+
+    toggleUpdateDisable = async (req, res, next) => {
+        try {
+            const result = await PromotionService.toggleUpdateDisable(req.params.id);
+            new SuccessResponse({
+                message: result.message,
+                metadata: result.updatedPromotion,
+            }).send(res);
+        } catch (error) {
+            next(error);
+        }
     };
 
 
