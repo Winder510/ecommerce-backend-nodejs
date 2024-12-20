@@ -18,6 +18,21 @@ class PromotionController {
         }).send(res);
     };
 
+    getListPromotions = async (req, res, next) => {
+        new SuccessResponse({
+            message: 'Create promotion successfully',
+            metadata: await PromotionService.getListPromotions(),
+        }).send(res);
+    };
+
+    getOnePromotion = async (req, res, next) => {
+        new SuccessResponse({
+            message: 'Create promotion successfully',
+            metadata: await PromotionService.getOnePromotion(req.params.id),
+        }).send(res);
+    };
+
+
     getSpuInPromotionIfOverLap = async (req, res, next) => {
         new SuccessResponse({
             message: 'Check overlap',

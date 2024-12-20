@@ -60,6 +60,25 @@ class PromotionService {
         return updatedPromotion;
     }
 
+    static async getListPromotions() {
+        const promotions = await promotionModel.find();
+        const modifiedPromotions = promotions.map((promotion) => {
+            const {
+                appliedProduct,
+                ...rest
+            } = promotion.toObject(); // Loại bỏ trường appliedProduct
+            return {
+                ...rest,
+                appliedProductLength: appliedProduct.length, // Tính độ dài của appliedProduct
+            };
+        });
+
+        return modifiedPromotions;
+    }
+
+    static async getOnePromotion(id) {
+        return await promotionModel.findById(id);
+    }
 
     static async deletePromotion(promotionId) {
 
