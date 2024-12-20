@@ -35,6 +35,32 @@ class PromotionService {
         return savedPromotion;
     }
 
+    static async updatePromotion({
+        promId,
+        prom_name,
+        prom_banner = '',
+        eventType = '',
+        appliedProduct,
+        startTime,
+        endTime,
+    }) {
+        const updatedPromotion = await promotionModel.findByIdAndUpdate(
+            promId, {
+                prom_name,
+                prom_banner,
+                eventType,
+                appliedProduct,
+                startTime,
+                endTime,
+            }, {
+                new: true
+            } // Trả về bản ghi sau khi cập nhật
+        );
+
+        return updatedPromotion;
+    }
+
+
     static async deletePromotion(promotionId) {
 
         const deletedPromotion = await promotionModel.findByIdAndDelete(promotionId);
