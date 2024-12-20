@@ -61,20 +61,42 @@ class PromotionService {
     }
 
     static async getListPromotions() {
+        const currentTime = new Date(); // Thời gian hiện tại theo UTC
+        const vietnamTimezoneOffset = 7 * 60 * 60 * 1000; // Múi giờ Việt Nam: +7 tiếng
+
         const promotions = await promotionModel.find();
         const modifiedPromotions = promotions.map((promotion) => {
             const {
                 appliedProduct,
+                startTime,
+                endTime,
                 ...rest
             } = promotion.toObject(); // Loại bỏ trường appliedProduct
+
+            const startDate = new Date(new Date(startTime).getTime() + vietnamTimezoneOffset); // Chuyển startTime sang giờ VN
+            const endDate = new Date(new Date(endTime).getTime() + vietnamTimezoneOffset); // Chuyển endTime sang giờ VN
+            const vietnamCurrentTime = new Date(currentTime.getTime() + vietnamTimezoneOffset); // Thời gian hiện tại theo giờ VN
+
+            // Xác định trạng thái của promotion
+            let status = "Sắp diễn ra"; // Mặc định là "sắp diễn ra"
+            if (vietnamCurrentTime >= startDate && vietnamCurrentTime <= endDate) {
+                status = "Đang diễn ra"; // Đang diễn ra
+            } else if (vietnamCurrentTime > endDate) {
+                status = "Đã kết thúc "; // Đã kết thúc
+            }
+
             return {
                 ...rest,
+                startTime: startDate.toISOString(), // Định dạng lại thời gian theo ISO
+                endTime: endDate.toISOString(),
                 appliedProductLength: appliedProduct.length, // Tính độ dài của appliedProduct
+                status, // Thêm trường trạng thái
             };
         });
 
         return modifiedPromotions;
     }
+
 
     static async getOnePromotion(id) {
         return await promotionModel.findById(id);
