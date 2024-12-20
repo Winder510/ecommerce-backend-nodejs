@@ -154,7 +154,14 @@ class ProductController {
             }),
         }).send(res);
     };
-
+    getListProdcutDetailsForAdmin = async (req, res, next) => {
+        new SuccessResponse({
+            message: 'Get list spu ',
+            metadata: await SpuService.getListProdcutDetailsForAdmin({
+                ...req.body,
+            }),
+        }).send(res);
+    };
 
 }
 export default new ProductController();

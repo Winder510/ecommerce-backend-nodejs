@@ -130,5 +130,22 @@ export class SkuService {
         return true;
     }
 
+    static async allSkuBySpuForAdmin({
+        product_id
+    }) {
+        const [foundProduct, allSku] = await Promise.all([
+            spuModel.findOne({
+                _id: product_id
+            }).lean(),
+            skuModel.find({
+                product_id
+            }).lean()
+        ]);
+
+        if (!foundProduct) throw new BadRequestError('Spu not exists');
+
+
+        return allSku;
+    }
 
 }

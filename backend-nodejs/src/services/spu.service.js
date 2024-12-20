@@ -416,6 +416,25 @@ export class SpuService {
         });
     }
 
+    static async getListProdcutDetailsForAdmin({
+        spuIds
+    }) {
+        return await Promise.all(spuIds.map(async (spuId) => {
+            const foundSpu = await spuModel.findById(spuId).lean();
 
-    // filter for admin 
+            if (!foundSpu) throw new BadRequestError('Spu not exists');
+
+            const sku_list = await SkuService.allSkuBySpuForAdmin({
+                product_id: _id,
+            });
+
+            return {
+                spu_info: _.omit(foundSpu, ['__v', 'isDeleted', 'updatedAt', 'createdAt']),
+                sku_list: sku_list.map((sku) => _.omit(sku, ['__v', 'isDeleted', 'updatedAt', 'createdAt'])),
+            };
+        }))
+
+
+        // filter for admin 
+    }
 }

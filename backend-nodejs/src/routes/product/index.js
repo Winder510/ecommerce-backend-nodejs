@@ -31,6 +31,7 @@ router.post('/publish/:id', asyncErrorHandler(productController.publishProduct))
 router.post('/unpublish/:id', asyncErrorHandler(productController.unPublishProduct));
 
 // for admin
+router.post('/list-detail-product', asyncErrorHandler(productController.getListProdcutDetailsForAdmin));
 
 router.post('/published/all', asyncErrorHandler(productController.getListPublishSpuByCategory));
 router.get('/top-products', asyncErrorHandler(productController.getBestSoldSpuEachCategory));

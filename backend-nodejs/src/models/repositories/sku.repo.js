@@ -140,12 +140,12 @@ const getPriceSku = async (skuId) => {
 
     let skuPromotion = null;
 
+    let promotionId;
     // Tìm kiếm chương trình khuyến mãi áp dụng cho SKU
     for (const event of promotionEvents) {
         const appliedProduct = event.appliedProduct?.find(
             (p) => p.spuId.toString() === spuId.toString()
         );
-        console.log("🚀 ~ getPriceSku ~ appliedProduct:", appliedProduct)
 
         if (appliedProduct) {
             const skuData = appliedProduct.sku_list?.find(
@@ -153,8 +153,10 @@ const getPriceSku = async (skuId) => {
 
             );
 
+
             if (skuData) {
                 skuPromotion = skuData;
+                promotionId = event._id
                 break; // Dừng lại nếu tìm thấy chương trình phù hợp
             }
         }
@@ -169,7 +171,20 @@ const getPriceSku = async (skuId) => {
         };
     }
 
-    // Tính toán giá sau giảm
+    let appliedQuantity = skuPromotion.appliedQuantity || 0;
+    let quantityLimit = skuPromotion.quantityLimit || 0;
+
+    if (appliedQuantity >= quantityLimit) {
+        // Nếu số lượng giảm giá đã áp dụng bằng hoặc vượt quá giới hạn
+        return {
+            originalPrice: sku.sku_price,
+            discountValue: 0,
+            priceAfterDiscount: sku.sku_price,
+        };
+    }
+
+    // Tính 
+    // toán giá sau giảm
     let originalPrice = sku.sku_price;
     let discountValue = 0;
 
@@ -192,12 +207,10 @@ const getPriceSku = async (skuId) => {
         originalPrice - discountValue,
         0 // Đảm bảo giá không âm
     );
-
-    console.log("🚀 ~ getPriceSku ~ priceAfterDiscount:", priceAfterDiscount)
-    console.log("🚀 ~ getPriceSku ~ discountValue:", discountValue)
-    console.log("🚀 ~ getPriceSku ~ originalPrice:", originalPrice)
+    console.log("🚀 ~ getPriceSku ~ promotionId:", promotionId)
 
     return {
+        promotionId,
         originalPrice,
         discountValue,
         priceAfterDiscount,
@@ -295,6 +308,11 @@ const getLowestPriceSku = async (spuId) => {
                 );
 
                 if (skuPromotion) {
+                    let appliedQuantity = skuPromotion.appliedQuantity || 0;
+                    let quantityLimit = skuPromotion.quantityLimit || 0;
+                    if (appliedQuantity >= quantityLimit) {
+                        continue;
+                    }
                     if (skuPromotion.discountType === "PERCENTAGE") {
                         discountValue = sku.sku_price * (skuPromotion.discountValue / 100);
 
@@ -329,6 +347,8 @@ const getLowestPriceSku = async (spuId) => {
     return bestSku;
 };
 
+
+
 export {
     findSkuById,
     createSkuName,
@@ -339,5 +359,6 @@ export {
     reservationSku,
     getPriceSku,
     getThumbFromSpu,
-    getLowestPriceSku
+    getLowestPriceSku,
 };
+s

@@ -135,6 +135,7 @@ export const getProductInforForCart = async (skuId) => {
         originalPrice,
         discountValue,
         priceAfterDiscount,
+        promotionId = null
     } = await getPriceSku(skuId)
 
     return {
@@ -144,6 +145,7 @@ export const getProductInforForCart = async (skuId) => {
         originalPrice: sku.sku_price,
         discount: discountValue,
         priceAfterDiscount,
+        promotionId,
         loyalPoint: sku.sku_price * sku.loyalPointRate,
     };
 

@@ -92,95 +92,86 @@ class PromotionService {
         })
     }
 
-    static async getFlashSaleNearest() {
-        // Lấy thời gian hiện tại
-        const now = new Date();
-
-        // Tìm chương trình Flash Sale gần nhất
-        const flashSaleEvent = await promotionModel
-            .findOne({
-                eventType: "Flash sale", // Chỉ lấy các sự kiện dạng Flash Sale
-                status: "active", // Sự kiện đang hoạt động
-                disable: false, // Sự kiện chưa bị vô hiệu hóa
+    static getActivePromotion = async () => {
+        try {
+            const currentTime = new Date();
+            const activePromotions = await Promotion.find({
+                status: 'active',
+                disable: false,
                 startTime: {
-                    $lte: now
-                }, // Đã bắt đầu
+                    $lte: currentTime
+                },
                 endTime: {
-                    $gte: now
-                } // Chưa kết thúc
-            })
-            .sort({
-                startTime: 1
-            }) // Sắp xếp theo thời gian bắt đầu
-            .lean();
+                    $gte: currentTime
+                },
+            });
 
-        // Nếu không có sự kiện nào, trả về null
-        if (!flashSaleEvent) {
-            return null;
+            if (activePromotions.length > 0) {
+                return activePromotions; // Trả về các Promotion đang hoạt động
+            }
+
+            const closestPromotion = await Promotion.find({
+                    disable: false,
+                    startTime: {
+                        $lte: currentTime
+                    },
+                    endTime: {
+                        $gte: currentTime
+                    },
+                })
+                .sort({
+                    startTime: 1
+                })
+                .limit(1);
+
+            return closestPromotion;
+        } catch (error) {
+            console.error('Error fetching promotion:', error);
+            throw error;
+        }
+    };
+
+    static updateAppliedQuantity = async (promotionId, skuId, quantityPurchased) => {
+        // Tìm chương trình khuyến mãi có promotionId
+        const promotion = await promotionModel.findById(promotionId);
+        if (!promotion) {
+            throw new BadRequestError("Promotion not found");
         }
 
-        // Lấy danh sách các sản phẩm trong Flash Sale
-        const appliedProducts = flashSaleEvent.appliedProduct;
+        // Tìm chương trình khuyến mãi có skuId trong danh sách 'appliedProduct'
+        let appliedProduct = null;
+        for (const product of promotion.appliedProduct) {
+            appliedProduct = product.sku_list.find(sku => sku.skuId.toString() === skuId.toString());
+            if (appliedProduct) {
+                break;
+            }
+        }
 
-        // Duyệt qua từng sản phẩm và tính giá sau giảm
-        const productDetails = await Promise.all(
-            appliedProducts.map(async (product) => {
-                const spu = await spuModel.findById(product.spuId).lean();
-                if (!spu) return null;
+        if (!appliedProduct) {
+            throw new BadRequestError("SKU not found in the promotion");
+        }
 
-                // Duyệt qua danh sách SKU liên quan
-                const skuDetails = await Promise.all(
-                    product.sku_list.map(async (skuPromotion) => {
-                        const sku = await skuModel.findById(skuPromotion.skuId).lean();
-                        if (!sku) return null;
+        // Kiểm tra số lượng đã áp dụng và giới hạn số lượng giảm giá
+        const {
+            appliedQuantity,
+            quantityLimit
+        } = appliedProduct;
+        if (appliedQuantity + quantityPurchased > quantityLimit) {
+            throw new BadRequestError("Exceeded quantity limit for the promotion");
+        }
 
-                        // Tính giá giảm
-                        let discountValue = 0;
-                        if (skuPromotion.discountType === "PERCENTAGE") {
-                            discountValue = sku.sku_price * (skuPromotion.discountValue / 100);
-                            if (skuPromotion.maxDiscountValue) {
-                                discountValue = Math.min(discountValue, skuPromotion.maxDiscountValue);
-                            }
-                        } else if (skuPromotion.discountType === "FIXED") {
-                            discountValue = skuPromotion.discountValue;
-                        }
+        // Cập nhật số lượng đã áp dụng
+        appliedProduct.appliedQuantity += quantityPurchased;
 
-                        const priceAfterDiscount = Math.max(sku.sku_price - discountValue, 0);
+        // Cập nhật lại chương trình khuyến mãi trong cơ sở dữ liệu
+        await promotion.save();
 
-                        return {
-                            skuId: sku._id,
-                            originalPrice: sku.sku_price,
-                            discountValue,
-                            priceAfterDiscount
-                        };
-                    })
-                );
-
-                // Loại bỏ các SKU không hợp lệ
-                const validSkuDetails = skuDetails.filter((sku) => sku !== null);
-
-                return {
-                    spuId: spu._id,
-                    spuName: spu.product_name,
-                    originalPrice: spu.product_price,
-                    skuDetails: validSkuDetails
-                };
-            })
-        );
-
-        // Loại bỏ các sản phẩm không hợp lệ
-        const validProducts = productDetails.filter((product) => product !== null);
-
-        // Trả về thông tin Flash Sale
         return {
-            eventId: flashSaleEvent._id,
-            eventName: flashSaleEvent.prom_name,
-            banner: flashSaleEvent.prom_banner,
-            startTime: flashSaleEvent.startTime,
-            endTime: flashSaleEvent.endTime,
-            products: validProducts
+            message: "Applied quantity updated successfully",
+            appliedQuantity: appliedProduct.appliedQuantity,
+            quantityLimit: appliedProduct.quantityLimit,
         };
-    }
+    };
 
 }
 export default PromotionService;
