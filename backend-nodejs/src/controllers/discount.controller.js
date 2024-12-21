@@ -65,5 +65,14 @@ class DiscountController {
             }),
         }).send(res);
     };
+
+    filterAllDiscountForClient = async (req, res, next) => {
+        new SuccessResponse({
+            message: 'success available',
+            metadata: await DiscountService.filterAllDiscountForClient({
+                ...req.body,
+            }),
+        }).send(res);
+    };
 }
 export default new DiscountController();

@@ -140,6 +140,7 @@ export const getProductInforForCart = async (skuId) => {
 
     return {
         skuId,
+        spuId: sku.product_id,
         name: sku.sku_name,
         thumb: await getThumbFromSpu(skuId),
         originalPrice: sku.sku_price,

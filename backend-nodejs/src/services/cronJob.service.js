@@ -9,12 +9,21 @@ cron.schedule('* * * * *', async () => {
         const vietnamTime = new Date(now.getTime() + 7 * 60 * 60 * 1000);
 
         const expiredPromotions = await promotionModel.updateMany({
-            endTime: {
-                $lt: vietnamTime
-            },
+            $or: [{
+                    endTime: {
+                        $lt: vietnamTime
+                    }
+                },
+                {
+                    startTime: {
+                        $gt: vietnamTime
+                    }
+                }
+            ]
         }, {
             status: 'inactive'
         });
+
 
         if (expiredPromotions.modifiedCount > 0) {
             console.log(`Updated ${expiredPromotions.modifiedCount} expired Flash Sales to inactive`);

@@ -15,7 +15,7 @@ const checkSkuByServer = async (products) => {
                         priceAfterDiscount: foundProduct.originalPrice,
                         discount: foundProduct.discount,
                         quantity: product.quantity,
-                        productId: product.productId,
+                        spuId: product.spuId,
                     };
                 } else {
                     throw new Error(`Product not found: ${product.productId}`);

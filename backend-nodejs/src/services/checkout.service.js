@@ -8,11 +8,12 @@ import {
 import {
     checkSkuByServer
 } from '../models/repositories/order.repo.js';
+import DiscountService from './discount.service.js';
 
 class CheckOutService {
     /**
-     *  shop_discount = [codeId]
-     *  products_order = [{ quanity,productId}]
+     *  shop_discount = [discountId]
+     *  products_order = [{ quanity,skuId,spuId,price}]
      */
     static async checkOutRevew({
         cartId,
@@ -47,21 +48,24 @@ class CheckOutService {
         checkOut_order.totalPrice = checkProductServer.reduce((acc, product) => {
             return acc + product.price * product.quantity;
         }, 0);
+
         checkOut_order.productDiscount = checkProductServer.reduce((acc, product) => {
             return acc + product.discount * product.quantity;
         }, 0);
+
         checkOut_order.accLoyalPoint = checkProductServer.reduce((acc, product) => {
             return acc + product.loyalPoint;
         }, 0);
 
         if (shop_discount.length > 0) {
             let discountAmount = 0;
-            await Promise.all(shop_discount.map(async (codeId) => {
+            await Promise.all(shop_discount.map(async (discountId) => {
+                console.log("🚀 ~ CheckOutService ~ awaitPromise.all ~ checkProductServer:", checkProductServer)
                 const {
-                    discount = 0
-                } = await DiscountService.getDiscountAmount({
-                    codeId,
+                    discount
+                } = await DiscountService.getDiscountAmountV2({
                     userId,
+                    discountId,
                     products: checkProductServer,
                 });
                 discountAmount += discount
