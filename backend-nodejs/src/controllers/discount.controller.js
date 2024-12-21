@@ -1,4 +1,6 @@
-import { SuccessResponse } from '../core/success.response.js';
+import {
+    SuccessResponse
+} from '../core/success.response.js';
 import DiscountService from '../services/discount.service.js';
 
 class DiscountController {
@@ -44,6 +46,22 @@ class DiscountController {
             message: 'success',
             metadata: await DiscountService.deleteDiscountCode({
                 ...req.query,
+            }),
+        }).send(res);
+    };
+
+    findAll = async (req, res, next) => {
+        new SuccessResponse({
+            message: 'success',
+            metadata: await DiscountService.findAll(),
+        }).send(res);
+    };
+
+    getDiscountAmountV2 = async (req, res, next) => {
+        new SuccessResponse({
+            message: 'success',
+            metadata: await DiscountService.getDiscountAmountV2({
+                ...req.body,
             }),
         }).send(res);
     };

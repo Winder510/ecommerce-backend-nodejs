@@ -4,16 +4,14 @@ import promotionModel from '../models/promotion.model.js';
 cron.schedule('* * * * *', async () => {
     console.log('Cron job to activate promotions is running...');
     try {
-        // Lấy giờ Việt Nam
-        const now = new Date(); // Lấy thời gian hiện tại theo UTC
-        const vietnamTime = new Date(now.getTime() + 7 * 60 * 60 * 1000); // Chuyển sang GMT+7
 
-        // Cập nhật các promotion đã hết hạn
+        const now = new Date();
+        const vietnamTime = new Date(now.getTime() + 7 * 60 * 60 * 1000);
+
         const expiredPromotions = await promotionModel.updateMany({
             endTime: {
                 $lt: vietnamTime
             },
-            status: 'active'
         }, {
             status: 'inactive'
         });
@@ -29,17 +27,17 @@ cron.schedule('* * * * *', async () => {
 cron.schedule('* * * * *', async () => {
     console.log('Cron job to deactivate expired promotions is running...');
     try {
-        // Lấy giờ Việt Nam
-        const now = new Date(); // Lấy thời gian hiện tại theo UTC
-        const vietnamTime = new Date(now.getTime() + 7 * 60 * 60 * 1000); // Chuyển sang GMT+7
+        const now = new Date();
+        const vietnamTime = new Date(now.getTime() + 7 * 60 * 60 * 1000);
 
-        // Kích hoạt các promotion
         const promotionsToActivate = await promotionModel.updateMany({
             startTime: {
                 $lte: vietnamTime // So sánh với giờ Việt Nam
             },
-            status: 'inactive',
-            disable: false
+            endTime: {
+                $gt: vietnamTime
+            },
+
         }, {
             status: 'active'
         });

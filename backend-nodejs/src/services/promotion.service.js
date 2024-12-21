@@ -60,11 +60,15 @@ class PromotionService {
         return updatedPromotion;
     }
 
-    static async getListPromotions() {
+    static async getListPromotions({
+        eventType
+    }) {
         const currentTime = new Date(); // Thời gian hiện tại theo UTC
         const vietnamTimezoneOffset = 7 * 60 * 60 * 1000; // Múi giờ Việt Nam: +7 tiếng
 
-        const promotions = await promotionModel.find();
+        const promotions = await promotionModel.find({
+            eventType: "Flash sale"
+        });
         const modifiedPromotions = promotions.map((promotion) => {
             const {
                 appliedProduct,
@@ -163,11 +167,10 @@ class PromotionService {
         })
     }
 
-    static getActivePromotion = async () => {
+    static getActiveFlashSale = async () => {
         try {
             const currentTime = new Date();
             currentTime.setHours(currentTime.getHours() + 7); // Thêm 7 giờ để chuyển sang múi giờ VN (UTC+7)
-
             const activePromotions = await promotionModel.find({
                 status: 'active',
                 disable: false,
@@ -218,7 +221,6 @@ class PromotionService {
             throw error;
         }
     };
-
 
     static updateAppliedQuantity = async (promotionId, skuId, quantityPurchased) => {
         // Tìm chương trình khuyến mãi có promotionId

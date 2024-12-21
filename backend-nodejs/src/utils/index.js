@@ -1,7 +1,10 @@
 import _ from 'lodash';
 import mongoose from 'mongoose';
 
-export const getInfoData = ({ fields = [], object = {} }) => {
+export const getInfoData = ({
+    fields = [],
+    object = {}
+}) => {
     return _.pick(object, fields);
 };
 
@@ -34,7 +37,10 @@ export const removeUndefinedNullObject = (obj) => {
 };
 export const convertToObjectIdMongodb = (id) => mongoose.Types.ObjectId(id);
 
-export const replacePlaceHolder = ({ template, params }) => {
+export const replacePlaceHolder = ({
+    template,
+    params
+}) => {
     Object.keys(params).forEach((k) => {
         const placeholer = `{{${k}}}`;
         template = template.replace(new RegExp(placeholer, 'g'), params[k]);
@@ -62,16 +68,13 @@ export async function processSale(spuId, quantity) {
             totalSold: quantity,
         },
     });
-    await skuModel.findOneAndUpdate(
-        {
-            spuId,
+    await skuModel.findOneAndUpdate({
+        spuId,
+    }, {
+        $inc: {
+            quantitySold: quantity,
         },
-        {
-            $inc: {
-                quantitySold: quantity,
-            },
-        },
-    );
+    }, );
 }
 
 export const updateStockStatus = function (quantity) {

@@ -262,4 +262,61 @@ export default class DiscountService {
 
         return result;
     }
+
+    static async findAll() {
+        return await discountModel.find({
+            discount_is_active: true,
+            discount_isPublic: true
+        }).lean();
+    }
+
+    static async validateDiscount({
+        selectedProducts, //{spuId,skuId,price,quantity}
+        discountId,
+        checkOutInfo
+    }) {
+        const discount = await discountModel.findById(discountId);
+
+        if (discount.discount_applies_to === "specific") {
+            const productIds = discount.discount_product_ids;
+
+            // Extract productIds from selectedProduct
+            const spuIds = selectedProducts.map(selectedProduct => selectedProduct.spuId);
+
+            // Check if all productIds from selectedProduct match those in the discount
+            const isMatch = spuIds.every(spuId => productIds.includes(spuId));
+
+            if (!isMatch) return false;
+        }
+
+    }
+
+    static async getDiscountAmountV2({
+        discountId,
+        products, // [{spuId, skuId, price, quantity}]
+    }) {
+        const discount = await discountModel.findById(discountId);
+        if (!discount) return 0;
+
+        let discountAmount = 0;
+
+        if (discount.discount_type === "fixed_amount") {
+            // Đếm số sản phẩm hợp lệ
+            const eligibleProducts = products.filter(product =>
+                discount.discount_product_ids.includes(product.spuId)
+            );
+            discountAmount = discount.discount_value * eligibleProducts.length;
+        } else if (discount.discount_type === "percentage") {
+            // Tính tổng giá trị của các sản phẩm hợp lệ
+            const eligibleAmount = products.reduce((total, product) => {
+                if (discount.discount_product_ids.includes(product.spuId)) {
+                    return total + (product.price * product.quantity);
+                }
+                return total;
+            }, 0);
+            discountAmount = (eligibleAmount * discount.discount_value) / 100;
+        }
+
+        return discountAmount;
+    }
 }

@@ -21,7 +21,9 @@ class PromotionController {
     getListPromotions = async (req, res, next) => {
         new SuccessResponse({
             message: 'Get list successfully',
-            metadata: await PromotionService.getListPromotions(),
+            metadata: await PromotionService.getListPromotions({
+                ...req.body
+            }),
         }).send(res);
     };
 
@@ -52,10 +54,10 @@ class PromotionController {
         }).send(res);
     };
 
-    getActivePromotion = async (req, res, next) => {
+    getActiveFlashSale = async (req, res, next) => {
         new SuccessResponse({
             message: 'Get active promotion',
-            metadata: await PromotionService.getActivePromotion(),
+            metadata: await PromotionService.getActiveFlashSale(),
         }).send(res);
     };
 

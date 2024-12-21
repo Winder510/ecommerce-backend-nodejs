@@ -12,12 +12,13 @@ const router = express.Router();
 // get amount a discount
 router.post('/amount', asyncErrorHandler(discountController.getDiscountAmount));
 router.get('/list_product_code', asyncErrorHandler(discountController.getAllProdcutWithDiscountCode));
-
+router.post('/amountV2', asyncErrorHandler(discountController.getDiscountAmountV2));
 // authentication
 //router.use(authenticationV2);
 
 router.post('', asyncErrorHandler(discountController.createDiscount));
 router.get('', asyncErrorHandler(discountController.getAllDiscountCode));
 router.delete('', asyncErrorHandler(discountController.deleteDiscount));
+router.get('/find-all', asyncErrorHandler(discountController.findAll));
 
 export default router;
