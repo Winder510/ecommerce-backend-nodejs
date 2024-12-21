@@ -67,7 +67,7 @@ class PromotionService {
         const vietnamTimezoneOffset = 7 * 60 * 60 * 1000; // Múi giờ Việt Nam: +7 tiếng
 
         const promotions = await promotionModel.find({
-            eventType: "Flash sale"
+            eventType
         });
         const modifiedPromotions = promotions.map((promotion) => {
             const {
