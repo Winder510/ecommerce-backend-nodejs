@@ -23,6 +23,8 @@ import {
 import sendSyncMessage from '../../test/rabbitmq/sync-data.producerDLX.js';
 import skuModel from '../models/sku.model.js';
 import categoryModel from '../models/category.model.js';
+import promotionModel from '../models/promotion.model.js';
+import PromotionService from './promotion.service.js';
 
 export class SpuService {
 
@@ -437,4 +439,45 @@ export class SpuService {
 
         // filter for admin 
     }
+
+    static async filterSpuForPromotion({
+        startTime,
+        endTime,
+        product_name,
+        categoryId,
+        limit = 10,
+        skip = 0,
+    }) {
+        const spuIds = await PromotionService.getSpuInPromotion({
+            startTime,
+            endTime
+        });
+
+        const filter = {
+            _id: {
+                $nin: spuIds
+            },
+        };
+
+        if (product_name) {
+            filter.product_name = {
+                $regex: product_name,
+                $options: 'i'
+            };
+        }
+
+        if (categoryId) {
+            filter.product_category = {
+                $in: [categoryId]
+            };
+        }
+
+        const spus = await spuModel.find(filter)
+            .limit(limit)
+            .skip(skip)
+            .lean();
+
+        return spus;
+    }
+
 }

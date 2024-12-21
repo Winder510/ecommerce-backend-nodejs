@@ -1,12 +1,13 @@
 import promotionModel from "../promotion.model.js";
-import {
-    getSpuIdBySku
-} from '../repositories/sku.repo.js'
-export const isTimeSlotAvailable = async (startTime, endTime) => {
-    const overlappingPromotion = await promotionModel.findOne({
+
+export const isTimeSlotAvailable = async (
+    startTime,
+    endTime
+) => {
+    const overlappingPromotions = await promotionModel.find({
         $or: [{
                 startTime: {
-                    $lt: endTime
+                    $lte: endTime
                 },
                 endTime: {
                     $gt: startTime
@@ -15,25 +16,33 @@ export const isTimeSlotAvailable = async (startTime, endTime) => {
             {
                 startTime: {
                     $gte: startTime,
-                    $lt: endTime
+                    $lte: endTime
                 }
             },
             {
                 endTime: {
-                    $gt: startTime,
+                    $gte: startTime,
                     $lte: endTime
                 }
             }
         ]
     }).lean();
-    return overlappingPromotion;
+    return overlappingPromotions;
 };
 
-export const getListAppliedSpu = async (promotionId) => {
-    const spus = await promotionModel.findById(promotionId).select("appliedProduct.productId -_id");
-    const spuIds = spus.appliedProduct?.map(product => product.productId);
-    return spuIds;
-}
+export const getListAppliedSpu = async (promotionOverLaps) => {
+    // Trích xuất tất cả spuId từ mảng các promotion
+    const spuIds = promotionOverLaps
+        .flatMap((promotion) =>
+            promotion.appliedProduct?.map((product) => product.spuId) || []
+        );
+
+    // Loại bỏ các giá trị trùng lặp
+    const uniqueSpuIds = [...new Set(spuIds)];
+    console.log("🚀 ~ getListAppliedSpu ~ uniqueSpuIds:", uniqueSpuIds)
+
+    return uniqueSpuIds;
+};
 
 
 export const getTotalQuantityAppliedAndLimit = async (appliedProducts) => {

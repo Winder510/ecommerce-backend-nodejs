@@ -42,5 +42,7 @@ router.get('/spu/get-draft', asyncErrorHandler(productController.getAllDraftSpu)
 
 router.get('/spu/filter', asyncErrorHandler(productController.findAllSpuWithCondition));
 
+router.post('/spu/filter-for-promotion', asyncErrorHandler(productController.filterSpuForPromotion));
+
 
 export default router

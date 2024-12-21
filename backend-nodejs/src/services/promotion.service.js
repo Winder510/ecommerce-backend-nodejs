@@ -137,10 +137,10 @@ class PromotionService {
         endTime
     }) {
 
-        const promotionOverLap = await isTimeSlotAvailable(startTime, endTime);
+        const promotionOverLaps = await isTimeSlotAvailable(startTime, endTime);
 
-        if (promotionOverLap) {
-            return await getListAppliedSpu(promotionOverLap._id)
+        if (promotionOverLaps) {
+            return await getListAppliedSpu(promotionOverLaps)
         }
 
         return [];

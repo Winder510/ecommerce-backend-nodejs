@@ -154,10 +154,20 @@ class ProductController {
             }),
         }).send(res);
     };
+
     getListProdcutDetailsForAdmin = async (req, res, next) => {
         new SuccessResponse({
             message: 'Get list spu ',
             metadata: await SpuService.getListProdcutDetailsForAdmin({
+                ...req.body,
+            }),
+        }).send(res);
+    };
+
+    filterSpuForPromotion = async (req, res, next) => {
+        new SuccessResponse({
+            message: 'Fiter list spu ',
+            metadata: await SpuService.filterSpuForPromotion({
                 ...req.body,
             }),
         }).send(res);
