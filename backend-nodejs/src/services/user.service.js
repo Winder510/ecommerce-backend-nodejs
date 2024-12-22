@@ -177,6 +177,7 @@ const changePassWordService = async ({
         usr_isDefaultPassword: false,
     }, );
 };
+
 const findOrCreateUser = async ({
     googleId,
     email,
@@ -208,7 +209,6 @@ const findOrCreateUser = async ({
         throw err; // Ném lại lỗi để catch trong hàm gọi
     }
 }
-
 
 export {
     newUserService,

@@ -135,6 +135,7 @@ class AccessService {
             tokens,
         };
     }
+
     static async getAccount({
         userId
     }) {

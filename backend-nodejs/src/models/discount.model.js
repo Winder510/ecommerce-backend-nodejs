@@ -43,7 +43,7 @@ var discountSchema = new mongoose.Schema({
     },
     discount_uses_count: {
         type: Number,
-        required: true, // so voucher da su dung
+        default: 0
     },
     discount_user_used: {
         type: Array,
