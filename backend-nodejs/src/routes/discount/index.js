@@ -17,6 +17,7 @@ router.post('/amountV2', asyncErrorHandler(discountController.getDiscountAmountV
 //router.use(authenticationV2);
 
 router.post('', asyncErrorHandler(discountController.createDiscount));
+router.patch('/:id', asyncErrorHandler(discountController.updateDiscount));
 router.get('', asyncErrorHandler(discountController.getAllDiscountCode));
 router.delete('', asyncErrorHandler(discountController.deleteDiscount));
 router.get('/find-all', asyncErrorHandler(discountController.findAll));

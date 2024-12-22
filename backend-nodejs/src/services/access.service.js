@@ -140,6 +140,7 @@ class AccessService {
         userId
     }) {
         const foundUser = await findUserById(userId);
+        console.log("🚀 ~ AccessService ~ foundUser:", foundUser)
         return foundUser
     }
 }

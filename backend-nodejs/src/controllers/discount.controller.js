@@ -13,6 +13,18 @@ class DiscountController {
         }).send(res);
     };
 
+    updateDiscount = async (req, res, next) => {
+        const {
+            id
+        } = req.params; // Lấy discountId từ params
+        new SuccessResponse({
+            message: 'Update discount success',
+            metadata: await DiscountService.updateDiscountCode(id, {
+                ...req.body,
+            }),
+        }).send(res);
+    };
+
     getAllDiscountCode = async (req, res, next) => {
         new SuccessResponse({
             message: 'Get all discount code success',

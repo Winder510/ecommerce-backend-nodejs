@@ -78,7 +78,75 @@ export default class DiscountService {
         return newDiscount;
     }
 
-    static async updateDiscount() {}
+    static async updateDiscountCode(discountId, payload) {
+        const {
+            code,
+            start_date,
+            end_date,
+            is_active,
+            min_order_value,
+            product_ids,
+            applies_to,
+            name,
+            description,
+            type,
+            value,
+            max_value,
+            max_uses,
+            max_uses_per_user,
+        } = payload;
+
+        // Tìm mã giảm giá dựa vào discountId
+        const foundDiscount = await discountModel.findById(discountId);
+
+        if (!foundDiscount) {
+            throw new BadRequestError('Discount not found');
+        }
+
+        // Nếu mã mới đã tồn tại và trùng với mã khác
+        if (code && code !== foundDiscount.discount_code) {
+            const existingCode = await discountModel.findOne({
+                discount_code: code
+            });
+            if (existingCode) {
+                throw new BadRequestError('Discount code already exists');
+            }
+        }
+
+        // Cập nhật thông tin mã giảm giá
+        Object.assign(foundDiscount, {
+            discount_code: code || foundDiscount.discount_code,
+            discount_name: name || foundDiscount.discount_name,
+            discount_description: description || foundDiscount.discount_description,
+            discount_type: type || foundDiscount.discount_type,
+            discount_value: value || foundDiscount.discount_value,
+            discount_start: start_date ? new Date(start_date) : foundDiscount.discount_start,
+            discount_end: end_date ? new Date(end_date) : foundDiscount.discount_end,
+            discount_max_uses: max_uses || foundDiscount.discount_max_uses,
+            discount_max_uses_per_user: max_uses_per_user || foundDiscount.discount_max_uses_per_user,
+            discount_min_order_value: min_order_value || foundDiscount.discount_min_order_value,
+            discount_is_active: is_active !== undefined ? is_active : foundDiscount.discount_is_active,
+            discount_max_value: max_value || foundDiscount.discount_max_value,
+            discount_applies_to: applies_to || foundDiscount.discount_applies_to,
+            discount_product_ids: applies_to === 'all' ? [] : product_ids || foundDiscount.discount_product_ids,
+        });
+
+        // Lưu thay đổi vào database
+        await foundDiscount.save();
+
+        // Gửi thông báo nếu cần thiết
+        if (foundDiscount.discount_is_active && applies_to === 'all') {
+            sendNotifitoQueue(SEND_NOTIFICATION_TYPE.BROADCAST, {
+                type: TYPE_NOTIFICATION.PROMOTION_UPDATE,
+                senderId: 'system',
+                options: {
+                    discount_name: foundDiscount.discount_name,
+                },
+            });
+        }
+
+        return foundDiscount;
+    }
 
     // user
     static async getAllProdcutWithDiscountCode({
