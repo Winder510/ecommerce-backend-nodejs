@@ -132,7 +132,7 @@ export default class DiscountService {
             discount_max_value: max_value || foundDiscount.discount_max_value,
             discount_applies_to: applies_to || foundDiscount.discount_applies_to,
             discount_product_ids: applies_to === 'all' ? [] : product_ids || foundDiscount.discount_product_ids,
-            discount_isPublic: isPublic || foundDiscount.discount_product_ids
+            discount_isPublic: isPublic || foundDiscount.isPublic
         });
 
         // Lưu thay đổi vào database
