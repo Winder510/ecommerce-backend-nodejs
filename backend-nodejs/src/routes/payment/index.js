@@ -12,5 +12,5 @@ router.post('/webhook', express.raw({
     type: 'application/json'
 }), asyncErrorHandler(paymentController.handleWebhook));
 
-
+// stripe listen --forward-to localhost:8000/api/v1/payment/webhook
 export default router;

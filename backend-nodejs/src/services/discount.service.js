@@ -36,6 +36,7 @@ export default class DiscountService {
             max_uses,
             uses_count,
             max_uses_per_user,
+            isPublic
         } = payload;
 
         const foundDiscount = await discountModel.findOne({
@@ -63,17 +64,18 @@ export default class DiscountService {
             discount_max_value: max_value,
             discount_applies_to: applies_to,
             discount_product_ids: applies_to === 'all' ? [] : product_ids,
+            discount_isPublic: isPublic
         });
 
-        if ((newDiscount).discount_isPublic) {
-            sendNotifitoQueue(SEND_NOTIFICATION_TYPE.BROADCAST, {
-                type: TYPE_NOTIFICATION.PROMOTION_NEW,
-                senderId: 'system',
-                options: {
-                    discount_name: name
-                }
-            })
-        }
+        // if ((newDiscount).discount_isPublic) {
+        //     sendNotifitoQueue(SEND_NOTIFICATION_TYPE.BROADCAST, {
+        //         type: TYPE_NOTIFICATION.PROMOTION_NEW,
+        //         senderId: 'system',
+        //         options: {
+        //             discount_name: name
+        //         }
+        //     })
+        // }
 
         return newDiscount;
     }
@@ -94,6 +96,7 @@ export default class DiscountService {
             max_value,
             max_uses,
             max_uses_per_user,
+            isPublic
         } = payload;
 
         // Tìm mã giảm giá dựa vào discountId
@@ -129,6 +132,7 @@ export default class DiscountService {
             discount_max_value: max_value || foundDiscount.discount_max_value,
             discount_applies_to: applies_to || foundDiscount.discount_applies_to,
             discount_product_ids: applies_to === 'all' ? [] : product_ids || foundDiscount.discount_product_ids,
+            discount_isPublic: isPublic || foundDiscount.discount_product_ids
         });
 
         // Lưu thay đổi vào database

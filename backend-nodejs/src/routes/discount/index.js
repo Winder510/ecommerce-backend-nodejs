@@ -23,4 +23,5 @@ router.delete('', asyncErrorHandler(discountController.deleteDiscount));
 router.get('/find-all', asyncErrorHandler(discountController.findAll));
 router.post('/find-all/available', asyncErrorHandler(discountController.filterAllDiscountForClient));
 router.post('/find-all/private', asyncErrorHandler(discountController.findPrivateDiscount));
+
 export default router;
