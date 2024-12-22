@@ -498,4 +498,12 @@ export default class DiscountService {
         };
     }
 
+    static async findPrivateDiscount({
+        code
+    }) {
+        return await discountModel.find({
+            discount_code: code,
+            discount_isPublic: false
+        })
+    }
 }

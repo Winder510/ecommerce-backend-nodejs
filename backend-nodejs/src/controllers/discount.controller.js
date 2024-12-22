@@ -74,5 +74,14 @@ class DiscountController {
             }),
         }).send(res);
     };
+
+    findPrivateDiscount = async (req, res, next) => {
+        new SuccessResponse({
+            message: 'success available',
+            metadata: await DiscountService.findPrivateDiscount({
+                ...req.body,
+            }),
+        }).send(res);
+    };
 }
 export default new DiscountController();

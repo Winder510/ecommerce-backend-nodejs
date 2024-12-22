@@ -36,6 +36,10 @@ var userSchema = new mongoose.Schema({
         type: String,
         default: '',
     },
+    usr_loyalPoint: {
+        type: Number,
+        default: 0,
+    },
     usr_date_of_birth: {
         type: Date,
         default: null,
