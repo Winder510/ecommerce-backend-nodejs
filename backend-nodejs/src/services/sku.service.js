@@ -31,6 +31,7 @@ export class SkuService {
                 product_id: spu_id,
             };
         });
+
         const newSkus = skuModel.create(convert_sku_list);
 
         await updateDefaultSku({
@@ -39,6 +40,7 @@ export class SkuService {
 
         return newSkus;
     }
+
     static async updateSku({
         spu_id,
         product_variations,
@@ -56,6 +58,7 @@ export class SkuService {
             })
         }));
     }
+
     static async deleteSku({
         spuId,
         skuId
@@ -65,7 +68,6 @@ export class SkuService {
             product_id: spuId
         })
     }
-
 
     static async getOneSku({
         sku_id,

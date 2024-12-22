@@ -19,6 +19,10 @@ const productSchema = new Schema({
         type: String,
         required: true,
     },
+    product_more_imgs: {
+        type: Array,
+        required: true,
+    },
     product_slug: {
         type: String,
     },

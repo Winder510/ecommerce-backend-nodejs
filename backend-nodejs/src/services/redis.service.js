@@ -50,14 +50,14 @@ const releaseLock = async (keylock) => {
     return await redisClient.del(keylock);
 };
 const acquireLockV2 = async ({
-    productId,
+    skuId,
     quantity
 }) => {
     const {
         instanceRedis: redisClient
     } = getRedis();
 
-    const key = `lock_v2024_${productId}`;
+    const key = `lock_v2024_${skuId}`;
     const retryTimes = 10;
     const expireTime = 3000;
 
@@ -67,7 +67,7 @@ const acquireLockV2 = async ({
 
         if (result === true) {
             const isReservation = await reservationSku({
-                skuId: productId,
+                skuId,
                 quantity,
             });
             if (isReservation.modifiedCount) {

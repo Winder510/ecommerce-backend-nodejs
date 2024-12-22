@@ -35,5 +35,12 @@ class CheckOutController {
             metadata: await OrderService.updateOrderStatusByAdmin(req.body),
         }).send(res);
     };
+
+    orderByUserV2 = async (req, res, next) => {
+        new SuccessResponse({
+            message: 'create order success',
+            metadata: await OrderService.orderByUserV2(req.body),
+        }).send(res);
+    };
 }
 export default new CheckOutController();

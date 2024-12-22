@@ -98,4 +98,56 @@ export class PaymentService {
         }
     }
 
+
+    async handleStripeWebhook(req, res) {
+        const sig = req.headers['stripe-signature'];
+        const event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
+
+        if (event.type === 'payment_intent.succeeded') {
+            const paymentIntent = event.data.object;
+
+            // Update order status
+            await orderModel.findOneAndUpdate({
+                'order_payment.payment_intent_id': paymentIntent.id
+            }, {
+                $set: {
+                    'order_payment.status': 'succeeded',
+                    'order_status': 'confirmed'
+                }
+            });
+        }
+
+        if (event.type === 'payment_intent.payment_failed') {
+            const paymentIntent = event.data.object;
+
+            // Revert inventory and update order status
+            const order = await orderModel.findOne({
+                'order_payment.payment_intent_id': paymentIntent.id
+            });
+
+            if (order) {
+                await Promise.all([
+                    // Revert inventory
+                    ...order.order_products.map(({
+                            productId,
+                            quantity
+                        }) =>
+                        ProductService.increaseInventory(productId, quantity)
+                    ),
+                    // Update order status
+                    orderModel.findByIdAndUpdate(order._id, {
+                        $set: {
+                            'order_payment.status': 'failed',
+                            'order_status': 'cancelled'
+                        }
+                    })
+                ]);
+            }
+        }
+
+        res.json({
+            received: true
+        });
+    }
+
 }

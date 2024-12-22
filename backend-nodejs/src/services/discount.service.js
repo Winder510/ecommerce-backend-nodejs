@@ -414,7 +414,7 @@ export default class DiscountService {
             if (discount.discount_type === "fixed_amount") {
                 discountAmount = discount.discount_value * products.length;
             } else {
-                discountAmount = totalOrderValue * (discount.discount_value / 100) * products.length;
+                discountAmount = totalOrderValue * (discount.discount_value / 100);
             }
         } else {
             // Tính giảm giá cho sản phẩm cụ thể
@@ -433,6 +433,7 @@ export default class DiscountService {
                     return total;
                 }, 0);
                 discountAmount = (eligibleAmount * discount.discount_value) / 100;
+                console.log("🚀 ~ DiscountService ~ discountAmount: >>>", discountAmount)
             }
         }
 

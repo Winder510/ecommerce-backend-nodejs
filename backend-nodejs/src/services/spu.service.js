@@ -7,7 +7,6 @@ import {
     BadRequestError
 } from '../core/error.response.js';
 import {
-    buildQuery,
     buildQueryForClient,
     publishSpu,
     querySpu,
@@ -32,6 +31,7 @@ export class SpuService {
         name,
         description,
         thumb,
+        more_imgs,
         category,
         attributes = [],
         variations,
@@ -65,6 +65,7 @@ export class SpuService {
             product_quantity,
             product_variations: variations,
             product_tags: tags,
+            product_more_imgs: more_imgs,
             product_ratingAverage: ratingAverage,
             isDraft,
             isPublished,
