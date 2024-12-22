@@ -266,7 +266,6 @@ export default class DiscountService {
     static async findAll() {
         return await discountModel.find({
             discount_is_active: true,
-            discount_isPublic: true
         }).lean();
     }
 
