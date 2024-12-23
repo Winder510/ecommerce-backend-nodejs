@@ -321,6 +321,7 @@ export class OrderService {
                     };
                 })
             );
+            console.log("🚀 ~ OrderService ~ acquireProduct:", acquireProduct)
 
             if (acquireProduct.some(result => !result.success)) {
                 throw new BadRequestError('Một số sản phẩm đã được cập nhật, vui lòng quay lại');
@@ -339,7 +340,7 @@ export class OrderService {
                             product_data: {
                                 name: 'Thanh toán đơn hàng',
                             },
-                            unit_amount: product.price, // Make sure this is in smallest currency unit (e.g., cents)
+                            unit_amount: product.price,
                         },
                         quantity: product.quantity,
                     })),
@@ -428,7 +429,7 @@ export class OrderService {
         }
     }
 
-    // Add this new webhook handler for Stripe events
+
     static async handleStripeWebhook(event) {
         if (event.type === 'checkout.session.completed') {
             const session = event.data.object;

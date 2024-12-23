@@ -59,10 +59,9 @@ const acquireLockV2 = async ({
 
     const key = `lock_v2024_${skuId}`;
     const retryTimes = 10;
-    const expireTime = 3000;
+    const expireTime = 1000000;
 
     for (let i = 0; i < retryTimes; i++) {
-        ///  tạo 1 key, thằng nào cầm key thì được vào thanh toán
         const result = await redisClient.setNX(key, 'locked');
 
         if (result === true) {
@@ -70,6 +69,8 @@ const acquireLockV2 = async ({
                 skuId,
                 quantity,
             });
+            console.log(`Result of reservationSku for skuId ${skuId}:`, isReservation);
+
             if (isReservation.modifiedCount) {
                 await redisClient.pExpire(key, expireTime);
                 return key;
