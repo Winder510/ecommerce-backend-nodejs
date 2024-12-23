@@ -100,7 +100,6 @@ export class SpuService {
         attributes = [],
         variations,
         tags,
-        ratingAverage,
         sku_list = [],
         isDraft,
         isPublished,
@@ -122,7 +121,6 @@ export class SpuService {
             product_attributes: attributes,
             product_quantity,
             product_tags: tags,
-            product_ratingAverage: ratingAverage,
             product_more_imgs: more_imgs,
             product_variations: variations,
         })
