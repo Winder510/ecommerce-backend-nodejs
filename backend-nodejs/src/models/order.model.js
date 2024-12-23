@@ -40,6 +40,12 @@ var orderSchema = new mongoose.Schema({
         type: String,
         default: 'SPX000',
     },
+    order_discount: {
+        type: Array,
+    },
+    order_note: {
+        type: String,
+    },
     order_status: {
         type: String,
         enum: ['pending', 'confirmed', 'shipped', 'cancelled', 'delivered'],

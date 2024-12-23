@@ -45,10 +45,18 @@ var discountSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
-    discount_user_used: {
-        type: Array,
-        default: [], // ai da su dung
-    },
+    discount_user_used: [{
+        userId: {
+            type: Schema.Types.ObjectId, // Kiểu ObjectId cho user
+            required: true,
+            ref: 'User', // Liên kết với collection User
+        },
+        use_count: {
+            type: Number,
+            default: 1,
+        },
+    }, ],
+
     discount_max_uses_per_user: {
         type: Number,
         required: true, // so luong su dung toi da tren 1 user
@@ -73,11 +81,11 @@ var discountSchema = new mongoose.Schema({
 
     discount_product_ids: {
         type: Array,
-        default: [], // so san pham duoc ap dung
+        default: [],
     },
     discount_isPublic: {
         type: Boolean,
-        default: true, // so san pham duoc ap dung
+        default: true,
     },
 }, {
     timestamps: true,

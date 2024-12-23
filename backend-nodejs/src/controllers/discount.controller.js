@@ -95,5 +95,14 @@ class DiscountController {
             }),
         }).send(res);
     };
+
+    test = async (req, res, next) => {
+        new SuccessResponse({
+            message: 'success available',
+            metadata: await DiscountService.addDiscountUserUsage({
+                ...req.body,
+            }),
+        }).send(res);
+    };
 }
 export default new DiscountController();

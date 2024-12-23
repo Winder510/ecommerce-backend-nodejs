@@ -96,6 +96,7 @@ const reservationSku = async ({
     quantity
 }) => {
     const foundSku = await skuModel.findById(skuId);
+    console.log("🚀 ~ foundSku.sku_stock:", foundSku.sku_stock)
 
     if (!foundSku || foundSku.sku_stock >= quantity) {
         return await skuModel.updateOne({

@@ -222,47 +222,47 @@ class PromotionService {
         }
     };
 
-    static updateAppliedQuantity = async (promotionId, skuId, quantityPurchased) => {
-        // Tìm chương trình khuyến mãi có promotionId
-        const promotion = await promotionModel.findById(promotionId);
-        if (!promotion) {
-            throw new BadRequestError("Promotion not found");
-        }
+    // static updateAppliedQuantity = async (promotionId, skuId, quantityPurchased) => {
+    //     // Tìm chương trình khuyến mãi có promotionId
+    //     const promotion = await promotionModel.findById(promotionId);
+    //     if (!promotion) {
+    //         throw new BadRequestError("Promotion not found");
+    //     }
 
-        // Tìm chương trình khuyến mãi có skuId trong danh sách 'appliedProduct'
-        let appliedProduct = null;
-        for (const product of promotion.appliedProduct) {
-            appliedProduct = product.sku_list.find(sku => sku.skuId.toString() === skuId.toString());
-            if (appliedProduct) {
-                break;
-            }
-        }
+    //     // Tìm chương trình khuyến mãi có skuId trong danh sách 'appliedProduct'
+    //     let appliedProduct = null;
+    //     for (const product of promotion.appliedProduct) {
+    //         appliedProduct = product.sku_list.find(sku => sku.skuId.toString() === skuId.toString());
+    //         if (appliedProduct) {
+    //             break;
+    //         }
+    //     }
 
-        if (!appliedProduct) {
-            throw new BadRequestError("SKU not found in the promotion");
-        }
+    //     if (!appliedProduct) {
+    //         throw new BadRequestError("SKU not found in the promotion");
+    //     }
 
-        // Kiểm tra số lượng đã áp dụng và giới hạn số lượng giảm giá
-        const {
-            appliedQuantity,
-            quantityLimit
-        } = appliedProduct;
-        if (appliedQuantity + quantityPurchased > quantityLimit) {
-            throw new BadRequestError("Exceeded quantity limit for the promotion");
-        }
+    //     // Kiểm tra số lượng đã áp dụng và giới hạn số lượng giảm giá
+    //     const {
+    //         appliedQuantity,
+    //         quantityLimit
+    //     } = appliedProduct;
+    //     if (appliedQuantity + quantityPurchased > quantityLimit) {
+    //         throw new BadRequestError("Exceeded quantity limit for the promotion");
+    //     }
 
-        // Cập nhật số lượng đã áp dụng
-        appliedProduct.appliedQuantity += quantityPurchased;
+    //     // Cập nhật số lượng đã áp dụng
+    //     appliedProduct.appliedQuantity += quantityPurchased;
 
-        // Cập nhật lại chương trình khuyến mãi trong cơ sở dữ liệu
-        await promotion.save();
+    //     // Cập nhật lại chương trình khuyến mãi trong cơ sở dữ liệu
+    //     await promotion.save();
 
-        return {
-            message: "Applied quantity updated successfully",
-            appliedQuantity: appliedProduct.appliedQuantity,
-            quantityLimit: appliedProduct.quantityLimit,
-        };
-    };
+    //     return {
+    //         message: "Applied quantity updated successfully",
+    //         appliedQuantity: appliedProduct.appliedQuantity,
+    //         quantityLimit: appliedProduct.quantityLimit,
+    //     };
+    // };
 
     static getSpuFormPromotion = async (appliedProducts) => {
         if (!appliedProducts || appliedProducts.length === 0) {
@@ -301,5 +301,51 @@ class PromotionService {
     }) {
         return promotionModel.findById(promotionId).lean();
     }
+
+    static updateAppliedQuantity = async ({
+        promotionId,
+        spuId,
+        skuId,
+        quantity
+    }) => {
+        try {
+            if (quantity <= 0) {
+                throw new Error('Số lượng cập nhật phải lớn hơn 0.');
+            }
+
+            const result = await promotionModel.findOneAndUpdate({
+                _id: promotionId
+            }, {
+                $inc: {
+                    'appliedProduct.$[spu].sku_list.$[sku].appliedQuantity': quantity
+                },
+            }, {
+                arrayFilters: [{
+                        'spu.spuId': spuId
+                    },
+                    {
+                        'sku.skuId': skuId
+                    },
+                ],
+                new: true,
+            });
+
+
+            if (!result) {
+                throw new Error('Không tìm thấy SPU hoặc SKU tương ứng trong khuyến mãi.');
+            }
+
+            return {
+                success: true,
+                message: 'Số lượng đã bán được cập nhật thành công.',
+                data: result,
+            };
+        } catch (error) {
+            return {
+                success: false,
+                message: error.message,
+            };
+        }
+    };
 }
 export default PromotionService;

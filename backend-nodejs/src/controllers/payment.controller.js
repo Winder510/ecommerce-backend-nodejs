@@ -14,10 +14,8 @@ class PaymentController {
     }
 
     handleWebhook = async (req, res, next) => {
-        new SuccessResponse({
-            message: 'Payment success',
-            metadata: await PaymentService.handleWebhook(req),
-        }).send(res);
+        await PaymentService.handleWebhook(req, res)
+
     }
 }
 

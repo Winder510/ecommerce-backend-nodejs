@@ -34,6 +34,7 @@ class CheckOutService {
             feeShip: 0, // phi van chuyen
             productDiscount: 0,
             voucherDiscount: 0,
+            usedLoyalPoint: 0,
             accLoyalPoint: 0, // diem tich luy duoc
             totalCheckOut: 0, // tong tien phai thanh toán
         };
@@ -79,6 +80,7 @@ class CheckOutService {
             const {
                 usr_loyalPoint
             } = await userModel.findById(userId).lean()
+            checkOut_order.usedLoyalPoint = usr_loyalPoint
             checkOut_order.totalCheckOut = checkOut_order.totalPrice - checkOut_order.productDiscount - checkOut_order.voucherDiscount - usr_loyalPoint;
         } else {
             checkOut_order.totalCheckOut = checkOut_order.totalPrice - checkOut_order.productDiscount - checkOut_order.voucherDiscount;

@@ -66,7 +66,7 @@ export class PaymentService {
         }
     }
 
-    static async handleWebhook(req) {
+    static async handleWebhook(req, res) {
         const sig = req.headers['stripe-signature'];
         let event;
 

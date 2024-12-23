@@ -67,5 +67,14 @@ class PromotionController {
             metadata: await PromotionService.findOnePromotion(req.params),
         }).send(res);
     };
+
+    test = async (req, res, next) => {
+        new SuccessResponse({
+            message: 'Find one promotion',
+            metadata: await PromotionService.updateAppliedQuantity({
+                ...req.body
+            }),
+        }).send(res);
+    };
 }
 export default new PromotionController();

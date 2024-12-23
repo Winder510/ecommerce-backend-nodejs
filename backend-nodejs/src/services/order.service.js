@@ -11,6 +11,18 @@ import {
 import orderModel from '../models/order.model.js';
 import mongoose from 'mongoose';
 import Stripe from 'stripe';
+import {
+    CartService
+} from './cart.service.js';
+import {
+    SkuService
+} from './sku.service.js';
+import PromotionService from './promotion.service.js';
+import DiscountService from './discount.service.js';
+import {
+    resetLoyaltyPoints,
+    updateLoyaltyPoints
+} from './user.service.js';
 export class OrderService {
     // Place an order by user
     static async orderByUser({
@@ -281,7 +293,9 @@ export class OrderService {
         products_order,
         user_payment,
         user_address,
-        payment_method = 'COD'
+        payment_method = 'COD',
+        isUseLoyalPoint,
+        orderNote
     }) {
         const session = await mongoose.startSession();
         session.startTransaction();
@@ -298,12 +312,12 @@ export class OrderService {
                 userId,
                 shop_discount,
                 products_order,
+                isUseLoyalPoint
             });
 
             // Step 2: Lock inventory
             acquireProduct = await Promise.all(
                 products_order.map(async ({
-                    spuId,
                     skuId,
                     quantity
                 }) => {
@@ -321,9 +335,9 @@ export class OrderService {
                     };
                 })
             );
-            console.log("🚀 ~ OrderService ~ acquireProduct:", acquireProduct)
 
             if (acquireProduct.some(result => !result.success)) {
+                console.log("🚀 ~ OrderService ~ acquireProduct:", acquireProduct)
                 throw new BadRequestError('Một số sản phẩm đã được cập nhật, vui lòng quay lại');
             }
 
@@ -340,7 +354,7 @@ export class OrderService {
                             product_data: {
                                 name: 'Thanh toán đơn hàng',
                             },
-                            unit_amount: product.price,
+                            unit_amount: product.priceAfterDiscount,
                         },
                         quantity: product.quantity,
                     })),
@@ -359,6 +373,7 @@ export class OrderService {
                 order_userId: userId,
                 order_checkout: checkOut_order,
                 order_shipping: user_address,
+                order_discount: shop_discount,
                 order_payment: {
                     ...user_payment,
                     status: payment_method === 'STRIPE' ? 'pending' : 'succeeded',
@@ -366,29 +381,47 @@ export class OrderService {
                     checkout_session_id: checkoutSession?.id
                 },
                 order_products: products_order,
+                order_note: orderNote,
                 order_status: payment_method === 'STRIPE' ? 'pending' : 'confirmed'
             }], {
                 session
             });
 
-            // Step 5: Update inventory and delete cart items for non-Stripe payments
+            // Step 5: Update inventory and delete cart items for non-Stripe payments, update discount use
             if (payment_method !== 'STRIPE') {
                 await Promise.all([
-                    ...products_order.map(({
-                            productId,
-                            quantity
-                        }) =>
-                        ProductService.reduceInventory(productId, quantity, session)
-                    ),
-                    ...products_order.map(({
-                            productId
+                    ...newOrder.order_products.map(({
+                        skuId,
+                        spuId,
+                        quantity,
+                        promotionId,
+                        quanity
+                    }) => {
+                        SkuService.reduceInventory(skuId, quantity);
+                        PromotionService.updateAppliedQuantity({
+                            promotionId,
+                            skuId,
+                            spuId,
+                            quanity
+                        })
+                    }),
+                    ...newOrder.order_products.map(({
+                            skuId
                         }) =>
                         CartService.deleteUserCart({
-                            userId,
-                            productId
-                        }, session)
-                    )
+                            userId: newOrder.order_userId,
+                            skuId
+                        })
+                    ),
+                    ...shop_discount.map((discountId) => {
+                        DiscountService.addDiscountUserUsage(discountId, userId)
+                    })
                 ]);
+                if (newOrder.order_checkout.usedLoyalPoint > 0) {
+                    await resetLoyaltyPoints(newOrder.order_userId);
+                }
+                // update loyadl point
+                await updateLoyaltyPoints(newOrder.order_userId, newOrder.order_checkout.accLoyalPoint)
             }
 
             // Step 6: Commit transaction
@@ -434,7 +467,7 @@ export class OrderService {
         if (event.type === 'checkout.session.completed') {
             const session = event.data.object;
 
-            // Start MongoDB session
+
             const mongoSession = await mongoose.startSession();
             mongoSession.startTransaction();
 
@@ -451,27 +484,48 @@ export class OrderService {
                 // Update order status
                 order.order_status = 'confirmed';
                 order.order_payment.status = 'succeeded';
+
                 await order.save({
                     session: mongoSession
                 });
 
-                // Update inventory and clear cart
+                // neu su dung thi reset loyalpoint
+                if (order.order_checkout.usedLoyalPoint > 0) {
+                    await resetLoyaltyPoints(order.order_userId);
+                }
+                // update loyadl point
+                await updateLoyaltyPoints(order.order_userId, order.order_checkout.accLoyalPoint)
+                // Update inventory and clear cart, update applied produt in promotion, update discount use
                 await Promise.all([
                     ...order.order_products.map(({
-                            productId,
+                        skuId,
+                        spuId,
+                        quantity,
+                        promotionId,
+
+                    }) => {
+                        SkuService.reduceInventory(skuId, quantity, mongoSession);
+                        PromotionService.updateAppliedQuantity({
+                            promotionId,
+                            skuId,
+                            spuId,
                             quantity
-                        }) =>
-                        ProductService.reduceInventory(productId, quantity, mongoSession)
-                    ),
+                        })
+                    }),
                     ...order.order_products.map(({
-                            productId
+                            skuId
                         }) =>
                         CartService.deleteUserCart({
                             userId: order.order_userId,
-                            productId
+                            skuId
                         }, mongoSession)
-                    )
+                    ),
+                    ...order.order_discount.map((discountId) => {
+                        DiscountService.addDiscountUserUsage(discountId, userId)
+                    })
+
                 ]);
+
 
                 await mongoSession.commitTransaction();
             } catch (error) {

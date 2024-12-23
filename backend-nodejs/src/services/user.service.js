@@ -293,6 +293,56 @@ const getDefaultAddress = async ({
     }
 };
 
+const updateLoyaltyPoints = async (userId, points) => {
+    try {
+
+        const user = await userModel.findByIdAndUpdate(
+            userId, {
+                $inc: {
+                    usr_loyalPoint: points
+                }
+            }, {
+                new: true
+            }
+        );
+
+        if (!user) {
+            throw new Error('Người dùng không tồn tại.');
+        }
+
+        return {
+            success: true,
+            message: `Cộng ${points} điểm thành công.`,
+            data: user,
+        };
+    } catch (error) {
+        throw new Error(`Lỗi khi cập nhật điểm: ${error.message}`);
+    }
+};
+
+const resetLoyaltyPoints = async (userId) => {
+    try {
+        const user = await userModel.findByIdAndUpdate(
+            userId, {
+                usr_loyalPoint: 0
+            }, {
+                new: true
+            }
+        );
+
+        if (!user) {
+            throw new Error('Người dùng không tồn tại.');
+        }
+
+        return {
+            success: true,
+            message: 'Reset điểm loyalty thành công.',
+            data: user,
+        };
+    } catch (error) {
+        throw new Error(`Lỗi khi reset điểm: ${error.message}`);
+    }
+};
 
 export {
     newUserService,
@@ -301,5 +351,8 @@ export {
     findOrCreateUser,
     addNewAddress,
     getListAddress,
-    getDefaultAddress
+    getDefaultAddress,
+    updateLoyaltyPoints,
+    resetLoyaltyPoints
+
 };

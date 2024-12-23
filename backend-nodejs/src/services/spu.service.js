@@ -100,10 +100,7 @@ export class SpuService {
         attributes = [],
         variations,
         tags,
-        sku_list = [],
-        isDraft,
-        isPublished,
-        isDeleted
+        sku_list = []
     }) {
         const product_quantity = sku_list.reduce((acc, sku) => {
             return acc + sku?.sku_stock;

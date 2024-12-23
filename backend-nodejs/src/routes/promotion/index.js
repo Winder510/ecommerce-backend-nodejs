@@ -17,6 +17,6 @@ router.get('/check-overlap', asyncErrorHandler(promotionController.getSpuInPromo
 router.get('/active-flash-sale', asyncErrorHandler(promotionController.getActiveFlashSale));
 router.get('/find-one/:promotionId', asyncErrorHandler(promotionController.findOne));
 
-
+router.post('/test', asyncErrorHandler(promotionController.test));
 
 export default router;

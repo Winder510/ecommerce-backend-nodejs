@@ -150,4 +150,43 @@ export class SkuService {
         return allSku;
     }
 
+    static reduceInventory = async (skuId, quantity, mongoSession = null) => {
+        try {
+            if (quantity <= 0) {
+                throw new Error('Số lượng cần giảm phải lớn hơn 0.');
+            }
+
+            const result = await skuModel.findOneAndUpdate({
+                _id: skuId,
+                sku_stock: {
+                    $gte: quantity
+                }
+            }, {
+                $inc: {
+                    stock: -quantity
+                }
+            }, {
+                session: mongoSession,
+                new: true
+            });
+
+
+            if (!result) {
+                throw new Error('Không đủ tồn kho hoặc sản phẩm không tồn tại.');
+            }
+
+            return {
+                success: true,
+                message: 'Tồn kho đã được cập nhật.',
+                data: result,
+            };
+        } catch (error) {
+            return {
+                success: false,
+                message: error.message,
+            };
+        }
+    };
+
+
 }
