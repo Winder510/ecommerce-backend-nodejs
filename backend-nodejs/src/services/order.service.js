@@ -363,8 +363,8 @@ export class OrderService {
                         cartId,
                         order_products: JSON.stringify(products_order.map(p => p.productId))
                     },
-                    success_url: `${process.env.FRONTEND_URL}/order-success/{CHECKOUT_SESSION_ID}`,
-                    cancel_url: `${process.env.FRONTEND_URL}/checkout`,
+                    success_url: `${process.env.FRONTEND_URL}/order/order-success/{CHECKOUT_SESSION_ID}`,
+                    cancel_url: `${process.env.FRONTEND_URL}/order/order-failed`,
                 });
             }
 
@@ -462,7 +462,6 @@ export class OrderService {
         }
     }
 
-
     static async handleStripeWebhook(event) {
         if (event.type === 'checkout.session.completed') {
             const session = event.data.object;
@@ -536,4 +535,7 @@ export class OrderService {
             }
         }
     }
+
+
+
 }
