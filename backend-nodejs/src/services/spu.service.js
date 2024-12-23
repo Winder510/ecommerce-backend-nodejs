@@ -91,6 +91,7 @@ export class SpuService {
     };
 
     static async updateSpu({
+        id,
         name,
         description,
         thumb,
