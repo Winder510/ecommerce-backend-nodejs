@@ -29,6 +29,33 @@ var userSchema = new mongoose.Schema({
     usr_phone: {
         type: String,
     },
+    usr_address: [{
+        fullName: {
+            type: String
+        },
+        phone: {
+            type: String
+        },
+        city: {
+            type: String
+        },
+        district: {
+            type: String
+        },
+        ward: {
+            type: String
+        },
+        specificAddress: {
+            type: String
+        },
+        isDefault: {
+            type: Boolean,
+            default: false
+        },
+        fullAddress: {
+            type: String
+        },
+    }],
     usr_sex: {
         type: String,
     },

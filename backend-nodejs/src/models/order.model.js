@@ -2,9 +2,6 @@
 import mongoose, {
     Schema
 } from 'mongoose'; // Erase if already required
-import {
-    type
-} from 'os';
 
 const DOCUMENT_NAME = 'Order';
 const COLLECTION_NAME = 'Orders';
@@ -31,7 +28,7 @@ var orderSchema = new mongoose.Schema({
         type: Object,
         default: {},
     },
-    order_shipping: {
+    order_shipping: { // receive address
         type: Object,
         default: {},
     },

@@ -210,9 +210,96 @@ const findOrCreateUser = async ({
     }
 }
 
+const getListAddress = async ({
+    id
+}) => {
+    try {
+        const user = await userModel.findById(id); // Assuming 'User' is the model for the 'userSchema'
+        if (!user) {
+            throw new Error('User not found');
+        }
+        return user.usr_address; // Return the addresses, including fullAddress
+    } catch (error) {
+        console.error("Error fetching addresses:", error);
+        throw error;
+    }
+};
+
+const addNewAddress = async ({
+    id,
+    address
+}) => {
+    try {
+        const user = await userModel.findById(id);
+        if (!user) {
+            throw new Error('User not found');
+        }
+
+        const {
+            fullName,
+            phone,
+            city,
+            district,
+            ward,
+            specificAddress,
+            isDefault
+        } = address;
+        if (!fullName || !phone || !city || !district || !ward || !specificAddress) {
+            throw new Error('Missing required address fields');
+        }
+
+        const fullAddress = `${specificAddress}, ${ward}, ${district}, ${city}`;
+
+        // Add the new address with the full address to the user object
+        user.usr_address.push({
+            fullName,
+            phone,
+            city,
+            district,
+            ward,
+            specificAddress,
+            isDefault,
+            fullAddress, // Store the full address
+        });
+
+        await user.save();
+        return user.usr_address;
+    } catch (error) {
+        console.error("Error adding new address:", error);
+        throw error;
+    }
+};
+
+const getDefaultAddress = async ({
+    id
+}) => {
+    try {
+        const user = await userModel.findById(id); // Assuming 'User' is the model for the 'userSchema'
+        if (!user) {
+            throw new Error('User not found');
+        }
+
+        // Find the default address from the user's addresses
+        const defaultAddress = user.usr_address.find(address => address.isDefault === true);
+
+        if (!defaultAddress) {
+            throw new Error('No default address found');
+        }
+
+        return defaultAddress; // Return the default address
+    } catch (error) {
+        console.error("Error fetching default address:", error);
+        throw error;
+    }
+};
+
+
 export {
     newUserService,
     checkLoginEmailTokenService,
     changePassWordService,
-    findOrCreateUser
+    findOrCreateUser,
+    addNewAddress,
+    getListAddress,
+    getDefaultAddress
 };

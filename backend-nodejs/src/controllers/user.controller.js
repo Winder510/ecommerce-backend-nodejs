@@ -3,8 +3,11 @@ import {
 } from '../core/success.response.js';
 
 import {
+    addNewAddress,
     changePassWordService,
     checkLoginEmailTokenService,
+    getDefaultAddress,
+    getListAddress,
 } from '../services/user.service.js';
 
 class UserController {
@@ -32,5 +35,33 @@ class UserController {
             }),
         }).send(res);
     };
+
+    addNewUserAddress = async (req, res, next) => {
+        return new SuccessResponse({
+            message: 'add new user address',
+            metadata: await addNewAddress({
+                ...req.body,
+            }),
+        }).send(res);
+    };
+
+    getUserAddress = async (req, res, next) => {
+        return new SuccessResponse({
+            message: 'add new user address',
+            metadata: await getListAddress({
+                ...req.params
+            }),
+        }).send(res);
+    };
+
+    getUserDefaultAddress = async (req, res, next) => {
+        return new SuccessResponse({
+            message: 'add new user address',
+            metadata: await getDefaultAddress({
+                ...req.params
+            }),
+        }).send(res);
+    };
+
 }
 export default new UserController();

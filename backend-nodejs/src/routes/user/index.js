@@ -11,6 +11,10 @@ import {
 const router = express.Router();
 
 router.post('/new_user', asyncErrorHandler(userController.newUser));
+router.post('/address', asyncErrorHandler(userController.addNewUserAddress));
+router.get('/address/:id', asyncErrorHandler(userController.getUserAddress));
+router.get('/default/address/:id', asyncErrorHandler(userController.getUserDefaultAddress));
+
 router.get('/welcome', asyncErrorHandler(userController.checkLoginEmailToken));
 
 router.use(authenticationV2);

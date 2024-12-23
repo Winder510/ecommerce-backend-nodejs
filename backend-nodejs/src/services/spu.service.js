@@ -91,14 +91,19 @@ export class SpuService {
     };
 
     static async updateSpu({
-        id,
         name,
         description,
         thumb,
+        more_imgs,
         category,
-        attributes,
+        attributes = [],
         variations,
+        tags,
+        ratingAverage,
         sku_list = [],
+        isDraft,
+        isPublished,
+        isDeleted
     }) {
         const product_quantity = sku_list.reduce((acc, sku) => {
             return acc + sku?.sku_stock;
@@ -115,6 +120,9 @@ export class SpuService {
             product_category: category,
             product_attributes: attributes,
             product_quantity,
+            product_tags: tags,
+            product_ratingAverage: ratingAverage,
+            product_more_imgs: more_imgs,
             product_variations: variations,
         })
 
