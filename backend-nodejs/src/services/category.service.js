@@ -118,4 +118,10 @@ export class CategoryService {
             .lean();
     }
 
+    static async findOne({
+        id
+    }) {
+        return await categoryModel.findById(id);
+    }
+
 }

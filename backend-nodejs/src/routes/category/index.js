@@ -1,11 +1,14 @@
 import express from 'express';
 
-import { asyncErrorHandler } from '../../helpers/asyncHandler.js';
+import {
+    asyncErrorHandler
+} from '../../helpers/asyncHandler.js';
 import CategoryController from '../../controllers/category.controller.js';
 
 const router = express.Router();
 
 router.post('', asyncErrorHandler(CategoryController.createCategory));
+router.get('/find-one/:id', asyncErrorHandler(CategoryController.findOne));
 router.patch('/:id', asyncErrorHandler(CategoryController.updateCategory));
 router.delete('/:id', asyncErrorHandler(CategoryController.deleteCategory));
 router.get('/all', asyncErrorHandler(CategoryController.getAllCategory));

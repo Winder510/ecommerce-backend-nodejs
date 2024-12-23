@@ -1,9 +1,17 @@
-import { CategoryService } from '../services/category.service.js';
-import { SuccessResponse } from '../core/success.response.js';
+import {
+    CategoryService
+} from '../services/category.service.js';
+import {
+    SuccessResponse
+} from '../core/success.response.js';
 
 class CategoryController {
     static async createCategory(req, res, next) {
-        const { name, description, parentId } = req.body;
+        const {
+            name,
+            description,
+            parentId
+        } = req.body;
 
         const result = await CategoryService.createCategory({
             name,
@@ -18,8 +26,13 @@ class CategoryController {
     }
 
     static async updateCategory(req, res, next) {
-        const { id } = req.params;
-        const { name, description } = req.body;
+        const {
+            id
+        } = req.params;
+        const {
+            name,
+            description
+        } = req.body;
 
         const result = await CategoryService.updateCategory({
             categoryId: id,
@@ -34,7 +47,9 @@ class CategoryController {
     }
 
     static async deleteCategory(req, res, next) {
-        const { id } = req.params;
+        const {
+            id
+        } = req.params;
 
         const result = await CategoryService.deleteCategory({
             categoryId: id,
@@ -52,6 +67,16 @@ class CategoryController {
             metadata: await CategoryService.getCategories(),
         }).send(res);
     }
+
+    static async findOne(req, res, next) {
+        new SuccessResponse({
+            message: 'get all category success',
+            metadata: await CategoryService.findOne({
+                ...req.params
+            }),
+        }).send(res);
+    }
+
 }
 
 export default CategoryController;
