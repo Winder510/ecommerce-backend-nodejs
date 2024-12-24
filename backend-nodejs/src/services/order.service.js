@@ -173,7 +173,6 @@ export class OrderService {
         return order;
     }
 
-
     static async orderByUserV2({
         cartId,
         userId,
@@ -454,7 +453,7 @@ export class OrderService {
 
     static async getListOrderByAdmin() {
         try {
-            const orders = await orderModel.find().sort({
+            const orders = await orderModel.find().populate("order_userId").sort({
                 createdAt: -1
             }).lean();
             return orders;
@@ -462,5 +461,6 @@ export class OrderService {
             throw new Error(`Lỗi khi lấy danh sách đơn hàng: ${error.message}`);
         }
     }
+
 
 }

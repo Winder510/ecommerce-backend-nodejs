@@ -78,20 +78,9 @@ class PromotionController {
     getPromotionEventList = async (req, res, next) => {
         new SuccessResponse({
             message: 'Find list promotion event',
-            metadata: await PromotionService.getPromotionEventList(),
+            metadata: await PromotionService.getPromotionEventList({}),
         }).send(res);
     };
-
-
-
-
-
-
-
-
-
-
-
 
     test = async (req, res, next) => {
         new SuccessResponse({

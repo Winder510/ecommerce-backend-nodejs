@@ -13,7 +13,7 @@ router.post('/get-list', asyncErrorHandler(promotionController.getListPromotions
 router.patch('/toggle-disable/:id', asyncErrorHandler(promotionController.toggleUpdateDisable));
 
 router.get('/get-event', asyncErrorHandler(promotionController.getOnePromotionEvent));
-router.post('/get-events', asyncErrorHandler(promotionController.getPromotionEventList));
+router.get('/get-events', asyncErrorHandler(promotionController.getPromotionEventList));
 
 
 router.get('/check-overlap', asyncErrorHandler(promotionController.getSpuInPromotionIfOverLap));

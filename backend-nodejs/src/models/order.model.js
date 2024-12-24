@@ -10,6 +10,7 @@ const COLLECTION_NAME = 'Orders';
 var orderSchema = new mongoose.Schema({
     order_userId: {
         type: String,
+        ref: "User",
         required: true,
     },
     order_checkout: {
