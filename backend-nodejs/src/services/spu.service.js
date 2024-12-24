@@ -320,11 +320,19 @@ export class SpuService {
             isDraft: true,
         };
 
-        return await querySpu({
-            query,
-            limit,
-            skip,
-        });
+        const spus = await spuModel
+            .find(query)
+            .skip(skip)
+            .limit(limit)
+            .populate({
+                path: 'product_category',
+                select: 'category_name',
+            })
+            .select('-isDraft -isPublished -isDeleted -updatedAt -__v')
+            .lean()
+            .exec();
+
+        return spus
     }
 
     static async findAllPublishSpu({

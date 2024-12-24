@@ -119,7 +119,7 @@ const unPublishSpu = async ({
         isDraft: true,
         isPublished: false
     }
-    console.log("🚀 ~ ok:", ok)
+
     sendSyncMessage({
         action: "update",
         data: {
