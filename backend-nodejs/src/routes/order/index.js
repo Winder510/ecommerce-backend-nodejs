@@ -8,6 +8,7 @@ import {
 } from '../../auth/authUtils.js';
 
 const router = express.Router();
+router.get('/get-all-for-admin', asyncErrorHandler(orderController.getListOrderForAdmin));
 
 router.use(authenticationV2)
 router.post('', asyncErrorHandler(orderController.orderByUser));
@@ -17,7 +18,6 @@ router.post('/change-status', asyncErrorHandler(orderController.updateOrderStatu
 router.post('/find-all/:userId', asyncErrorHandler(orderController.getListOrderByUser));
 
 //admin
-router.get('get-all-for-admin', asyncErrorHandler(orderController.getListOrderForAdmin));
 
 router.post('/test', asyncErrorHandler(orderController.orderByUserV2));
 export default router;
