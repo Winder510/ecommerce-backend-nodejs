@@ -328,7 +328,7 @@ export class SpuService {
                 path: 'product_category',
                 select: 'category_name',
             })
-            .select('-isDraft -isPublished -isDeleted -updatedAt -__v')
+
             .lean()
             .exec();
 
@@ -344,11 +344,19 @@ export class SpuService {
             isPublished: true,
         };
 
-        return await querySpu({
-            query,
-            limit,
-            skip,
-        });
+        const spus = await spuModel
+            .find(query)
+            .skip(skip)
+            .limit(limit)
+            .populate({
+                path: 'product_category',
+                select: 'category_name',
+            })
+            .lean()
+            .exec();
+
+        return spus
+
     }
 
     static async findAllSpu({
@@ -357,11 +365,18 @@ export class SpuService {
     }) {
         const query = {};
 
-        return await querySpu({
-            query,
-            limit,
-            skip,
-        });
+        const spus = await spuModel
+            .find(query)
+            .skip(skip)
+            .limit(limit)
+            .populate({
+                path: 'product_category',
+                select: 'category_name',
+            })
+            .lean()
+            .exec();
+
+        return spus
     }
 
 
