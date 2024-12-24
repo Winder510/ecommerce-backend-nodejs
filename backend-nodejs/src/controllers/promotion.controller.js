@@ -68,6 +68,31 @@ class PromotionController {
         }).send(res);
     };
 
+    getOnePromotionEvent = async (req, res, next) => {
+        new SuccessResponse({
+            message: 'Find one promotion event',
+            metadata: await PromotionService.getOnePromotionEvent(),
+        }).send(res);
+    };
+
+    getPromotionEventList = async (req, res, next) => {
+        new SuccessResponse({
+            message: 'Find list promotion event',
+            metadata: await PromotionService.getPromotionEventList(),
+        }).send(res);
+    };
+
+
+
+
+
+
+
+
+
+
+
+
     test = async (req, res, next) => {
         new SuccessResponse({
             message: 'Find one promotion',

@@ -22,6 +22,13 @@ class PromotionService {
         startTime,
         endTime,
     }) {
+        if (eventType === "Flash sale") {
+            const check = isTimeSlotAvailable(startTime, endTime)
+            if (!check) {
+                throw BadRequestError("Lỗi: Trùng thời gian flash sale")
+            }
+        }
+
         const newPromotion = new promotionModel({
             prom_name,
             prom_banner,
@@ -344,5 +351,67 @@ class PromotionService {
             };
         }
     };
+
+
+    static getOnePromotionEvent = async () => {
+        try {
+            const currentTime = new Date();
+            currentTime.setHours(currentTime.getHours() + 7);
+            const promotionEvent = await promotionModel
+                .findOne({
+                    eventType: "Custom",
+                    disable: false,
+                    startTime: {
+                        $lte: currentTime
+                    },
+                    endTime: {
+                        $gte: currentTime
+                    },
+                })
+                .sort({
+                    createdAt: -1,
+                })
+                .lean();
+
+            if (!promotionEvent) {
+                throw new NotFoundError("Không tìm thấy sự kiện khuyến mãi phù hợp.");
+            }
+
+            return promotionEvent;
+        } catch (error) {
+            throw new Error(`Lỗi khi lấy sự kiện khuyến mãi: ${error.message}`);
+        }
+    };
+
+    static getPromotionEventList = async ({
+        eventType = "Custom"
+    }) => {
+        try {
+            const currentTime = new Date();
+            currentTime.setHours(currentTime.getHours() + 7);
+            const promotionEvents = await promotionModel
+                .find({
+                    eventType: eventType,
+                    disable: false,
+                    startTime: {
+                        $lte: currentTime
+                    },
+                    endTime: {
+                        $gte: currentTime
+                    },
+                })
+                .sort({
+                    createdAt: -1,
+                })
+                .lean();
+
+            return promotionEvents;
+        } catch (error) {
+            throw new Error(`Lỗi khi lấy danh sách sự kiện khuyến mãi: ${error.message}`);
+        }
+    };
+
+
+
 }
 export default PromotionService;

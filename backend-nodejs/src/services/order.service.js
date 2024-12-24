@@ -452,6 +452,15 @@ export class OrderService {
         return orders;
     }
 
-
+    static async getListOrderByAdmin() {
+        try {
+            const orders = await orderModel.find().sort({
+                createdAt: -1
+            }).lean();
+            return orders;
+        } catch (error) {
+            throw new Error(`Lỗi khi lấy danh sách đơn hàng: ${error.message}`);
+        }
+    }
 
 }

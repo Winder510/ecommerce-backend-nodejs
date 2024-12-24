@@ -12,6 +12,9 @@ router.get('/get-one/:id', asyncErrorHandler(promotionController.getOnePromotion
 router.post('/get-list', asyncErrorHandler(promotionController.getListPromotions));
 router.patch('/toggle-disable/:id', asyncErrorHandler(promotionController.toggleUpdateDisable));
 
+router.get('/get-event', asyncErrorHandler(promotionController.getOnePromotionEvent));
+router.post('/get-events', asyncErrorHandler(promotionController.getPromotionEventList));
+
 
 router.get('/check-overlap', asyncErrorHandler(promotionController.getSpuInPromotionIfOverLap));
 router.get('/active-flash-sale', asyncErrorHandler(promotionController.getActiveFlashSale));

@@ -1,33 +1,41 @@
 import promotionModel from "../promotion.model.js";
 
-export const isTimeSlotAvailable = async (
-    startTime,
-    endTime
-) => {
+export const isTimeSlotAvailable = async (startTime, endTime) => {
+    if (!startTime || !endTime || new Date(startTime) >= new Date(endTime)) {
+        throw new Error("Thời gian bắt đầu phải nhỏ hơn thời gian kết thúc.");
+    }
+
     const overlappingPromotions = await promotionModel.find({
-        $or: [{
+        $or: [
+            // 1. Promotion bắt đầu trước khi endTime và kết thúc sau startTime (giao nhau bất kỳ)
+            {
                 startTime: {
-                    $lte: endTime
+                    $lt: endTime
                 },
                 endTime: {
                     $gt: startTime
-                }
+                },
             },
+            // 2. Promotion nằm hoàn toàn bên trong khoảng (startTime - endTime)
             {
                 startTime: {
                     $gte: startTime,
                     $lte: endTime
-                }
+                },
             },
+            // 3. Promotion bao phủ khoảng (startTime - endTime)
             {
+                startTime: {
+                    $lte: startTime
+                },
                 endTime: {
-                    $gte: startTime,
-                    $lte: endTime
-                }
-            }
-        ]
+                    $gte: endTime
+                },
+            },
+        ],
     }).lean();
-    return overlappingPromotions;
+
+    return overlappingPromotions.length === 0; // true nếu không có sự kiện nào trùng
 };
 
 export const getListAppliedSpu = async (promotionOverLaps) => {

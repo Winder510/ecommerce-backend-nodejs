@@ -16,5 +16,8 @@ router.delete('/:orderId', asyncErrorHandler(orderController.cancelOrderByUser))
 router.post('/change-status', asyncErrorHandler(orderController.updateOrderStatusByAdmin));
 router.post('/find-all/:userId', asyncErrorHandler(orderController.getListOrderByUser));
 
+//admin
+router.get('get-all-for-admin', asyncErrorHandler(orderController.getListOrderByAdmin));
+
 router.post('/test', asyncErrorHandler(orderController.orderByUserV2));
 export default router;
