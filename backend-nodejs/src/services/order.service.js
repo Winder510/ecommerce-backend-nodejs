@@ -93,16 +93,16 @@ export class OrderService {
         orderId
     }) {
         const order = await orderModel.findOne({
-            _id: orderId,
+            _id: new mongoose.Types.ObjectId(orderId),
             order_userId: userId
         });
+
         if (!order) {
             throw new NotFoundError('Đơn hàng không tồn tại');
         }
         return order;
     }
 
-    // Cancel an order by user
     static async cancelOrderByUser({
         userId,
         orderId
@@ -116,17 +116,39 @@ export class OrderService {
             throw new NotFoundError('Đơn hàng không tồn tại');
         }
 
-        if (order.order_status !== 'pending') {
-            throw new BadRequestError('Chỉ đơn hàng chờ xác nhận mới có thể huỷ');
+        if (order.order_status !== 'confirmed') {
+            throw new BadRequestError('Chỉ đơn hàng đã xác nhận mới có thể huỷ');
         }
 
         order.order_status = 'cancelled';
+
         await order.save();
+
+        await Promise.all([
+            ...order.order_products.map(({
+                skuId,
+                spuId,
+                quantity,
+                promotionId,
+
+            }) => {
+                SkuService.reduceInventory(skuId, -quantity);
+                PromotionService.updateAppliedQuantity({
+                    promotionId,
+                    skuId,
+                    spuId,
+                    quantity: -quantity
+                })
+            }),
+        ]);
+
+        if (order.order_checkout.usedLoyalPoint > 0) {
+            await resetLoyaltyPoints(order.order_userId);
+        }
 
         return order;
     }
 
-    // Update order status by admin
     static async updateOrderStatusByAdmin({
         orderId,
         status
@@ -146,144 +168,6 @@ export class OrderService {
 
         return order;
     }
-
-
-    // static async orderByUserV2({
-    //     cartId,
-    //     userId,
-    //     shop_discount,
-    //     products_order,
-    //     user_payment,
-    //     user_address,
-    //     payment_method = 'COD'
-    // }) {
-    //     const session = await mongoose.startSession();
-    //     session.startTransaction();
-    //     let acquireProduct = [];
-
-    //     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-    //     try {
-    //         // Step 1: Checkout review
-    //         const {
-    //             checkOut_order
-    //         } = await CheckOutService.checkOutRevew({
-    //             cartId,
-    //             userId,
-    //             shop_discount,
-    //             products_order,
-    //         });
-
-    //         // Step 2: Lock inventory
-    //         acquireProduct = await Promise.all(
-    //             products_order.map(async ({
-    //                 spuId,
-    //                 skuId,
-    //                 quantity
-    //             }) => {
-    //                 const keyLock = await acquireLockV2({
-    //                     skuId,
-    //                     quantity
-    //                 });
-    //                 if (!keyLock) return {
-    //                     success: false
-    //                 };
-    //                 return {
-    //                     success: true,
-    //                     keyLock,
-    //                     skuId
-    //                 };
-    //             })
-    //         );
-
-    //         if (acquireProduct.some(result => !result.success)) {
-    //             throw new BadRequestError('Một số sản phẩm đã được cập nhật, vui lòng quay lại');
-    //         }
-
-    //         // Step 3: Handle payment based on payment method
-    //         let paymentIntent;
-    //         if (payment_method === 'STRIPE') {
-    //             paymentIntent = await stripe.paymentIntents.create({
-    //                 amount: checkOut_order.totalCheckOut,
-    //                 currency: 'vnd',
-    //                 payment_method_types: ['card'],
-    //                 metadata: {
-    //                     userId,
-    //                     order_products: JSON.stringify(products_order.map(p => p.productId))
-    //                 }
-    //             });
-    //         }
-
-    //         // Step 4: Create order - Fixed to use array as first argument
-    //         const [newOrder] = await orderModel.create([{
-    //             order_userId: userId,
-    //             order_checkout: checkOut_order,
-    //             order_shipping: user_address,
-    //             order_payment: {
-    //                 ...user_payment,
-    //                 status: payment_method === 'STRIPE' ? 'pending' : 'succeeded',
-    //                 payment_method,
-    //                 payment_intent_id: paymentIntent?.id
-    //             },
-    //             order_products: products_order,
-    //             order_status: payment_method === 'STRIPE' ? 'pending' : 'confirmed'
-    //         }], {
-    //             session
-    //         });
-
-    //         // // Step 5: Update inventory and delete cart items
-    //         // await Promise.all([
-    //         //     ...products_order.map(({
-    //         //             productId,
-    //         //             quantity
-    //         //         }) =>
-    //         //         ProductService.reduceInventory(productId, quantity, session)
-    //         //     ),
-    //         //     ...products_order.map(({
-    //         //             productId
-    //         //         }) =>
-    //         //         CartService.deleteUserCart({
-    //         //             userId,
-    //         //             productId
-    //         //         }, session)
-    //         //     )
-    //         // ]);
-
-    //         // Step 6: Commit transaction
-    //         await session.commitTransaction();
-
-    //         // Step 7: Release locks
-    //         await Promise.all(
-    //             acquireProduct.map(({
-    //                 keyLock
-    //             }) => releaseLock(keyLock))
-    //         );
-
-    //         // Return different results based on payment method
-    //         return payment_method === 'STRIPE' ? {
-    //             clientSecret: paymentIntent.client_secret
-    //         } : {
-    //             order: newOrder
-    //         };
-
-    //     } catch (error) {
-    //         // Rollback transaction
-    //         await session.abortTransaction();
-
-    //         // Release all acquired locks
-    //         if (acquireProduct?.length) {
-    //             await Promise.all(
-    //                 acquireProduct
-    //                 .filter(result => result.keyLock)
-    //                 .map(({
-    //                     keyLock
-    //                 }) => releaseLock(keyLock))
-    //             );
-    //         }
-    //         throw error;
-    //     } finally {
-    //         await session.endSession();
-    //     }
-    // }
 
 
     static async orderByUserV2({
@@ -395,14 +279,14 @@ export class OrderService {
                         spuId,
                         quantity,
                         promotionId,
-                        quanity
+
                     }) => {
                         SkuService.reduceInventory(skuId, quantity);
                         PromotionService.updateAppliedQuantity({
                             promotionId,
                             skuId,
                             spuId,
-                            quanity
+                            quantity
                         })
                     }),
                     ...newOrder.order_products.map(({
@@ -534,6 +418,34 @@ export class OrderService {
                 await mongoSession.endSession();
             }
         }
+    }
+
+    static async getListOrderByUser({
+        userId,
+        status = "all"
+    }) {
+        let orders
+        if (status === "all") {
+            orders = await orderModel.find({
+                order_userId: userId,
+            }).sort({
+                createdAt: -1
+            });
+        } else {
+            orders = await orderModel.find({
+                order_userId: userId,
+                order_status: status,
+            }).sort({
+                createdAt: -1
+            });
+        }
+
+
+        if (!orders || orders.length === 0) {
+            throw new NotFoundError('Không có đơn hàng nào với trạng thái này');
+        }
+
+        return orders;
     }
 
 

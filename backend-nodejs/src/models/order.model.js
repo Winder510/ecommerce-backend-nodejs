@@ -25,8 +25,21 @@ var orderSchema = new mongoose.Schema({
         */
     },
     order_payment: {
-        type: Object,
-        default: {},
+        status: {
+            type: String,
+            enum: ['pending', 'succeeded', 'failed'],
+            default: 'pending',
+            required: true,
+        },
+        payment_method: {
+            type: String,
+            enum: ['STRIPE', 'COD'],
+            required: true,
+        },
+        checkout_session_id: {
+            type: String,
+            default: null,
+        },
     },
     order_shipping: { // receive address
         type: Object,

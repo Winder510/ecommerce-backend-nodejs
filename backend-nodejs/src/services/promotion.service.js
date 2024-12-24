@@ -309,9 +309,6 @@ class PromotionService {
         quantity
     }) => {
         try {
-            if (quantity <= 0) {
-                throw new Error('Số lượng cập nhật phải lớn hơn 0.');
-            }
 
             const result = await promotionModel.findOneAndUpdate({
                 _id: promotionId

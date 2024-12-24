@@ -16,7 +16,10 @@ class CheckOutController {
     getOneOrderByUser = async (req, res, next) => {
         new SuccessResponse({
             message: 'get one order success',
-            metadata: await OrderService.getOneOrderByUser(req.body),
+            metadata: await OrderService.getOneOrderByUser({
+                ...req.params,
+                userId: req.user.userId
+            }),
         }).send(res);
     };
 
@@ -24,7 +27,10 @@ class CheckOutController {
     cancelOrderByUser = async (req, res, next) => {
         new SuccessResponse({
             message: 'create order success',
-            metadata: await OrderService.cancelOrderByUser(req.body),
+            metadata: await OrderService.cancelOrderByUser({
+                ...req.params,
+                userId: req.user.userId
+            }),
         }).send(res);
     };
 
@@ -42,5 +48,23 @@ class CheckOutController {
             metadata: await OrderService.orderByUserV2(req.body),
         }).send(res);
     };
+
+    getListOrderByUser = async (req, res, next) => {
+        const {
+            userId
+        } = req.params;
+        const {
+            status
+        } = req.query;
+        new SuccessResponse({
+            message: 'create order success',
+            metadata: await OrderService.getListOrderByUser({
+                userId,
+                status
+            }),
+        }).send(res);
+    };
+
+
 }
 export default new CheckOutController();
