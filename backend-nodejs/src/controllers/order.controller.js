@@ -65,7 +65,7 @@ class CheckOutController {
         }).send(res);
     };
 
-    getListOrderByAdmin = async (req, res, next) => {
+    getListOrderForAdmin = async (req, res, next) => {
         new SuccessResponse({
             message: 'get  order ',
             metadata: await OrderService.getListOrderByAdmin(),
