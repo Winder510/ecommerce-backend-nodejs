@@ -153,7 +153,7 @@ export class OrderService {
         orderId,
         status
     }) {
-        const validStatuses = ['pending', 'confirmed', 'shipped', 'cancelled', 'delivered'];
+        const validStatuses = ['confirmed', 'shipped', 'cancelled', 'delivered'];
         if (!validStatuses.includes(status)) {
             throw new BadRequestError('Trạng thái đơn hàng không hợp lệ');
         }
@@ -165,6 +165,10 @@ export class OrderService {
 
         order.order_status = status;
         await order.save();
+
+        if (status === delivered) {
+            await updateLoyaltyPoints(order.order_userId, order.order_checkout.accLoyalPoint)
+        }
 
         return order;
     }
@@ -305,7 +309,7 @@ export class OrderService {
                     await resetLoyaltyPoints(newOrder.order_userId);
                 }
                 // update loyadl point
-                await updateLoyaltyPoints(newOrder.order_userId, newOrder.order_checkout.accLoyalPoint)
+
             }
 
             // Step 6: Commit transaction
@@ -377,7 +381,7 @@ export class OrderService {
                     await resetLoyaltyPoints(order.order_userId);
                 }
                 // update loyadl point
-                await updateLoyaltyPoints(order.order_userId, order.order_checkout.accLoyalPoint)
+
                 // Update inventory and clear cart, update applied produt in promotion, update discount use
                 await Promise.all([
                     ...order.order_products.map(({
