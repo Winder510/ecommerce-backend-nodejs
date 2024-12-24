@@ -10,7 +10,7 @@ import {
 const router = express.Router();
 router.get('/get-all-for-admin', asyncErrorHandler(orderController.getListOrderForAdmin));
 router.post('/change-status', asyncErrorHandler(orderController.updateOrderStatusByAdmin));
-router.get('/get-one-for-admin/:orderId', asyncErrorHandler(orderController.getOneOrderByUser));
+router.get('/get-one-for-admin/:orderId', asyncErrorHandler(orderController.getOneOrderByAdmin));
 
 router.use(authenticationV2)
 router.post('', asyncErrorHandler(orderController.orderByUser));
