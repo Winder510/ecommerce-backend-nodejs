@@ -32,6 +32,12 @@ class CheckOutController {
         }).send(res);
     };
 
+    getOrderCountByStatus = async (req, res, next) => {
+        new SuccessResponse({
+            message: 'get one order success',
+            metadata: await OrderService.getOrderCountByStatus(),
+        }).send(res);
+    };
 
     cancelOrderByUser = async (req, res, next) => {
         new SuccessResponse({

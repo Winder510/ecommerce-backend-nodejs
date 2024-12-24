@@ -474,4 +474,27 @@ export class OrderService {
         return order;
     }
 
+    static async getOrderCountByStatus() {
+        try {
+            const orderCountByStatus = await orderModel.aggregate([{
+                    $group: {
+                        _id: "$order_status",
+                        count: {
+                            $sum: 1
+                        }
+                    }
+                },
+                {
+                    $sort: {
+                        count: -1
+                    }
+                }
+            ]);
+
+            return orderCountByStatus;
+        } catch (error) {
+            throw new Error(`Lỗi khi đếm số lượng đơn hàng theo trạng thái: ${error.message}`);
+        }
+    }
+
 }

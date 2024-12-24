@@ -11,6 +11,7 @@ const router = express.Router();
 router.get('/get-all-for-admin', asyncErrorHandler(orderController.getListOrderForAdmin));
 router.post('/change-status', asyncErrorHandler(orderController.updateOrderStatusByAdmin));
 router.get('/get-one-for-admin/:orderId', asyncErrorHandler(orderController.getOneOrderByAdmin));
+router.get('/count-order', asyncErrorHandler(orderController.getOrderCountByStatus));
 
 router.use(authenticationV2)
 router.post('', asyncErrorHandler(orderController.orderByUser));
