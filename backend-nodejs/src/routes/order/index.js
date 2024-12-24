@@ -9,12 +9,12 @@ import {
 
 const router = express.Router();
 router.get('/get-all-for-admin', asyncErrorHandler(orderController.getListOrderForAdmin));
+router.post('/change-status', asyncErrorHandler(orderController.updateOrderStatusByAdmin));
 
 router.use(authenticationV2)
 router.post('', asyncErrorHandler(orderController.orderByUser));
 router.get('/:orderId', asyncErrorHandler(orderController.getOneOrderByUser));
 router.delete('/:orderId', asyncErrorHandler(orderController.cancelOrderByUser));
-router.post('/change-status', asyncErrorHandler(orderController.updateOrderStatusByAdmin));
 router.post('/find-all/:userId', asyncErrorHandler(orderController.getListOrderByUser));
 
 //admin

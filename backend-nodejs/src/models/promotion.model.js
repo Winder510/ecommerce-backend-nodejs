@@ -36,7 +36,6 @@ var promotionSchema = new mongoose.Schema({
             },
             quantityLimit: {
                 type: Number,
-                required: true,
                 min: 1
             },
             maxDiscountValue: {

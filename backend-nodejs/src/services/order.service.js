@@ -153,7 +153,7 @@ export class OrderService {
         orderId,
         status
     }) {
-        const validStatuses = ['confirmed', 'shipped', 'cancelled', 'delivered'];
+        const validStatuses = ['confirmed', 'processing', 'shipped', 'cancelled', 'delivered'];
         if (!validStatuses.includes(status)) {
             throw new BadRequestError('Trạng thái đơn hàng không hợp lệ');
         }
@@ -166,7 +166,7 @@ export class OrderService {
         order.order_status = status;
         await order.save();
 
-        if (status === delivered) {
+        if (status === "delivered") {
             await updateLoyaltyPoints(order.order_userId, order.order_checkout.accLoyalPoint)
         }
 

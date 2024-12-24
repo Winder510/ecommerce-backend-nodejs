@@ -291,6 +291,7 @@ class PromotionService {
             totalQuantityLimit,
             totalAppliedQuantity
         } = await getTotalQuantityAppliedAndLimit(appliedProducts)
+
         const spuswithPrice = await Promise.all(spus.map(async spu => {
             return {
                 ...spu,
@@ -377,7 +378,32 @@ class PromotionService {
                 throw new NotFoundError("Không tìm thấy sự kiện khuyến mãi phù hợp.");
             }
 
-            return promotionEvent;
+            const spuIds = promotionEvent.appliedProduct.map(product => product.spuId);
+
+            const spus = await spuModel.find({
+                _id: {
+                    $in: spuIds
+                }
+            }).lean();
+
+            if (!spus || spus.length === 0) {
+                throw new BadRequestError("No SPUs found for the provided promotion");
+            }
+
+            const spuswithPrice = await Promise.all(spus.map(async spu => {
+                return {
+                    ...spu,
+                    product_price: await getPriceSpu(spu._id),
+                }
+            }));
+
+            console.log("🚀 ~ PromotionService ~ spuswithPrice ~ spuswithPrice:", spuswithPrice)
+            return {
+                ...promotionEvent,
+                appliedProduct: spuswithPrice
+            };
+
+
         } catch (error) {
             throw new Error(`Lỗi khi lấy sự kiện khuyến mãi: ${error.message}`);
         }
@@ -405,7 +431,8 @@ class PromotionService {
                 })
                 .lean();
 
-            return promotionEvents;
+
+            console.log("🚀 ~ PromotionService ~ promotionEvents:", promotionEvents)
         } catch (error) {
             throw new Error(`Lỗi khi lấy danh sách sự kiện khuyến mãi: ${error.message}`);
         }
