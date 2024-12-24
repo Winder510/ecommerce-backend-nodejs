@@ -27,8 +27,8 @@ router.get('/best-sold', asyncErrorHandler(productController.getBestSoldSpuEachC
 //router.use(authenticationV2);
 
 router.post('', asyncErrorHandler(productController.createProduct));
-router.post('/publish/:id', asyncErrorHandler(productController.publishProduct));
-router.post('/unpublish/:id', asyncErrorHandler(productController.unPublishProduct));
+router.get('/publish/:id', asyncErrorHandler(productController.publishProduct));
+router.get('/unpublish/:id', asyncErrorHandler(productController.unPublishProduct));
 
 // for admin
 router.post('/list-detail-product', asyncErrorHandler(productController.getListProdcutDetailsForAdmin));
