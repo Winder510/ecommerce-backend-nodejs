@@ -397,7 +397,6 @@ class PromotionService {
                 }
             }));
 
-            console.log("🚀 ~ PromotionService ~ spuswithPrice ~ spuswithPrice:", spuswithPrice)
             return {
                 ...promotionEvent,
                 appliedProduct: spuswithPrice
@@ -436,6 +435,47 @@ class PromotionService {
         }
     };
 
+    static getOnePromotionEventById = async ({
+        promotionId
+    }) => {
+        try {
+            const currentTime = new Date();
+            currentTime.setHours(currentTime.getHours() + 7);
+            const promotionEvent = await promotionModel.findById(promotionId).lean();
+
+            if (!promotionEvent) {
+                throw new NotFoundError("Không tìm thấy sự kiện khuyến mãi phù hợp.");
+            }
+
+            const spuIds = promotionEvent.appliedProduct.map(product => product.spuId);
+
+            const spus = await spuModel.find({
+                _id: {
+                    $in: spuIds
+                }
+            }).lean();
+
+            if (!spus || spus.length === 0) {
+                throw new BadRequestError("No SPUs found for the provided promotion");
+            }
+
+            const spuswithPrice = await Promise.all(spus.map(async spu => {
+                return {
+                    ...spu,
+                    product_price: await getPriceSpu(spu._id),
+                }
+            }));
+
+            return {
+                ...promotionEvent,
+                appliedProduct: spuswithPrice
+            };
+
+
+        } catch (error) {
+            throw new Error(`Lỗi khi lấy sự kiện khuyến mãi: ${error.message}`);
+        }
+    };
 
 
 }

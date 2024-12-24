@@ -14,7 +14,7 @@ router.patch('/toggle-disable/:id', asyncErrorHandler(promotionController.toggle
 
 router.get('/get-event', asyncErrorHandler(promotionController.getOnePromotionEvent));
 router.get('/get-events', asyncErrorHandler(promotionController.getPromotionEventList));
-
+router.get('/get-event/:promotionId', asyncErrorHandler(promotionController.getOnePromotionEventById));
 
 router.get('/check-overlap', asyncErrorHandler(promotionController.getSpuInPromotionIfOverLap));
 router.get('/active-flash-sale', asyncErrorHandler(promotionController.getActiveFlashSale));
