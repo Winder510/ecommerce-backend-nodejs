@@ -328,7 +328,6 @@ export class SpuService {
                 path: 'product_category',
                 select: 'category_name',
             })
-
             .lean()
             .exec();
 
