@@ -16,8 +16,8 @@ router.get('/address/:id', asyncErrorHandler(userController.getUserAddress));
 router.get('/default/address/:id', asyncErrorHandler(userController.getUserDefaultAddress));
 
 router.get('/welcome', asyncErrorHandler(userController.checkLoginEmailToken));
-
 router.use(authenticationV2);
+router.put("/profile/:id", asyncErrorHandler(userController.updateUserProfile));
 
 router.patch('', asyncErrorHandler(userController.changePassword));
 

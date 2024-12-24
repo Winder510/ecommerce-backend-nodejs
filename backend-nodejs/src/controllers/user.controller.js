@@ -63,5 +63,36 @@ class UserController {
         }).send(res);
     };
 
+    updateUserProfile = async (req, res, next) => {
+        try {
+            const {
+                id
+            } = req.user.userId; // ID của người dùng từ route
+            const {
+                usr_name,
+                usr_phone,
+                usr_email,
+                usr_img
+            } = req.body;
+
+            // Gọi service để thực hiện cập nhật
+            const updatedUser = await updateProfileService({
+                id,
+                usr_name,
+                usr_phone,
+                usr_email,
+                usr_img,
+            });
+
+            // Trả về kết quả sau khi cập nhật
+            return new SuccessResponse({
+                message: "Profile updated successfully",
+                metadata: updatedUser,
+            }).send(res);
+        } catch (error) {
+            next(error);
+        }
+    };
+
 }
 export default new UserController();

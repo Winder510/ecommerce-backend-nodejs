@@ -344,6 +344,40 @@ const resetLoyaltyPoints = async (userId) => {
     }
 };
 
+const updateProfileService = async ({
+    id,
+    usr_name,
+    usr_phone,
+    usr_email,
+    usr_img
+}) => {
+    try {
+        const user = await userModel.findById(id);
+        if (!user) {
+            throw new Error("User not found");
+        }
+
+        if (usr_name) user.usr_name = usr_name;
+        if (usr_phone) user.usr_phone = usr_phone;
+        if (usr_email) user.usr_email = usr_email;
+        if (usr_img) user.usr_img = usr_img;
+
+        await user.save();
+
+        return {
+            id: user._id,
+            usr_name: user.usr_name,
+            usr_phone: user.usr_phone,
+            usr_email: user.usr_email,
+            usr_img: user.usr_img,
+        };
+    } catch (error) {
+        console.error("Error updating user profile:", error);
+        throw error;
+    }
+};
+
+
 export {
     newUserService,
     checkLoginEmailTokenService,
@@ -353,6 +387,7 @@ export {
     getListAddress,
     getDefaultAddress,
     updateLoyaltyPoints,
-    resetLoyaltyPoints
+    resetLoyaltyPoints,
+    updateProfileService
 
 };
