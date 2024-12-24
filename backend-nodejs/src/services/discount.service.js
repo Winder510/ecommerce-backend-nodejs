@@ -477,10 +477,10 @@ export default class DiscountService {
             if (discount.discount_max_uses_per_user && userId) {
                 const userUsedCount = discount.discount_user_used.filter(
                     used => used.userId.toString() === userId.toString()
-                ).length;
+                ).reduce((total, used) => total + used.use_count, 0);
 
                 if (userUsedCount >= discount.discount_max_uses_per_user) {
-                    continue;
+                    continue; // Bỏ qua giảm giá này nếu đã vượt quá giới hạn
                 }
             }
 
