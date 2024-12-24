@@ -10,6 +10,7 @@ import {
 const router = express.Router();
 router.get('/get-all-for-admin', asyncErrorHandler(orderController.getListOrderForAdmin));
 router.post('/change-status', asyncErrorHandler(orderController.updateOrderStatusByAdmin));
+router.get('/get-one-for-admin/:orderId', asyncErrorHandler(orderController.getOneOrderByUser));
 
 router.use(authenticationV2)
 router.post('', asyncErrorHandler(orderController.orderByUser));
@@ -18,6 +19,5 @@ router.delete('/:orderId', asyncErrorHandler(orderController.cancelOrderByUser))
 router.post('/find-all/:userId', asyncErrorHandler(orderController.getListOrderByUser));
 
 //admin
-
 router.post('/test', asyncErrorHandler(orderController.orderByUserV2));
 export default router;

@@ -462,5 +462,18 @@ export class OrderService {
         }
     }
 
+    static async getOneOrderByAdmin({
+        orderId
+    }) {
+        const order = await orderModel.findOne({
+            _id: new mongoose.Types.ObjectId(orderId),
+        }).populate(order_userId);
+
+        if (!order) {
+            throw new NotFoundError('Đơn hàng không tồn tại');
+        }
+
+        return order;
+    }
 
 }

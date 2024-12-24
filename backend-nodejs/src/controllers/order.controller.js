@@ -23,6 +23,15 @@ class CheckOutController {
         }).send(res);
     };
 
+    getOneOrderByAdmin = async (req, res, next) => {
+        new SuccessResponse({
+            message: 'get one order success',
+            metadata: await OrderService.getOneOrderByAdmin({
+                ...req.params,
+            }),
+        }).send(res);
+    };
+
 
     cancelOrderByUser = async (req, res, next) => {
         new SuccessResponse({

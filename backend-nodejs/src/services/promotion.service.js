@@ -430,9 +430,7 @@ class PromotionService {
                     createdAt: -1,
                 })
                 .lean();
-
-
-            console.log("🚀 ~ PromotionService ~ promotionEvents:", promotionEvents)
+            return promotionEvents
         } catch (error) {
             throw new Error(`Lỗi khi lấy danh sách sự kiện khuyến mãi: ${error.message}`);
         }
