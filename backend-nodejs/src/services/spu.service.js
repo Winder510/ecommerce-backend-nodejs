@@ -228,21 +228,7 @@ export class SpuService {
         });
     }
 
-    static async publishSpu({
-        product_id
-    }) {
-        return await publishSpu({
-            product_id,
-        });
-    }
 
-    static async unPublishSpu({
-        product_id
-    }) {
-        return await unPublishSpu({
-            product_id,
-        });
-    }
 
     static async searchSpu({
         keySearch
@@ -279,7 +265,21 @@ export class SpuService {
 
 
     // admin
+    static async publishSpu({
+        spuId
+    }) {
+        return await publishSpu({
+            product_id: spuId,
+        });
+    }
 
+    static async unPublishSpu({
+        spuId
+    }) {
+        return await unPublishSpu({
+            product_id: spuId,
+        });
+    }
 
     static async totalRevenueByCategory(categoryId) {
         const spus = await this.getListPublishSpuByCategory({
@@ -311,7 +311,6 @@ export class SpuService {
 
         return data;
     }
-
 
     static async findAlLDraftSpu({
         limit = 10,

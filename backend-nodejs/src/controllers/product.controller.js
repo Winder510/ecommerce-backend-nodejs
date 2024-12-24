@@ -104,7 +104,7 @@ class ProductController {
         new SuccessResponse({
             message: 'publish spu',
             metadata: await SpuService.publishSpu({
-                product_id: req.params.id,
+                spuId: req.params.id,
             }),
         }).send(res);
     };
@@ -113,7 +113,7 @@ class ProductController {
         new SuccessResponse({
             message: 'unPublish spu',
             metadata: await SpuService.unPublishSpu({
-                product_id: req.params.id,
+                spuId: req.params.id,
             }),
         }).send(res);
     };
