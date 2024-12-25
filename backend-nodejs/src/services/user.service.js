@@ -349,8 +349,11 @@ const updateProfileService = async ({
     usr_name,
     usr_phone,
     usr_email,
-    usr_img
+    usr_img,
+    usr_sex,
+    usr_date_of_birth
 }) => {
+    console.log("🚀 ~ id:", id)
     try {
         const user = await userModel.findById(id);
         if (!user) {
@@ -360,8 +363,9 @@ const updateProfileService = async ({
         if (usr_name) user.usr_name = usr_name;
         if (usr_phone) user.usr_phone = usr_phone;
         if (usr_email) user.usr_email = usr_email;
-        if (usr_img) user.usr_img = usr_img;
-
+        if (usr_img) user.usr_avatar = usr_img;
+        if (usr_sex) user.usr_sex = usr_sex;
+        if (usr_date_of_birth) user.usr_date_of_birth = usr_date_of_birth;
         await user.save();
 
         return {
@@ -369,7 +373,9 @@ const updateProfileService = async ({
             usr_name: user.usr_name,
             usr_phone: user.usr_phone,
             usr_email: user.usr_email,
-            usr_img: user.usr_img,
+            usr_avatar: user.usr_avatar,
+            usr_sex: user.usr_sex,
+            usr_date_of_birth: user.usr_date_of_birth,
         };
     } catch (error) {
         console.error("Error updating user profile:", error);

@@ -45,6 +45,9 @@ const findUserById = async (
             usr_status: 1,
             usr_role: 1,
             usr_avatar: 1,
+            usr_sex: 1,
+            usr_date_of_birth: 1,
+            usr_phone: 1,
             usr_loyalPoint: 1
         })
         .lean();

@@ -10,6 +10,7 @@ import {
     getDefaultAddress,
     getListAddress,
     getListUser,
+    updateProfileService,
 } from '../services/user.service.js';
 
 class UserController {
@@ -86,22 +87,27 @@ class UserController {
     updateUserProfile = async (req, res, next) => {
         try {
             const {
-                id
-            } = req.user.userId; // ID của người dùng từ route
+                userId
+            } = req.user; // ID của người dùng từ route
+            console.log("🚀 ~ UserController ~ updateUserProfile= ~ req.user:", req.user)
             const {
                 usr_name,
                 usr_phone,
                 usr_email,
-                usr_img
+                usr_img,
+                usr_sex,
+                usr_date_of_birth
             } = req.body;
 
             // Gọi service để thực hiện cập nhật
             const updatedUser = await updateProfileService({
-                id,
+                id: userId,
                 usr_name,
                 usr_phone,
                 usr_email,
                 usr_img,
+                usr_sex,
+                usr_date_of_birth
             });
 
             // Trả về kết quả sau khi cập nhật
