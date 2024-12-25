@@ -260,6 +260,15 @@ export default class CommentService {
         userId,
         productId
     }) => {
+        const comment = await commentModel.findOne({
+            comment_productId: productId,
+            comment_userId: userId,
+            comment_rating: {
+                $gt: 0
+            }
+        });
 
-    }
+        return !!comment;
+    };
+
 }

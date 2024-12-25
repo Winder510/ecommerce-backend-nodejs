@@ -42,5 +42,14 @@ class CommentController {
         }).send(res);
     };
 
+    checkCommentByPurchaser = async (req, res, next) => {
+        new SuccessResponse({
+            message: 'like comment success',
+            metadata: await commentService.checkCommentByPurchaser({
+                ...req.body
+            }),
+        }).send(res);
+    };
+
 }
 export default new CommentController();
