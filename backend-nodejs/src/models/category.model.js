@@ -22,7 +22,7 @@ var categorySchema = new mongoose.Schema({
     category_slug: {
         type: String,
     },
-    category_parent_Id: {
+    category_parentId: {
         type: Schema.Types.ObjectId,
         index: true,
     },

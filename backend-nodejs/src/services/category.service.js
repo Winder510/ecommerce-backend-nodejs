@@ -18,7 +18,7 @@ export class CategoryService {
         const newCategory = await categoryModel.create({
             category_name: name,
             category_description: description,
-            category_parent_Id: parentId,
+            category_parentId: parentId,
         });
 
         return newCategory;
