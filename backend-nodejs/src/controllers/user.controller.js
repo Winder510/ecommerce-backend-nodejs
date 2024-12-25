@@ -67,7 +67,9 @@ class UserController {
     getListUserForAddmin = async (req, res, next) => {
         return new SuccessResponse({
             message: 'add new user address',
-            metadata: await getListUser(),
+            metadata: await getListUser({
+                ...req.query
+            }),
         }).send(res);
     };
 

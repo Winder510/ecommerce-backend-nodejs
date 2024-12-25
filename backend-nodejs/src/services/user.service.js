@@ -377,10 +377,32 @@ const updateProfileService = async ({
     }
 };
 
-const getListUser = async () => {
-    const users = await userModel.find();
-    return users;
-}
+const getListUser = async (filters = {}) => {
+    const {
+        name,
+        role
+    } = filters;
+
+    const query = {};
+    if (name) {
+        query.usr_name = {
+            $regex: name,
+            $options: 'i'
+        };
+    }
+    if (role) {
+        query.usr_role = role;
+    }
+
+    try {
+        // Query the database with filters
+        const users = await userModel.find(query).populate('usr_role', 'rol_name');
+        return users;
+    } catch (error) {
+        console.error('Error fetching users:', error);
+        throw new Error('Failed to fetch users.');
+    }
+};
 export {
     newUserService,
     checkLoginEmailTokenService,
