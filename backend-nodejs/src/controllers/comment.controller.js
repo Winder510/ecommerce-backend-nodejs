@@ -51,5 +51,21 @@ class CommentController {
         }).send(res);
     };
 
+    getRatingCounts = async (req, res, next) => {
+        new SuccessResponse({
+            message: 'get rating conut',
+            metadata: await commentService.getRatingCounts({
+                ...req.params
+            }),
+        }).send(res);
+    };
+    getTotalCommentsAndRatings = async (req, res, next) => {
+        new SuccessResponse({
+            message: 'get rating conut',
+            metadata: await commentService.getTotalCommentsAndRatings({
+                ...req.params
+            }),
+        }).send(res);
+    };
 }
 export default new CommentController();

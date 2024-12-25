@@ -2,8 +2,6 @@
 import mongoose, {
     Schema
 } from 'mongoose'; // Erase if already required
-import mongooseDelete from 'mongoose-delete';
-
 const DOCUMENT_NAME = 'Comment';
 const COLLECTION_NAME = 'Comments';
 

@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import {
     TYPE_NOTIFICATION
 } from '../constant/index.js';
@@ -269,6 +270,79 @@ export default class CommentService {
         });
 
         return !!comment;
+    };
+
+    static getRatingCounts = async ({
+        productId
+    }) => {
+        try {
+            const ratingCounts = await commentModel.aggregate([{
+                    $match: {
+                        comment_productId: new mongoose.Types.ObjectId(productId)
+                    }
+                },
+                {
+                    $group: {
+                        _id: "$comment_rating",
+                        count: {
+                            $sum: 1
+                        }
+                    }
+                },
+                {
+                    $sort: {
+                        _id: 1
+                    }
+                }
+            ]);
+            return ratingCounts;
+        } catch (error) {
+            console.error("Error fetching rating counts:", error);
+            throw error;
+        }
+    };
+
+    static getTotalCommentsAndRatings = async ({
+        productId
+    }) => {
+        try {
+            // Lấy tổng số comment cho sản phẩm
+            const totalComments = await commentModel.countDocuments({
+                comment_productId: new mongoose.Types.ObjectId(productId),
+            });
+
+            // Lấy tổng số lượng comment có rating và phân theo rating
+            const ratingCounts = await commentModel.aggregate([{
+                    $match: {
+                        comment_productId: new mongoose.Types.ObjectId(productId),
+                        comment_rating: {
+                            $gt: 0
+                        } // Lọc chỉ những comment có rating > 0
+                    }
+                },
+                {
+                    $group: {
+                        _id: "$comment_rating", // Nhóm theo rating
+                        count: {
+                            $sum: 1
+                        } // Đếm số lượng comment theo rating
+                    }
+                },
+                {
+                    $sort: {
+                        _id: 1 // Sắp xếp theo rating từ thấp đến cao
+                    }
+                }
+            ]);
+
+            return {
+                totalComments, // Trả về tổng số comment
+                ratingCounts // Trả về số lượng comment theo rating
+            };
+        } catch (error) {
+            console.error("Error fetching total comments and ratings:", error);
+            throw error;
+        }
     };
 
 }
