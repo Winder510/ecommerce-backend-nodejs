@@ -8,6 +8,7 @@ import {
     checkLoginEmailTokenService,
     getDefaultAddress,
     getListAddress,
+    getListUser,
 } from '../services/user.service.js';
 
 class UserController {
@@ -60,6 +61,13 @@ class UserController {
             metadata: await getDefaultAddress({
                 ...req.params
             }),
+        }).send(res);
+    };
+
+    getListUserForAddmin = async (req, res, next) => {
+        return new SuccessResponse({
+            message: 'add new user address',
+            metadata: await getListUser(),
         }).send(res);
     };
 

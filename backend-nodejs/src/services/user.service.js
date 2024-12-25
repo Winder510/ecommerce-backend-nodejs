@@ -377,7 +377,10 @@ const updateProfileService = async ({
     }
 };
 
-
+const getListUser = async () => {
+    const users = await userModel.find();
+    return users;
+}
 export {
     newUserService,
     checkLoginEmailTokenService,
@@ -388,6 +391,6 @@ export {
     getDefaultAddress,
     updateLoyaltyPoints,
     resetLoyaltyPoints,
-    updateProfileService
-
+    updateProfileService,
+    getListUser
 };

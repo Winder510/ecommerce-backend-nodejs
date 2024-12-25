@@ -87,6 +87,15 @@ class CheckOutController {
         }).send(res);
     };
 
+    hasUserPurchasedProduct = async (req, res, next) => {
+        new SuccessResponse({
+            message: 'Check purchase',
+            metadata: await OrderService.hasUserPurchasedProduct({
+                ...req.body
+            }),
+        }).send(res);
+    };
+
 
 }
 export default new CheckOutController();

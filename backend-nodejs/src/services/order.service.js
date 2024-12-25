@@ -497,4 +497,21 @@ export class OrderService {
         }
     }
 
+    static hasUserPurchasedProduct = async ({
+        userId,
+        spuId
+    }) => {
+        try {
+
+            const orders = await orderModel.find({
+                order_userId: userId,
+                'order_products.spuId': spuId,
+            });
+
+            return orders.length > 0;
+        } catch (error) {
+            console.error('Error checking user purchase:', error);
+            throw new Error('Failed to check user purchase.');
+        }
+    };
 }
