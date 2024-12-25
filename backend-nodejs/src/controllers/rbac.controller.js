@@ -5,7 +5,8 @@ import {
     createRole,
     getListResource,
     getListRole,
-    createResource
+    createResource,
+    getListRoleForSelect
 } from '../services/rbac.service.js';
 
 const newRole = async (req, res, next) => {
@@ -33,9 +34,23 @@ const listRole = async (req, res, next) => {
     }).send(res);
 };
 
+
+
+///
+
+
+
+const listRoleForDisplay = async (req, res, next) => {
+    new SuccessResponse({
+        message: 'listRole',
+        metadata: await getListRoleForSelect(req.body),
+    }).send(res);
+};
+
 export {
     newRole,
     newResource,
     listRole,
-    listResource
+    listResource,
+    listRoleForDisplay
 };

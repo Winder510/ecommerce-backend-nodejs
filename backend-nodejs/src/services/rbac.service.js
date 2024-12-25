@@ -87,8 +87,7 @@ const getListRole = async ({
     userId, // admin mới xem được
 
 }) => {
-    console.log("🚀 ~ userId:", userId)
-    //
+
     const user = await userModel.findById(userId).populate('usr_role');
     const isAdmin = user.usr_role.rol_name === 'admin';
 
@@ -125,9 +124,14 @@ const getListRole = async ({
 
     return roles;
 };
+
+const getListRoleForSelect = async () => {
+    return roleModel.find().select("rol_name rol_description _id")
+}
 export {
     getListRole,
     createResource,
     getListResource,
-    createRole
+    createRole,
+    getListRoleForSelect
 };
