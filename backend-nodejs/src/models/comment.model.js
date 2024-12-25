@@ -37,7 +37,7 @@ var commentSchema = new mongoose.Schema({
     },
     comment_rating: {
         type: Number,
-        min: 1,
+        min: 0,
         max: 5,
         default: null,
     },
@@ -48,6 +48,10 @@ var commentSchema = new mongoose.Schema({
     comment_parentId: {
         type: Schema.Types.ObjectId,
     },
+    isCommentByPurchase: {
+        type: Boolean,
+        default: false
+    }
 }, {
     timestamps: true,
     collection: COLLECTION_NAME,

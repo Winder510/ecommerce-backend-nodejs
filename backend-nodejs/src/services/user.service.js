@@ -403,6 +403,29 @@ const getListUser = async (filters = {}) => {
         throw new Error('Failed to fetch users.');
     }
 };
+
+const changeUserStatus = async ({
+    userId,
+    status
+}) => {
+    if (!['active', 'block'].includes(status)) {
+        throw new Error('Invalid status value');
+    }
+
+    const updatedUser = await userModel.findByIdAndUpdate(
+        userId, {
+            usr_status: status
+        }, {
+            new: true
+        }
+    );
+
+    if (!updatedUser) {
+        throw new Error('User not found');
+    }
+
+    return updatedUser;
+};
 export {
     newUserService,
     checkLoginEmailTokenService,
@@ -414,5 +437,6 @@ export {
     updateLoyaltyPoints,
     resetLoyaltyPoints,
     updateProfileService,
-    getListUser
+    getListUser,
+    changeUserStatus
 };

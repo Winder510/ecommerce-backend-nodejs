@@ -5,6 +5,7 @@ import {
 import {
     addNewAddress,
     changePassWordService,
+    changeUserStatus,
     checkLoginEmailTokenService,
     getDefaultAddress,
     getListAddress,
@@ -69,6 +70,15 @@ class UserController {
             message: 'add new user address',
             metadata: await getListUser({
                 ...req.query
+            }),
+        }).send(res);
+    };
+
+    changeUserStatus = async (req, res, next) => {
+        return new SuccessResponse({
+            message: 'Change status',
+            metadata: await changeUserStatus({
+                ...req.body
             }),
         }).send(res);
     };

@@ -25,12 +25,14 @@ export default class CommentService {
         productId,
         userId,
         content,
+        rating,
         parentCommentId = null
     }) {
         const comment = new commentModel({
             comment_productId: productId,
             comment_userId: userId,
             comment_content: content,
+            comment_rating: rating,
             comment_parentId: parentCommentId,
         });
 
@@ -254,4 +256,10 @@ export default class CommentService {
         }
     };
 
+    static checkCommentByPurchaser = async ({
+        userId,
+        productId
+    }) => {
+
+    }
 }
