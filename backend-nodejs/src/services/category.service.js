@@ -99,6 +99,7 @@ export class CategoryService {
                         category_description: 1,
                         category_slug: 1,
                         category_img: 1,
+                        category_parentId: 1,
                         _id: 1,
                         children: [] // Tránh hiển thị children cho các danh mục con ở đây
                     }
