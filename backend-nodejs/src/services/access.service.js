@@ -49,6 +49,9 @@ class AccessService {
         const tokens = await createTokenPair({
                 userId: foundUser._id,
                 email: user.usr_email,
+                phone: foundUser.usr_phone,
+                role: foundUser.usr_role,
+
             },
             publicKey,
             privateKey,
@@ -109,7 +112,9 @@ class AccessService {
 
         const tokens = await createTokenPair({
                 userId: foundUser._id,
-                email,
+                email: foundUser.usr_email,
+                phone: foundUser.usr_phone,
+                role: foundUser.usr_role,
             },
             publicKey,
             privateKey,

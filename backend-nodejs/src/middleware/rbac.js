@@ -1,9 +1,12 @@
 import {
     AuthFailureError
 } from '../core/error.response.js';
+import roleModel from '../models/role.model.js';
+
 import {
     getListRole
 } from '../services/rbac.service.js';
+
 import rbac from './role.middleware.js';
 
 /**
@@ -13,10 +16,15 @@ import rbac from './role.middleware.js';
  * @returns {function} Middleware function để kiểm tra quyền truy cập.
  */
 const grantAccess = (action, resource) => {
+
     return async (req, res, next) => {
         try {
-            rbac.setGrants(await getListRole())
-            const roleName = req.user?.role || 'user'; // Lấy vai trò từ req.user hoặc mặc định là 'user'
+            // rbac.setGrants(await getListRole())
+            //  rbac.setGrants(grantList)
+            const roleId = req.user?.role;
+            const role = await roleModel.findById(roleId).lean()
+            const roleName = role.rol_name
+            console.log("🚀 ~ return ~ roleName:", roleName)
             const permission = await rbac.can(roleName)[action](resource);
 
             if (!permission.granted) {
