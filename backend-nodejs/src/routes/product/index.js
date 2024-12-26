@@ -45,7 +45,26 @@ router.get('/spu/filter', asyncErrorHandler(productController.findAllSpuWithCond
 
 router.post('/spu/filter-for-promotion', asyncErrorHandler(productController.filterSpuForPromotion));
 
-router.get('/recommendations/:productId', recommendController.getRecommendations);
+
 // routes/recommendation.routes.js
+router.get('/recommendations/:productId', recommendController.getRecommendations);
 router.get('/recommendationsV2/:userId/:productId', recommendController.getRecommendationsV2);
+router.get('/recommendations/detail-product/:productId', recommendController.getRecommendForDetailProductPage)
+router.get('/recommendations/home-page', recommendController.getRecommendForDetailProductPage)
+router.get('/recommendations/cart', recommendController.getRecommendForCartPage)
+router.get('/recommendations/profile', recommendController.getRecommendForProfilePage)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 export default router

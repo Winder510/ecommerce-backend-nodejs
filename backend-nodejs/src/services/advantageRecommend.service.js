@@ -229,6 +229,16 @@ class AdvancedRecommendationService {
             .limit(limit);
     }
 
+    async determineUserSegment(user) {
+        // Implement user segmentation logic here
+        // Có thể dựa vào:
+        // - Demographics (age, gender, location)
+        // - Purchase behavior (frequency, average order value)
+        // - Browse history
+        // - Wishlist
+        // Return segment identifier
+    }
+
     // Helper methods
     async getMaxQuantitySold() {
         const topProduct = await spuModel.findOne({
@@ -242,15 +252,6 @@ class AdvancedRecommendationService {
         return topProduct ? topProduct.product_quantitySold : 1;
     }
 
-    async determineUserSegment(user) {
-        // Implement user segmentation logic here
-        // Có thể dựa vào:
-        // - Demographics (age, gender, location)
-        // - Purchase behavior (frequency, average order value)
-        // - Browse history
-        // - Wishlist
-        // Return segment identifier
-    }
 
     // Seasonal/Trending recommendations
     async getTrendingRecommendations(limit = 5) {
@@ -292,6 +293,7 @@ class AdvancedRecommendationService {
             }
         ]);
     }
+
     // Lấy sản phẩm tương tự dựa trên category
     async findSimilarProducts({
         productId,
@@ -399,6 +401,7 @@ class AdvancedRecommendationService {
             throw new Error(`Error finding products by price range: ${error.message}`);
         }
     }
+
 }
 
 export default new AdvancedRecommendationService();

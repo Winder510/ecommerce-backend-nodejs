@@ -13,6 +13,7 @@ import {
 import {
     sendNotifitoQueue
 } from './rabbitmq.service.js';
+import userModel from '../models/user.model.js';
 
 /*
 {
