@@ -29,12 +29,19 @@ export default class CommentService {
         rating,
         parentCommentId = null
     }) {
+        const user = await userModel.findById(userId).populate('usr_role');
+        const roleName = user.usr_role.rol_name;
+        let isFromSystem = false;
+        if (roleName !== 'user') {
+            isFromSystem = true;
+        }
         const comment = new commentModel({
             comment_productId: productId,
             comment_userId: userId,
             comment_content: content,
             comment_rating: rating,
             comment_parentId: parentCommentId,
+            isFromSystem
         });
 
         let rightValue;
@@ -128,7 +135,8 @@ export default class CommentService {
                 })
                 .sort({
                     comment_left: 1,
-                });
+                }).skip(offset) // Bỏ qua `offset` comment đầu tiên
+                .limit(limit); // Lấy `limit` comment tiếp theo;
 
             return comments;
         }
@@ -143,7 +151,8 @@ export default class CommentService {
             })
             .sort({
                 createdAt: -1,
-            });
+            }).skip(offset) // Bỏ qua `offset` comment đầu tiên
+            .limit(limit); // Lấy `limit` comment tiếp theo;
         return comments;
     }
 
@@ -344,5 +353,6 @@ export default class CommentService {
             throw error;
         }
     };
+
 
 }

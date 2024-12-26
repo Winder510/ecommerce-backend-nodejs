@@ -7,6 +7,7 @@ import productController from '../../controllers/product.controller.js';
 import {
     authenticationV2
 } from '../../auth/authUtils.js';
+import recommendController from '../../controllers/recommend.controller.js';
 
 
 const router = express.Router();
@@ -44,5 +45,7 @@ router.get('/spu/filter', asyncErrorHandler(productController.findAllSpuWithCond
 
 router.post('/spu/filter-for-promotion', asyncErrorHandler(productController.filterSpuForPromotion));
 
-
+router.get('/recommendations/:productId', recommendController.getRecommendations);
+// routes/recommendation.routes.js
+router.get('/recommendationsV2/:userId/:productId', recommendController.getRecommendationsV2);
 export default router

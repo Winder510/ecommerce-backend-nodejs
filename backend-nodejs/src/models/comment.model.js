@@ -49,6 +49,10 @@ var commentSchema = new mongoose.Schema({
     isCommentByPurchase: {
         type: Boolean,
         default: false
+    },
+    isFromSystem: {
+        type: Boolean,
+        default: false
     }
 }, {
     timestamps: true,
