@@ -99,7 +99,6 @@ class AccessController {
 
                 // set cookies cho client
                 res.cookie('refresh_token', tokens.refreshToken, {
-                    httpOnly: true,
                     maxAge: 60 * 60 * 1000,
                 });
 

@@ -16,10 +16,11 @@ router.get(
         failureRedirect: '/login',
     }),
     (req, res) => {
-        const { token } = req.user;
+        const {
+            token
+        } = req.user;
 
         res.cookie('refresh_token', token.refreshToken, {
-            httpOnly: true,
             maxAge: 60 * 60 * 1000,
         });
 

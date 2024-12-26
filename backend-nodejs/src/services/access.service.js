@@ -59,8 +59,7 @@ class AccessService {
 
         // set cookies cho client
         res.cookie('refresh_token', tokens.refreshToken, {
-            httpOnly: true,
-            maxAge: 60 * 60 * 1000,
+            maxAge: 60 * 60 * 10000,
         });
 
         await KeyTokenService.upsertKeyToken({
@@ -71,7 +70,7 @@ class AccessService {
 
         return {
             user: getInfoData({
-                fields: ['_id', 'usr_name', 'usr_email'],
+                fields: ['_id', 'usr_name', 'usr_email', 'usr_avatar', "usr_phone", 'usr_role', "usr_sex", "usr_date_of_birth", "usr_loyalPoint"],
                 object: foundUser,
             }),
             accessToken: tokens.accessToken,
@@ -122,8 +121,7 @@ class AccessService {
 
         // set cookies cho client
         res.cookie('refresh_token', tokens.refreshToken, {
-            httpOnly: true,
-            maxAge: 60 * 60 * 1000,
+            maxAge: 60 * 60 * 10000,
         });
 
         await KeyTokenService.upsertKeyToken({
@@ -133,7 +131,7 @@ class AccessService {
         });
         return {
             user: getInfoData({
-                fields: ['_id', 'usr_name', 'usr_email', 'usr_avatar', 'usr_role'],
+                fields: ['_id', 'usr_name', 'usr_email', 'usr_avatar', "usr_phone", 'usr_role', "usr_sex", "usr_date_of_birth", "usr_loyalPoint"],
                 object: foundUser,
             }),
             // accessToken: tokens.accessToken

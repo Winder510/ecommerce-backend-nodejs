@@ -12,7 +12,7 @@ export const createTokenPair = async (payload, publicKey, privateKey) => {
     try {
         const accessToken = await jwt.sign(payload, privateKey, {
             algorithm: 'RS256',
-            expiresIn: '2 days',
+            expiresIn: '3 days',
         });
         const refreshToken = await jwt.sign(payload, privateKey, {
             algorithm: 'RS256',
@@ -67,7 +67,7 @@ function getAccessTokenFromHeader(req) {
 // })
 export const authenticationV2 = asyncErrorHandler(async (req, res, next) => {
     const userId = req.headers['x-client-id'];
-    if (!userId) throw new AuthFailureError('Invalid request');
+    if (!userId) throw new NotFoundError('Invalid request');
 
     const keyStore = await KeyTokenService.findByUserId(userId);
     if (!keyStore) throw new NotFoundError('Not found key store');
@@ -102,6 +102,7 @@ export const authenticationV2 = asyncErrorHandler(async (req, res, next) => {
 
         return next();
     } catch (e) {
-        throw e;
+        console.log("🚀 ~ authenticationV2 ~ e:", e)
+        throw new AuthFailureError("Lỗi JWT");
     }
 });
