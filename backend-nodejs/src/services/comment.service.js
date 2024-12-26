@@ -362,7 +362,13 @@ export default class CommentService {
             comment_productId: new mongoose.Types.ObjectId(productId),
             comment_rating: {
                 $gt: 0
-            }
+            }.populate({
+                path: 'comment_userId',
+                select: 'usr_avatar usr_name'
+            })
+            .sort({
+                createdAt: -1,
+            })
         }).lean();
 
         return totalComments;
