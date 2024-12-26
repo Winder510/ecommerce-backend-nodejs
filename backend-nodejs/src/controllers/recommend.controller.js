@@ -106,15 +106,13 @@ class RecommendationController {
     }
 
     async getRecommendForHomePage(req, res) {
-        const userId = req.user.userId;
+        const userId = req?.user?.userId;
+        let personalizedRecs;
+        if (userId) {
+            personalizedRecs = await advantageRecommendService.getSegmentBasedRecommendations(userId, 10);
+        }
 
-        const [
-            personalizedRecs,
-            trendingProducts
-        ] = await Promise.all([
-            advantageRecommendService.getSegmentBasedRecommendations(userId, 10),
-            advantageRecommendService.getTrendingRecommendations(10)
-        ]);
+        const trendingProducts = await advantageRecommendService.getTrendingRecommendations(10);
 
         new SuccessResponse({
             message: 'Get recommend in detail page',

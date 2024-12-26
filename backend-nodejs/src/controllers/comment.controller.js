@@ -59,10 +59,20 @@ class CommentController {
             }),
         }).send(res);
     };
+
     getTotalCommentsAndRatings = async (req, res, next) => {
         new SuccessResponse({
             message: 'get rating conut',
             metadata: await commentService.getTotalCommentsAndRatings({
+                ...req.params
+            }),
+        }).send(res);
+    };
+
+    getReviewProductById = async (req, res, next) => {
+        new SuccessResponse({
+            message: 'get ',
+            metadata: await commentService.getReviewProductById({
                 ...req.params
             }),
         }).send(res);

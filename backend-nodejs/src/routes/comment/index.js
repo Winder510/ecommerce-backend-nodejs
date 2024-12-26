@@ -18,4 +18,5 @@ router.use(authenticationV2);
 router.post('', asyncErrorHandler(commentController.createComment));
 router.delete('', asyncErrorHandler(commentController.deleteComments));
 router.put('/:commentId/like', asyncErrorHandler(commentController.likeComment));
+router.get("/with-rating/:productId", asyncErrorHandler(commentController.getReviewProductById))
 export default router;

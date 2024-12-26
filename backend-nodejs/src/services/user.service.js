@@ -433,6 +433,7 @@ const changeUserStatus = async ({
 
     return updatedUser;
 };
+
 export {
     newUserService,
     checkLoginEmailTokenService,

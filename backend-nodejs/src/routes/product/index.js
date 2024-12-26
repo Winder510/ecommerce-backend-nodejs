@@ -45,12 +45,12 @@ router.get('/spu/filter', asyncErrorHandler(productController.findAllSpuWithCond
 
 router.post('/spu/filter-for-promotion', asyncErrorHandler(productController.filterSpuForPromotion));
 
-
+router.use(authenticationV2);
 // routes/recommendation.routes.js
-router.get('/recommendations/:productId', recommendController.getRecommendations);
-router.get('/recommendationsV2/:userId/:productId', recommendController.getRecommendationsV2);
+router.get('/recommendations/base/:productId', recommendController.getRecommendations);
+router.get('/recommendationsV2/manyRC/:userId/:productId', recommendController.getRecommendationsV2);
 router.get('/recommendations/detail-product/:productId', recommendController.getRecommendForDetailProductPage)
-router.get('/recommendations/home-page', recommendController.getRecommendForDetailProductPage)
+router.get('/recommendations/home-page', recommendController.getRecommendForHomePage)
 router.get('/recommendations/cart', recommendController.getRecommendForCartPage)
 router.get('/recommendations/profile', recommendController.getRecommendForProfilePage)
 

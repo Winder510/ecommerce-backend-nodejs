@@ -355,5 +355,17 @@ export default class CommentService {
         }
     };
 
+    static getReviewProductById = async ({
+        productId
+    }) => {
+        const totalComments = await commentModel.find({
+            comment_productId: new mongoose.Types.ObjectId(productId),
+            comment_rating: {
+                $gt: 0
+            }
+        }).lean();
+
+        return totalComments;
+    }
 
 }
