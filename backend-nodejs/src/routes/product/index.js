@@ -45,6 +45,7 @@ router.get('/spu/filter', asyncErrorHandler(productController.findAllSpuWithCond
 
 router.post('/spu/filter-for-promotion', asyncErrorHandler(productController.filterSpuForPromotion));
 
+router.get('/recommendations/trending', recommendController.getRecommendTrending)
 router.use(authenticationV2);
 // routes/recommendation.routes.js
 router.get('/recommendations/base/:productId', recommendController.getRecommendations);

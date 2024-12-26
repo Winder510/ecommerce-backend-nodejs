@@ -226,7 +226,7 @@ class AdvancedRecommendationService {
                 product_ratingAverage: -1,
                 product_quantitySold: -1
             })
-            .limit(limit);
+            .limit(limit).lean().lean();
     }
 
     async determineUserSegment(user) {
@@ -291,7 +291,7 @@ class AdvancedRecommendationService {
             {
                 $limit: limit
             }
-        ]);
+        ]).lean();
     }
 
     // Lấy sản phẩm tương tự dựa trên category
@@ -318,7 +318,7 @@ class AdvancedRecommendationService {
                     product_ratingAverage: -1,
                     product_quantitySold: -1
                 })
-                .limit(limit);
+                .limit(limit).lean();
 
             return similarProducts;
         } catch (error) {
@@ -339,7 +339,7 @@ class AdvancedRecommendationService {
                     product_quantitySold: -1,
                     product_ratingAverage: -1
                 })
-                .limit(limit);
+                .limit(limit).lean();
         } catch (error) {
             throw new Error(`Error finding popular products: ${error.message}`);
         }
@@ -362,7 +362,7 @@ class AdvancedRecommendationService {
                     product_ratingAverage: -1,
                     product_quantitySold: -1
                 })
-                .limit(limit);
+                .limit(limit).lean();
         } catch (error) {
             throw new Error(`Error finding products by tags: ${error.message}`);
         }
@@ -396,7 +396,7 @@ class AdvancedRecommendationService {
                     product_ratingAverage: -1,
                     product_quantitySold: -1
                 })
-                .limit(limit);
+                .limit(limit).lean();
         } catch (error) {
             throw new Error(`Error finding products by price range: ${error.message}`);
         }

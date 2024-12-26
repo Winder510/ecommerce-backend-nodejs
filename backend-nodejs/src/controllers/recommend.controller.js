@@ -3,9 +3,15 @@
 import {
     SuccessResponse
 } from "../core/success.response.js";
+import {
+    getPriceSpu
+} from "../models/repositories/spu.repo.js";
 import advantageRecommendService from "../services/advantageRecommend.service.js";
 import recommendService from "../services/recommend.service.js";
-
+import cartModel from '../models/cart.model.js';
+import {
+    getSpuIdBySku
+} from "../models/repositories/sku.repo.js";
 class RecommendationController {
     async getRecommendations(req, res) {
         try {
@@ -98,28 +104,36 @@ class RecommendationController {
             productId,
             limit: 5
         })
-
+        const spuswithPrice = await Promise.all(recommendations.map(async spu => {
+            return {
+                ...spu,
+                product_price: await getPriceSpu(spu._id)
+            }
+        }));
         new SuccessResponse({
             message: 'Get recommend in detail page',
-            metadata: recommendations
+            metadata: spuswithPrice
         }).send(res);
     }
 
     async getRecommendForHomePage(req, res) {
         const userId = req?.user?.userId;
         let personalizedRecs;
+
         if (userId) {
             personalizedRecs = await advantageRecommendService.getSegmentBasedRecommendations(userId, 10);
         }
 
-        const trendingProducts = await advantageRecommendService.getTrendingRecommendations(10);
+        const spuswithPrice = await Promise.all(personalizedRecs.map(async spu => {
+            return {
+                ...spu,
+                product_price: await getPriceSpu(spu._id)
+            }
+        }));
 
         new SuccessResponse({
-            message: 'Get recommend in detail page',
-            metadata: {
-                forYou: personalizedRecs,
-                trending: trendingProducts
-            }
+            message: 'Get recommend in home',
+            metadata: spuswithPrice
         }).send(res);
     }
 
@@ -130,17 +144,24 @@ class RecommendationController {
         });
 
         const recommendations = await Promise.all(
-            cartItems.products.map(item =>
-                advantageRecommendService.getContentBasedRecommendations(
-                    item.productId,
+            cartItems.cart_products.map(async (item) => {
+                const spu = await getSpuIdBySku(item.skuId)
+                return advantageRecommendService.getContentBasedRecommendations(
+                    spu.product_id,
                     5
                 )
-            )
+            })
         );
-
+        const data = recommendations.flat()
+        const spuswithPrice = await Promise.all(data.map(async spu => {
+            return {
+                ...spu,
+                product_price: await getPriceSpu(spu._id)
+            }
+        }));
         new SuccessResponse({
             message: 'Get recommend in detail page',
-            metadata: recommendations.flat()
+            metadata: spuswithPrice
         }).send(res);
     }
 
@@ -150,12 +171,32 @@ class RecommendationController {
         const personalizedRecs = await advantageRecommendService
             .getCollaborativeRecommendations(userId, 10);
 
+        const spuswithPrice = await Promise.all(personalizedRecs.map(async spu => {
+            return {
+                ...spu,
+                product_price: await getPriceSpu(spu._id)
+            }
+        }));
+
         new SuccessResponse({
             message: 'Get recommend in detail page',
-            metadata: personalizedRecs
+            metadata: spuswithPrice
         }).send(res);
     }
 
+    async getRecommendTrending(req, res) {
+        const trendingProducts = await advantageRecommendService.getTrendingRecommendations(10);
+        const spuswithPrice = await Promise.all(trendingProducts.map(async spu => {
+            return {
+                ...spu,
+                product_price: await getPriceSpu(spu._id)
+            }
+        }));
+        new SuccessResponse({
+            message: 'Get recommend in detail page',
+            metadata: spuswithPrice
+        }).send(res);
+    }
 
 }
 
