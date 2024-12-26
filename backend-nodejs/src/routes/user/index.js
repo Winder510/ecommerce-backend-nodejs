@@ -20,6 +20,7 @@ router.get('/welcome', asyncErrorHandler(userController.checkLoginEmailToken));
 router.use(authenticationV2);
 router.put("/profile", asyncErrorHandler(userController.updateUserProfile));
 router.patch('', asyncErrorHandler(userController.changePassword));
+router.post('/change-role', asyncErrorHandler(userController.changeUserRole));
 
 
 export default router;

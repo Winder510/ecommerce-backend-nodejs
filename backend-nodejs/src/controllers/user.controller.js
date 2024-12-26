@@ -5,6 +5,7 @@ import {
 import {
     addNewAddress,
     changePassWordService,
+    changeUserRole,
     changeUserStatus,
     checkLoginEmailTokenService,
     getDefaultAddress,
@@ -120,5 +121,13 @@ class UserController {
         }
     };
 
+    changeUserRole = async (req, res, next) => {
+        return new SuccessResponse({
+            message: 'Change status',
+            metadata: await changeUserRole({
+                ...req.body
+            }),
+        }).send(res);
+    };
 }
 export default new UserController();

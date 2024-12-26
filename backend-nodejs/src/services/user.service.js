@@ -434,6 +434,25 @@ const changeUserStatus = async ({
     return updatedUser;
 };
 
+const changeUserRole = async ({
+    userId,
+    roleId
+}) => {
+    const updatedUser = await userModel.findByIdAndUpdate(
+        userId, {
+            usr_role: roleId
+        }, {
+            new: true
+        }
+    );
+
+    if (!updatedUser) {
+        throw new Error('User not found');
+    }
+
+    return updatedUser;
+};
+
 export {
     newUserService,
     checkLoginEmailTokenService,
@@ -446,5 +465,6 @@ export {
     resetLoyaltyPoints,
     updateProfileService,
     getListUser,
-    changeUserStatus
+    changeUserStatus,
+    changeUserRole
 };
