@@ -89,7 +89,9 @@ class AccessController {
 
                 const tokens = await createTokenPair({
                         userId: foundUser._id,
-                        email: foundUser.usr_email,
+                        email: user.usr_email,
+                        phone: foundUser.usr_phone,
+                        role: foundUser.usr_role,
                     },
                     publicKey,
                     privateKey,

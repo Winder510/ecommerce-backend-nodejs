@@ -6,7 +6,9 @@ import {
     getListResource,
     getListRole,
     createResource,
-    getListRoleForSelect
+    getListRoleForSelect,
+    getAllRoleWithGrant,
+    updateRolePermission
 } from '../services/rbac.service.js';
 
 const newRole = async (req, res, next) => {
@@ -47,10 +49,27 @@ const listRoleForDisplay = async (req, res, next) => {
     }).send(res);
 };
 
+const allRoleWithGrant = async (req, res, next) => {
+    new SuccessResponse({
+        message: 'listRole',
+        metadata: await getAllRoleWithGrant(),
+    }).send(res);
+};
+
+
+const updateRole = async (req, res, next) => {
+    new SuccessResponse({
+        message: 'update role',
+        metadata: await updateRolePermission(req.body),
+    }).send(res);
+};
+
 export {
     newRole,
     newResource,
     listRole,
     listResource,
-    listRoleForDisplay
+    listRoleForDisplay,
+    allRoleWithGrant,
+    updateRole
 };

@@ -9,10 +9,13 @@ import {
     newResource,
     listRole,
     listResource,
-    listRoleForDisplay
+    listRoleForDisplay,
+    allRoleWithGrant,
+    updateRole
 } from '../../controllers/rbac.controller.js';
 const router = express.Router();
 
+router.patch('/role', asyncErrorHandler(updateRole));
 router.post('/role', asyncErrorHandler(newRole));
 router.get('/roles', asyncErrorHandler(listRole));
 
@@ -21,4 +24,6 @@ router.get('/resources', asyncErrorHandler(listResource));
 
 ///
 router.get('/list/roles', asyncErrorHandler(listRoleForDisplay));
+///
+router.get('/list/roles-for-admin', asyncErrorHandler(allRoleWithGrant));
 export default router;

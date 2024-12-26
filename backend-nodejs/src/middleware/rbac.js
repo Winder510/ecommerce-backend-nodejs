@@ -1,7 +1,9 @@
 import {
-    AuthFailureError
+    AuthFailureError,
+    ForbiddenError
 } from '../core/error.response.js';
 import roleModel from '../models/role.model.js';
+import userModel from '../models/user.model.js';
 
 import {
     getListRole
@@ -19,16 +21,18 @@ const grantAccess = (action, resource) => {
 
     return async (req, res, next) => {
         try {
-            // rbac.setGrants(await getListRole())
-            //  rbac.setGrants(grantList)
-            const roleId = req.user?.role;
-            const role = await roleModel.findById(roleId).lean()
-            const roleName = role.rol_name
+
+            //    rbac.setGrants(await getListRole())
+
+            const user = await userModel.findById(req.user.userId).populate('usr_role');
+            const roleName = user.usr_role.rol_name;
             console.log("🚀 ~ return ~ roleName:", roleName)
+
+
             const permission = await rbac.can(roleName)[action](resource);
 
             if (!permission.granted) {
-                throw new AuthFailureError("You don't have permission to access this route!");
+                throw new ForbiddenError("You don't have permission to access this route!");
             }
 
             next();

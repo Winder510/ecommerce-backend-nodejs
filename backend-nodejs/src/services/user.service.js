@@ -95,7 +95,9 @@ const checkLoginEmailTokenService = async ({
 
         const tokens = await createTokenPair({
                 userId: newUser._id,
-                email,
+                email: newUser.usr_email,
+                phone: newUser.usr_phone,
+                role: newUser.usr_role,
             },
             publicKey,
             privateKey,
