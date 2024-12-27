@@ -271,6 +271,8 @@ const getLowestPriceSku = async (spuId) => {
         product_id: spuId
     }).lean();
     if (!skus || skus.length === 0) {
+        console.log("🚀 ~ getLowestPriceSku ~ spuId:", spuId)
+
         throw new BadRequestError("No SKUs found for this product");
     }
 

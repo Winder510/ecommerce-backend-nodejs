@@ -33,19 +33,15 @@ router.get('/unpublish/:id', asyncErrorHandler(productController.unPublishProduc
 
 // for admin
 router.post('/list-detail-product', asyncErrorHandler(productController.getListProdcutDetailsForAdmin));
-
 router.post('/published/all', asyncErrorHandler(productController.getListPublishSpuByCategory));
 router.get('/top-products', asyncErrorHandler(productController.getBestSoldSpuEachCategory));
-
 router.get('/spu/get-all', asyncErrorHandler(productController.getAllSpu));
 router.get('/spu/get-published', asyncErrorHandler(productController.getAllPublishedSpu));
 router.get('/spu/get-draft', asyncErrorHandler(productController.getAllDraftSpu));
-
 router.get('/spu/filter', asyncErrorHandler(productController.findAllSpuWithCondition));
-
 router.post('/spu/filter-for-promotion', asyncErrorHandler(productController.filterSpuForPromotion));
-
 router.get('/recommendations/trending', recommendController.getRecommendTrending)
+
 router.use(authenticationV2);
 // routes/recommendation.routes.js
 router.get('/recommendations/base/:productId', recommendController.getRecommendations);

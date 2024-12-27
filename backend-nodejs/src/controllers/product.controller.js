@@ -120,7 +120,7 @@ class ProductController {
 
     getBestSoldSpuEachCategory = async (req, res, next) => {
         new SuccessResponse({
-            message: 'get success',
+            message: 'get success đâsd',
             metadata: await SpuService.getBestSoldSpuEachCategory(),
         }).send(res);
     };

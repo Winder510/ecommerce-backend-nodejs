@@ -188,7 +188,6 @@ export class SpuService {
         })
         if (!category) throw new BadRequestError("Không tìm thấy category")
         const categoryId = category._id;
-        console.log("🚀 ~ SpuService ~ categoryId:", categoryId)
 
         const query = {
             isPublished: true,
@@ -281,9 +280,9 @@ export class SpuService {
         });
     }
 
-    static async totalRevenueByCategory(categoryId) {
+    static async totalRevenueByCategory(categorySlug) {
         const spus = await this.getListPublishSpuByCategory({
-            categoryId,
+            categorySlug,
         });
         return spus.reduce((acc, spu) => {
             return acc + spu.product_revenue;
@@ -292,6 +291,7 @@ export class SpuService {
 
     static async getBestSoldSpuEachCategory() {
         const allCategories = await CategoryService.getParentCategory();
+        console.log("🚀 ~ SpuService ~ getBestSoldSpuEachCategory ~ allCategories:", allCategories)
         const data = await Promise.all(
             allCategories.map(async (category) => {
                 const bestSold = await this.getBestSoldSpu({
@@ -299,7 +299,7 @@ export class SpuService {
                     limit: 10,
                 });
 
-                const totalRevenue = await this.totalRevenueByCategory(category._id.toString());
+                const totalRevenue = await this.totalRevenueByCategory(category.category_slug.toString());
 
                 return {
                     category,
