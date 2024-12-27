@@ -611,7 +611,6 @@ export default class DiscountService {
                 });
             }
 
-            // Tăng tổng số lần sử dụng của mã giảm giá
             if (discount.discount_uses_count >= discount.discount_max_uses) {
                 throw new Error('Mã giảm giá đã hết lượt sử dụng.');
             }

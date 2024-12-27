@@ -10,6 +10,7 @@ import {
     buildQueryForClient,
     publishSpu,
     querySpu,
+    querySpuV2,
     searchSpuByUser,
     unPublishSpu,
 } from '../models/repositories/spu.repo.js';
@@ -199,7 +200,7 @@ export class SpuService {
             }),
         };
 
-        return await querySpu({
+        return await querySpuV2({
             query,
             limit,
             skip,
@@ -291,7 +292,6 @@ export class SpuService {
 
     static async getBestSoldSpuEachCategory() {
         const allCategories = await CategoryService.getParentCategory();
-        console.log("🚀 ~ SpuService ~ getBestSoldSpuEachCategory ~ allCategories:", allCategories)
         const data = await Promise.all(
             allCategories.map(async (category) => {
                 const bestSold = await this.getBestSoldSpu({
@@ -377,6 +377,42 @@ export class SpuService {
 
         return spus
     }
+
+    static updateStockSPU = async (spuId, quantity, mongoSession = null) => {
+        try {
+            if (quantity <= 0) {
+                throw new Error('Số lượng cần giảm phải lớn hơn 0.');
+            }
+
+            const result = await spuModel.findOneAndUpdate({
+                _id: spuId,
+            }, {
+                $inc: {
+                    product_quantity: -quantity,
+                    product_quantitySold: quantity
+                }
+            }, {
+                session: mongoSession,
+                new: true
+            });
+
+
+            if (!result) {
+                throw new Error('Không đủ tồn kho hoặc sản phẩm không tồn tại.');
+            }
+
+            return {
+                success: true,
+                message: 'Tồn kho đã được cập nhật.',
+                data: result,
+            };
+        } catch (error) {
+            return {
+                success: false,
+                message: error.message,
+            };
+        }
+    };
 
 
     // filter for client in search page

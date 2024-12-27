@@ -150,7 +150,7 @@ export class SkuService {
         return allSku;
     }
 
-    static reduceInventory = async (skuId, quantity, mongoSession = null) => {
+    static updateStockSKU = async (skuId, quantity, mongoSession = null) => {
         try {
             if (quantity <= 0) {
                 throw new Error('Số lượng cần giảm phải lớn hơn 0.');
@@ -158,12 +158,11 @@ export class SkuService {
 
             const result = await skuModel.findOneAndUpdate({
                 _id: skuId,
-                sku_stock: {
-                    $gte: quantity
-                }
+
             }, {
                 $inc: {
-                    stock: -quantity
+                    sku_stock: -quantity,
+                    sku_quantitySold: quantity
                 }
             }, {
                 session: mongoSession,

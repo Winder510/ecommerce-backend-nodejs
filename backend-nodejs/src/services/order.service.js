@@ -23,6 +23,14 @@ import {
     resetLoyaltyPoints,
     updateLoyaltyPoints
 } from './user.service.js';
+import spuModel from '../models/spu.model.js';
+import skuModel from '../models/sku.model.js';
+import {
+    handleDeliverOrder
+} from '../models/repositories/order.repo.js';
+import {
+    SpuService
+} from './spu.service.js';
 export class OrderService {
     // Place an order by user
     static async orderByUser({
@@ -130,15 +138,20 @@ export class OrderService {
                 spuId,
                 quantity,
                 promotionId,
-
             }) => {
-                SkuService.reduceInventory(skuId, -quantity);
+
+                SkuService.updateStockSKU(skuId, -quantity);
+
+                SpuService.updateStockSPU(spuId, -quantity);
+
                 PromotionService.updateAppliedQuantity({
                     promotionId,
                     skuId,
                     spuId,
                     quantity: -quantity
-                })
+                });
+
+
             }),
         ]);
 
@@ -167,7 +180,31 @@ export class OrderService {
         await order.save();
 
         if (status === "delivered") {
-            await updateLoyaltyPoints(order.order_userId, order.order_checkout.accLoyalPoint)
+            await updateLoyaltyPoints(order.order_userId, order.order_checkout.accLoyalPoint);
+            await handleDeliverOrder(order)
+        }
+
+        if (status === "cancelled") {
+            await Promise.all([
+                ...newOrder.order_products.map(({
+                    skuId,
+                    spuId,
+                    quantity,
+                    promotionId,
+
+                }) => {
+                    SkuService.updateStockSKU(skuId, quantity);
+                    SpuService.updateStockSPU(spuId, quantity)
+                    PromotionService.updateAppliedQuantity({
+                        promotionId,
+                        skuId,
+                        spuId,
+                        quantity
+                    })
+
+                })
+            ])
+
         }
 
         return order;
@@ -284,7 +321,8 @@ export class OrderService {
                         promotionId,
 
                     }) => {
-                        SkuService.reduceInventory(skuId, quantity);
+                        SkuService.updateStockSKU(skuId, quantity);
+                        SpuService.updateStockSPU(spuId, quantity)
                         PromotionService.updateAppliedQuantity({
                             promotionId,
                             skuId,
@@ -390,7 +428,8 @@ export class OrderService {
                         promotionId,
 
                     }) => {
-                        SkuService.reduceInventory(skuId, quantity, mongoSession);
+                        SkuService.updateStockSKU(skuId, quantity, mongoSession);
+                        SpuService.updateStockSPU(spuId, quantity)
                         PromotionService.updateAppliedQuantity({
                             promotionId,
                             skuId,
@@ -409,6 +448,7 @@ export class OrderService {
                     ...order.order_discount.map((discountId) => {
                         DiscountService.addDiscountUserUsage(discountId, userId)
                     })
+
 
                 ]);
 

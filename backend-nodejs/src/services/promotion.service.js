@@ -317,7 +317,7 @@ class PromotionService {
         quantity
     }) => {
         try {
-
+            if (promotionId === null) return;
             const result = await promotionModel.findOneAndUpdate({
                 _id: promotionId
             }, {

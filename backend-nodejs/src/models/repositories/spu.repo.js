@@ -21,13 +21,16 @@ const querySpu = async ({
     sort = {
         created_At: -1,
     },
-    limit,
-    skip,
+    limit = 10,
+    offset = 0
 }) => {
+    // Get total count for pagination info
+    const totalCount = await spuModel.countDocuments(query);
+
     const spus = await spuModel
         .find(query)
         .sort(sort)
-        .skip(skip)
+        .skip(offset)
         .limit(limit)
         .populate({
             path: 'product_category',
@@ -37,16 +40,57 @@ const querySpu = async ({
         .lean()
         .exec();
 
-    const spuswithPrice = await Promise.all(spus.map(async spu => {
+    const spusWithPrice = await Promise.all(spus.map(async spu => {
         return {
             ...spu,
             product_price: await getPriceSpu(spu._id)
         }
     }));
 
-    return spuswithPrice;
+    // Return data with pagination metadata
+    return {
+        data: spusWithPrice,
+        pagination: {
+            total: totalCount,
+            limit,
+            offset
+        }
+    };
 };
+const querySpuV2 = async ({
+    query,
+    sort = {
+        created_At: -1,
+    },
+    limit = 10,
+    offset = 0
+}) => {
+    // Get total count for pagination info
+    const totalCount = await spuModel.countDocuments(query);
 
+    const spus = await spuModel
+        .find(query)
+        .sort(sort)
+        .skip(offset)
+        .limit(limit)
+        .populate({
+            path: 'product_category',
+            select: 'category_name',
+        })
+        .select('-isDraft -isPublished -isDeleted -updatedAt -__v')
+        .lean()
+        .exec();
+
+    const spusWithPrice = await Promise.all(spus.map(async spu => {
+        return {
+            ...spu,
+            product_price: await getPriceSpu(spu._id)
+        }
+    }));
+
+    // Return data with pagination metadata
+    return spusWithPrice
+};
 
 const publishSpu = async ({
     product_id
@@ -349,5 +393,6 @@ export {
     getSpuByIds,
     getPriceSpu,
     querySpu,
-    buildQueryForClient
+    buildQueryForClient,
+    querySpuV2
 };
