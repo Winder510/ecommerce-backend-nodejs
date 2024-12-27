@@ -35,6 +35,7 @@ router.get('/unpublish/:id', asyncErrorHandler(productController.unPublishProduc
 router.post('/list-detail-product', asyncErrorHandler(productController.getListProdcutDetailsForAdmin));
 router.post('/published/all', asyncErrorHandler(productController.getListPublishSpuByCategory));
 router.get('/top-products', asyncErrorHandler(productController.getBestSoldSpuEachCategory));
+router.get('/home-page-product', asyncErrorHandler(productController.getBestSoldSpuEachCategory))
 router.get('/spu/get-all', asyncErrorHandler(productController.getAllSpu));
 router.get('/spu/get-published', asyncErrorHandler(productController.getAllPublishedSpu));
 router.get('/spu/get-draft', asyncErrorHandler(productController.getAllDraftSpu));

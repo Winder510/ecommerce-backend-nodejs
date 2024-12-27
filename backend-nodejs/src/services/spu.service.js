@@ -8,6 +8,7 @@ import {
 } from '../core/error.response.js';
 import {
     buildQueryForClient,
+    getPriceSpu,
     publishSpu,
     querySpu,
     querySpuV2,
@@ -311,6 +312,52 @@ export class SpuService {
 
         return data;
     }
+
+
+    static async getProductForHomePage() {
+        try {
+            const allCategories = await CategoryService.getParentCategory();
+
+            const data = await Promise.all(allCategories.map(async (category) => {
+                const products = await productModel.find({
+                        isPublished: true,
+                        isDeleted: false,
+                        product_category: {
+                            $in: [category._id],
+                        },
+                    })
+                    .sort({
+                        createdAt: -1,
+                        product_quantitySold: -1
+                    })
+                    .limit(8)
+                    .lean();
+
+
+                const spusWithPrice = await Promise.all(products.map(async spu => {
+                    return {
+                        ...spu,
+                        product_price: await getPriceSpu(spu._id)
+                    }
+                }));
+
+                return {
+                    category: {
+                        _id: category._id,
+                        name: category.name,
+                        slug: category.slug
+                    },
+                    spusWithPrice
+                };
+            }));
+
+            return data;
+        } catch (error) {
+            throw new Error(`Error getting products for homepage: ${error.message}`);
+        }
+    }
+
+
 
     static async findAlLDraftSpu({
         limit = 10,

@@ -125,6 +125,13 @@ class ProductController {
         }).send(res);
     };
 
+    getProductForHomePage = async (req, res, next) => {
+        new SuccessResponse({
+            message: 'get success đâsd',
+            metadata: await SpuService.getProductForHomePage(),
+        }).send(res);
+    };
+
     getAllPublishedSpu = async (req, res, next) => {
         new SuccessResponse({
             message: 'Get list publish spu',
