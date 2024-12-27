@@ -59,156 +59,45 @@ class AdvancedRecommendationService {
     }
 
     // Lấy collaborative recommendations dựa trên user behavior
-    // async getCollaborativeRecommendations(userId, limit = 5) {
-    //     // Lấy sản phẩm user đã mua
-    //     const userOrders = await orderModel.find({
-    //         order_userId: userId
-    //     });
-    //     const userProducts = userOrders.flatMap(order => order.order_products.map(p => p.spuId));
-
-    //     // Tìm users khác đã mua các sản phẩm tương tự
-    //     const similarUsers = await orderModel.find({
-    //         'order_products.spuId': {
-    //             $in: userProducts
-    //         },
-    //         order_userId: {
-    //             $ne: userId
-    //         }
-    //     }).distinct('order_userId');
-
-    //     // Lấy sản phẩm từ similar users
-    //     const recommendedProducts = await orderModel.aggregate([{
-    //             $match: {
-    //                 order_userId: {
-    //                     $in: similarUsers
-    //                 },
-    //                 'order_products.spuId': {
-    //                     $nin: userProducts
-    //                 }
-    //             }
-    //         },
-    //         {
-    //             $unwind: '$order_products'
-    //         },
-    //         {
-    //             $group: {
-    //                 _id: '$order_products.spuId',
-    //                 score: {
-    //                     $sum: 1
-    //                 }
-    //             }
-    //         },
-    //         {
-    //             $sort: {
-    //                 score: -1
-    //             }
-    //         },
-    //         {
-    //             $limit: limit
-    //         }
-    //     ]);
-
-    //     return spuModel.find({
-    //         _id: {
-    //             $in: recommendedProducts.map(p => p._id)
-    //         }
-    //     });
-    // }
-
     async getCollaborativeRecommendations(userId, limit = 5) {
+        // Lấy sản phẩm user đã mua
         const userOrders = await orderModel.find({
             order_userId: userId
         });
-        const userSkuIds = userOrders.flatMap(order =>
-            order.order_products.map(p => p.skuId)
-        );
+        const userProducts = userOrders.flatMap(order => order.order_products.map(p => p.spuId));
 
-        const skuDetails = await skuModel.find({
-            _id: {
-                $in: userSkuIds
-            }
-        });
-        const userSpuIds = [...new Set(skuDetails.map(sku => sku.product_id))];
-
-        // 3. Tìm users khác đã mua các sản phẩm có cùng SPU
-        const similarUserOrders = await orderModel.aggregate([
-            // Join với SKU collection để lấy thông tin SPU
-            {
-                $lookup: {
-                    from: 'skus',
-                    localField: 'order_products.skuId',
-                    foreignField: '_id',
-                    as: 'sku_details'
-                }
+        // Tìm users khác đã mua các sản phẩm tương tự
+        const similarUsers = await orderModel.find({
+            'order_products.spuId': {
+                $in: userProducts
             },
-            // Lọc các đơn hàng có sản phẩm cùng SPU với user hiện tại
-            {
-                $match: {
-                    'sku_details.product_id': {
-                        $in: userSpuIds
-                    },
-                    'order_userId': {
-                        $ne: userId
-                    }
-                }
+            order_userId: {
+                $ne: userId
             }
-        ]);
+        }).distinct('order_userId');
 
-        const similarUserIds = [...new Set(similarUserOrders.map(order => order.order_userId))];
-
-        // 4. Lấy recommendations từ similar users
-        const recommendedProducts = await orderModel.aggregate([
-            // Match đơn hàng từ similar users
-            {
+        // Lấy sản phẩm từ similar users
+        const recommendedProducts = await orderModel.aggregate([{
                 $match: {
                     order_userId: {
-                        $in: similarUserIds
+                        $in: similarUsers
+                    },
+                    'order_products.spuId': {
+                        $nin: userProducts
                     }
                 }
             },
-            // Join với SKU collection
-            {
-                $lookup: {
-                    from: 'skus',
-                    localField: 'order_products.skuId',
-                    foreignField: '_id',
-                    as: 'sku_details'
-                }
-            },
-            // Unwind để xử lý từng sản phẩm
             {
                 $unwind: '$order_products'
             },
-            // Join lần nữa để lấy thông tin SPU của từng SKU
-            {
-                $lookup: {
-                    from: 'skus',
-                    localField: 'order_products.skuId',
-                    foreignField: '_id',
-                    as: 'product_sku'
-                }
-            },
-            {
-                $unwind: '$product_sku'
-            },
-            // Lọc bỏ các SPU mà user đã mua
-            {
-                $match: {
-                    'product_sku.product_id': {
-                        $nin: userSpuIds
-                    }
-                }
-            },
-            // Group theo SPU để tính điểm
             {
                 $group: {
-                    _id: '$product_sku.product_id',
+                    _id: '$order_products.spuId',
                     score: {
                         $sum: 1
                     }
                 }
             },
-            // Sắp xếp theo điểm và giới hạn kết quả
             {
                 $sort: {
                     score: -1
@@ -219,8 +108,13 @@ class AdvancedRecommendationService {
             }
         ]);
 
-        return recommendedProducts;
+        return spuModel.find({
+            _id: {
+                $in: recommendedProducts.map(p => p._id)
+            }
+        });
     }
+
     // Content-based recommendations với caching
     async getContentBasedRecommendations(productId, limit = 5) {
         const {

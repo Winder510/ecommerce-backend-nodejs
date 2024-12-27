@@ -144,7 +144,7 @@ class RecommendationController {
         const cartItems = await cartModel.findOne({
             cart_userId: userId
         });
-
+        if (!cartItems) return []
         const recommendations = await Promise.all(
             cartItems.cart_products.map(async (item) => {
                 const spu = await getSpuIdBySku(item.skuId)
@@ -154,6 +154,7 @@ class RecommendationController {
                 )
             })
         );
+
         const data = recommendations.flat()
         const spuswithPrice = await Promise.all(data.map(async spu => {
             return {
