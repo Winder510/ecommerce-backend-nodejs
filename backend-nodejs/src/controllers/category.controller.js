@@ -10,13 +10,15 @@ class CategoryController {
         const {
             name,
             description,
-            parentId
+            parentId,
+            thumb
         } = req.body;
 
         const result = await CategoryService.createCategory({
             name,
             description,
             parentId,
+            thumb
         });
 
         new SuccessResponse({
@@ -31,13 +33,15 @@ class CategoryController {
         } = req.params;
         const {
             name,
-            description
+            description,
+            thumb
         } = req.body;
 
         const result = await CategoryService.updateCategory({
             categoryId: id,
             name,
             description,
+            thumb
         });
 
         new SuccessResponse({
