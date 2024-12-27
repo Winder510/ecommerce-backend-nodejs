@@ -14,6 +14,9 @@ import {
     sendNotifitoQueue
 } from './rabbitmq.service.js';
 import userModel from '../models/user.model.js';
+import {
+    updateRatingSpu
+} from '../models/repositories/spu.repo.js';
 
 /*
 {
@@ -101,6 +104,9 @@ export default class CommentService {
 
         await comment.save();
 
+        if (rating > 0) {
+            updateRatingSpu(productId, await this.calculateAverageRating(productId))
+        }
         // if(comment){
         //     sendNotifitoQueue("INDIVIDUAL",{
         //         type: TYPE_NOTIFICATION.
@@ -373,5 +379,38 @@ export default class CommentService {
 
         return totalComments;
     }
+
+    static calculateAverageRating = async (productId) => {
+        try {
+            const result = await commentModel.aggregate([{
+                    $match: {
+                        comment_productId: productId,
+                        comment_rating: {
+                            $ne: null
+                        } // Lọc những comment có rating hợp lệ
+                    }
+                },
+                {
+                    $group: {
+                        _id: "$comment_productId",
+                        averageRating: {
+                            $avg: "$comment_rating"
+                        } // Tính rating trung bình
+                    }
+                }
+            ]);
+
+            // Nếu không có kết quả, trả về 0
+            if (result.length === 0) {
+                return 0;
+            }
+
+            // Trả về giá trị trung bình
+            return result[0].averageRating;
+        } catch (error) {
+            console.error(`Lỗi: ${error.message}`);
+            return 0; // Trả về 0 nếu có lỗi xảy ra
+        }
+    };
 
 }

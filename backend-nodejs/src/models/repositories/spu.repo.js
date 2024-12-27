@@ -382,6 +382,11 @@ const buildQueryForClient = async ({
     return query;
 }
 
+const updateRatingSpu = async (spuId, newRatingAvg) => {
+    return await spuModel.findByIdAndDelete(spuId, {
+        product_ratingAverage: newRatingAvg
+    })
+}
 export {
     findSpuById,
     publishSpu,
@@ -394,5 +399,6 @@ export {
     getPriceSpu,
     querySpu,
     buildQueryForClient,
-    querySpuV2
+    querySpuV2,
+    updateRatingSpu
 };
