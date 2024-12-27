@@ -104,12 +104,14 @@ class RecommendationController {
             productId,
             limit: 5
         })
+
         const spuswithPrice = await Promise.all(recommendations.map(async spu => {
             return {
                 ...spu,
                 product_price: await getPriceSpu(spu._id)
             }
         }));
+
         new SuccessResponse({
             message: 'Get recommend in detail page',
             metadata: spuswithPrice
@@ -160,7 +162,7 @@ class RecommendationController {
             }
         }));
         new SuccessResponse({
-            message: 'Get recommend in detail page',
+            message: 'Get recommend in cart page',
             metadata: spuswithPrice
         }).send(res);
     }
@@ -179,7 +181,7 @@ class RecommendationController {
         }));
 
         new SuccessResponse({
-            message: 'Get recommend in detail page',
+            message: 'Get recommend in profile page',
             metadata: spuswithPrice
         }).send(res);
     }
@@ -193,7 +195,7 @@ class RecommendationController {
             }
         }));
         new SuccessResponse({
-            message: 'Get recommend in detail page',
+            message: 'Get recommend in trending page',
             metadata: spuswithPrice
         }).send(res);
     }

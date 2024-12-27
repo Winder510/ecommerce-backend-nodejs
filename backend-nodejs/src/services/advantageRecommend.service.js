@@ -138,7 +138,7 @@ class AdvancedRecommendationService {
             },
             isPublished: true,
             isDeleted: false
-        });
+        }).lean();
 
         // Tính similarity scores
         const productsWithScores = await Promise.all(
@@ -210,7 +210,7 @@ class AdvancedRecommendationService {
 
     // Segmentation-based recommendations
     async getSegmentBasedRecommendations(userId, limit = 5) {
-        const user = await userModel.findById(userId);
+        const user = await userModel.findById(userId).lean();
         if (!user) throw new Error('User not found');
 
         // Xác định segment của user (có thể dựa vào age, location, purchase history...)
@@ -226,7 +226,7 @@ class AdvancedRecommendationService {
                 product_ratingAverage: -1,
                 product_quantitySold: -1
             })
-            .limit(limit).lean().lean();
+            .limit(limit).lean();
     }
 
     async determineUserSegment(user) {

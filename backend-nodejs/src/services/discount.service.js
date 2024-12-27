@@ -456,7 +456,6 @@ export default class DiscountService {
         const availableDiscounts = [];
         const now = new Date();
         const currentDate = new Date(now.getTime() + 7 * 60 * 60 * 1000);
-        console.log("🚀 ~ DiscountService ~ currentDate:", currentDate)
 
         for (const discount of allDiscounts) {
             // 2. Kiểm tra thời gian hiệu lực
