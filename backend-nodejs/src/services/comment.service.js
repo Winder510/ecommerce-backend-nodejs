@@ -386,7 +386,7 @@ export default class CommentService {
                     $match: {
                         comment_productId: productId,
                         comment_rating: {
-                            $ne: null
+                            $gt: 0
                         } // Lọc những comment có rating hợp lệ
                     }
                 },
