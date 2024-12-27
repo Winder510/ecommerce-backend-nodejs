@@ -164,7 +164,8 @@ const changePassWordService = async ({
     if (!foundUser) throw new BadRequestError('User is not registered');
 
     const match = await bcrypt.compare(currentPassword, foundUser.usr_password);
-    if (!match) throw new AuthFailureError('Sai mật khẩu');
+
+    if (!match) throw new BadRequestError('Sai mật khẩu');
 
     if (newPassword !== reNewPassword) throw new BadRequestError('Passwords are not the same');
 
