@@ -383,7 +383,7 @@ const buildQueryForClient = async ({
 }
 
 const updateRatingSpu = async (spuId, newRatingAvg) => {
-    return await spuModel.findByIdAndDelete(spuId, {
+    return await spuModel.findByIdAndUpdate(spuId, {
         product_ratingAverage: newRatingAvg
     })
 }

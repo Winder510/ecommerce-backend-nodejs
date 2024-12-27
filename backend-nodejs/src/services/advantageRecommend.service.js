@@ -117,17 +117,17 @@ class AdvancedRecommendationService {
 
     // Content-based recommendations với caching
     async getContentBasedRecommendations(productId, limit = 5) {
-        const {
-            instanceRedis: redis
-        } = getRedis();
+        // const {
+        //     instanceRedis: redis
+        // } = getRedis();
 
-        const cacheKey = `recommendations:${productId}:${limit}`;
+        // const cacheKey = `recommendations:${productId}:${limit}`;
 
-        // Kiểm tra cache
-        const cachedResults = await redis.get(cacheKey);
-        if (cachedResults) {
-            return JSON.parse(cachedResults);
-        }
+        // // Kiểm tra cache
+        // const cachedResults = await redis.get(cacheKey);
+        // if (cachedResults) {
+        //     return JSON.parse(cachedResults);
+        // }
 
         const product = await spuModel.findById(productId);
         if (!product) throw new Error('Product not found');
@@ -155,13 +155,13 @@ class AdvancedRecommendationService {
             .slice(0, limit)
             .map(p => p.product);
 
-        // Cache kết quả
-        await redis.set(
-            cacheKey,
-            JSON.stringify(recommendations),
-            'EX',
-            this.CACHE_TTL
-        );
+        // // Cache kết quả
+        // await redis.set(
+        //     cacheKey,
+        //     JSON.stringify(recommendations),
+        //     'EX',
+        //     this.CACHE_TTL
+        // );
 
         return recommendations;
     }
