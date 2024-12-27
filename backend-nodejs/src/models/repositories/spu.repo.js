@@ -1,21 +1,16 @@
 import {
     PRODUCT_STATUS
 } from '../../constant/index.js';
-import {
-    getSelectData
-} from '../../utils/index.js';
+
 import {
     productModel
 } from '../product.model.js';
-import promotionModel from '../promotion.model.js';
 import spuModel from '../spu.model.js';
 import {
     findSkuById,
     getLowestPriceSku
 } from './sku.repo.js';
-import {
-    BadRequestError
-} from '../../core/error.response.js'
+
 import sendSyncMessage from '../../../test/rabbitmq/sync-data.producerDLX.js';
 const findSpuById = async (spuId) => {
     return await spuModel.findById(spuId).lean();
