@@ -6,6 +6,7 @@ export class CategoryService {
     static async createCategory({
         name,
         description,
+        thumb = null,
         parentId
     }) {
         const foungCategory = await categoryModel
@@ -19,6 +20,7 @@ export class CategoryService {
             category_name: name,
             category_description: description,
             category_parentId: parentId,
+            category_img: thumb
         });
 
         return newCategory;
@@ -27,7 +29,8 @@ export class CategoryService {
     static async updateCategory({
         categoryId,
         name,
-        description
+        description,
+        thumb
     }) {
         const category = await categoryModel.findById(categoryId);
         if (!category) {
@@ -36,6 +39,7 @@ export class CategoryService {
 
         category.category_name = name;
         category.category_description = description;
+        category.category_img = thumb
 
         const updatedCategory = await category.save();
 
@@ -60,7 +64,7 @@ export class CategoryService {
             .find({
                 category_parentId: parentId,
             })
-            .select('category_name category_description category_slug');
+            .select('category_name category_description category_slug category_img');
 
         return Promise.all(
             subCategories.map(async (subCategory) => {
