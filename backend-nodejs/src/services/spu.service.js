@@ -319,7 +319,7 @@ export class SpuService {
             const allCategories = await CategoryService.getParentCategory();
 
             const data = await Promise.all(allCategories.map(async (category) => {
-                const products = await productModel.find({
+                const products = await spuModel.find({
                         isPublished: true,
                         isDeleted: false,
                         product_category: {
