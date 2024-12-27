@@ -15,7 +15,7 @@ export class CategoryService {
             })
             .lean();
         if (foungCategory) throw new BadRequestError('Name of category is exists');
-
+        if (parentId === "") parentId = null
         const newCategory = await categoryModel.create({
             category_name: name,
             category_description: description,
