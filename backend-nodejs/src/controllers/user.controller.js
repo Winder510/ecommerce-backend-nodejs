@@ -34,7 +34,6 @@ class UserController {
         return new SuccessResponse({
             message: 'create new user',
             metadata: await changePassWordService({
-                email: req.user.email,
                 ...req.body,
             }),
         }).send(res);
