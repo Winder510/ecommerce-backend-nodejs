@@ -180,5 +180,14 @@ class ProductController {
         }).send(res);
     };
 
+    filterSpuForVoucher = async (req, res, next) => {
+        new SuccessResponse({
+            message: 'Fiter list spu ',
+            metadata: await SpuService.filterSpuForVoucher({
+                ...req.body,
+            }),
+        }).send(res);
+    };
+
 }
 export default new ProductController();

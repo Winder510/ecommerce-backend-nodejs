@@ -98,6 +98,7 @@ const publishSpu = async ({
     const foundSpu = await spuModel.findOne({
         _id: product_id
     }).lean();
+    console.log("🚀 ~ foundSpu:", foundSpu)
 
     if (!foundSpu) {
         throw new Error('Product not found');

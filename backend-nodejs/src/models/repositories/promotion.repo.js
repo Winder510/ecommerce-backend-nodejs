@@ -35,7 +35,7 @@ export const isTimeSlotAvailable = async (startTime, endTime) => {
         ],
     }).lean();
 
-    return overlappingPromotions.length === 0; // true nếu không có sự kiện nào trùng
+    return overlappingPromotions; // true nếu không có sự kiện nào trùng
 };
 
 export const getListAppliedSpu = async (promotionOverLaps) => {
@@ -47,7 +47,6 @@ export const getListAppliedSpu = async (promotionOverLaps) => {
 
     // Loại bỏ các giá trị trùng lặp
     const uniqueSpuIds = [...new Set(spuIds)];
-    console.log("🚀 ~ getListAppliedSpu ~ uniqueSpuIds:", uniqueSpuIds)
 
     return uniqueSpuIds;
 };

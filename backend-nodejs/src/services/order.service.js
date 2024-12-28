@@ -546,6 +546,7 @@ export class OrderService {
             const orders = await orderModel.find({
                 order_userId: userId,
                 'order_products.spuId': spuId,
+                order_status: "delivered"
             });
 
             return orders.length > 0;

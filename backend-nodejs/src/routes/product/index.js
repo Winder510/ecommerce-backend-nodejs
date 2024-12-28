@@ -8,6 +8,9 @@ import {
     authenticationV2
 } from '../../auth/authUtils.js';
 import recommendController from '../../controllers/recommend.controller.js';
+import {
+    grantAccess
+} from '../../middleware/rbac.js';
 
 
 const router = express.Router();
@@ -25,22 +28,21 @@ router.post('/sku/set-default', asyncErrorHandler(productController.setDefaultSk
 router.get('/sku/select-all', asyncErrorHandler(productController.findOneSku));
 router.get('/best-sold', asyncErrorHandler(productController.getBestSoldSpuEachCategory));
 
-//router.use(authenticationV2);
 
-router.post('', asyncErrorHandler(productController.createProduct));
-router.get('/publish/:id', asyncErrorHandler(productController.publishProduct));
-router.get('/unpublish/:id', asyncErrorHandler(productController.unPublishProduct));
+router.get('/home-page-product', asyncErrorHandler(productController.getProductForHomePage))
 
 // for admin
+router.get('/publish/:id', asyncErrorHandler(productController.publishProduct));
+router.get('/unpublish/:id', asyncErrorHandler(productController.unPublishProduct));
 router.post('/list-detail-product', asyncErrorHandler(productController.getListProdcutDetailsForAdmin));
 router.post('/published/all', asyncErrorHandler(productController.getListPublishSpuByCategory));
 router.get('/top-products', asyncErrorHandler(productController.getBestSoldSpuEachCategory));
-router.get('/home-page-product', asyncErrorHandler(productController.getProductForHomePage))
 router.get('/spu/get-all', asyncErrorHandler(productController.getAllSpu));
 router.get('/spu/get-published', asyncErrorHandler(productController.getAllPublishedSpu));
 router.get('/spu/get-draft', asyncErrorHandler(productController.getAllDraftSpu));
 router.get('/spu/filter', asyncErrorHandler(productController.findAllSpuWithCondition));
 router.post('/spu/filter-for-promotion', asyncErrorHandler(productController.filterSpuForPromotion));
+router.post('/spu/filter-for-voucher', asyncErrorHandler(productController.filterSpuForVoucher));
 router.get('/recommendations/trending', recommendController.getRecommendTrending)
 
 router.use(authenticationV2);
