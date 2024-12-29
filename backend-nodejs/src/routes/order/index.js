@@ -14,17 +14,17 @@ const router = express.Router();
 
 router.use(authenticationV2)
 //admin
-router.get('/get-all-for-admin', grantAccess("readAny", 'order'), asyncErrorHandler(orderController.getListOrderForAdmin));
-router.post('/change-status', grantAccess("updateAny", 'order'), asyncErrorHandler(orderController.updateOrderStatusByAdmin));
-router.get('/get-one-for-admin/:orderId', grantAccess("readAny", 'order'), asyncErrorHandler(orderController.getOneOrderByAdmin));
-router.get('/count-order', grantAccess("readAny", 'order'), asyncErrorHandler(orderController.getOrderCountByStatus));
+router.get('/get-all-for-admin', asyncErrorHandler(orderController.getListOrderForAdmin));
+router.post('/change-status', asyncErrorHandler(orderController.updateOrderStatusByAdmin));
+router.get('/get-one-for-admin/:orderId', asyncErrorHandler(orderController.getOneOrderByAdmin));
+router.get('/count-order', asyncErrorHandler(orderController.getOrderCountByStatus));
 
 
 // user
-router.post('/check-purchase', grantAccess("readOwn", 'order'), asyncErrorHandler(orderController.hasUserPurchasedProduct));
-router.post('', grantAccess("createOwn", 'order'), asyncErrorHandler(orderController.orderByUserV2));
-router.get('/:orderId', grantAccess("readOwn", 'order'), asyncErrorHandler(orderController.getOneOrderByUser));
-router.delete('/:orderId', grantAccess("updateOwn", 'order'), asyncErrorHandler(orderController.cancelOrderByUser));
-router.post('/find-all/:userId', grantAccess("readOwn", 'order'), asyncErrorHandler(orderController.getListOrderByUser));
+router.post('/check-purchase', asyncErrorHandler(orderController.hasUserPurchasedProduct));
+router.post('', asyncErrorHandler(orderController.orderByUserV2));
+router.get('/:orderId', asyncErrorHandler(orderController.getOneOrderByUser));
+router.delete('/:orderId', asyncErrorHandler(orderController.cancelOrderByUser));
+router.post('/find-all/:userId', asyncErrorHandler(orderController.getListOrderByUser));
 
 export default router;
