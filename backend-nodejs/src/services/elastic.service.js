@@ -12,7 +12,7 @@ class ElasticService {
         minPrice,
         maxPrice,
         limit = 10,
-        skip = 0,
+        page = 1,
         sortBy,
     }) => {
         try {
@@ -58,7 +58,7 @@ class ElasticService {
                 minPrice,
                 maxPrice,
                 limit,
-                skip,
+                page,
                 sortBy,
             });
         } catch (error) {

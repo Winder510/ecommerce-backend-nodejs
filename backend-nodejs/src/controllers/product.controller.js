@@ -135,21 +135,27 @@ class ProductController {
     getAllPublishedSpu = async (req, res, next) => {
         new SuccessResponse({
             message: 'Get list publish spu',
-            metadata: await SpuService.findAllPublishSpu({}),
+            metadata: await SpuService.findAllPublishSpu({
+                ...req.query
+            }),
         }).send(res);
     };
 
     getAllSpu = async (req, res, next) => {
         new SuccessResponse({
             message: 'Get list  spu',
-            metadata: await SpuService.findAllSpu({}),
+            metadata: await SpuService.findAllSpu({
+                ...req.query
+            }),
         }).send(res);
     };
 
     getAllDraftSpu = async (req, res, next) => {
         new SuccessResponse({
             message: 'Get list draft spu ',
-            metadata: await SpuService.findAlLDraftSpu({}),
+            metadata: await SpuService.findAlLDraftSpu({
+                ...req.query
+            }),
         }).send(res);
     };
 

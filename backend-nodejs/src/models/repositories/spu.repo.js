@@ -22,15 +22,18 @@ const querySpu = async ({
         created_At: -1,
     },
     limit = 10,
-    offset = 0
+    skip = 0,
+    page = 0,
 }) => {
     // Get total count for pagination info
-    const totalCount = await spuModel.countDocuments(query);
+    const totalResult = await spuModel.countDocuments(query);
+
+    const totalPages = Math.ceil(totalResult / limit);
 
     const spus = await spuModel
         .find(query)
         .sort(sort)
-        .skip(offset)
+        .skip(skip)
         .limit(limit)
         .populate({
             path: 'product_category',
@@ -51,9 +54,9 @@ const querySpu = async ({
     return {
         data: spusWithPrice,
         pagination: {
-            total: totalCount,
-            limit,
-            offset
+            totalResult,
+            totalPages,
+            currentPage: page
         }
     };
 };
@@ -65,8 +68,6 @@ const querySpuV2 = async ({
     limit = 10,
     offset = 0
 }) => {
-    // Get total count for pagination info
-    const totalCount = await spuModel.countDocuments(query);
 
     const spus = await spuModel
         .find(query)
@@ -88,7 +89,6 @@ const querySpuV2 = async ({
         }
     }));
 
-    // Return data with pagination metadata
     return spusWithPrice
 };
 
@@ -269,17 +269,24 @@ const updateQuantitySpu = async (spuId, quantity) => {
 const getSpuByIds = async (productIds = [], {
     minPrice,
     maxPrice,
-    limit,
-    skip,
+    limit = 10,
+    page = 1,
     sortBy
 }) => {
     try {
         if (!Array.isArray(productIds) || productIds.length === 0) {
             return {
                 products: [],
-                totalResult: 0,
+                pagination: {
+                    totalResult: 0,
+                    totalPages: 0,
+                    currentPage: page
+                }
             };
         }
+
+        // Calculate skip based on page number
+        const skip = (page - 1) * limit;
 
         // Khai báo query để lọc các sản phẩm
         let query = {
@@ -314,18 +321,27 @@ const getSpuByIds = async (productIds = [], {
                 sortOptions.createdAt = -1;
         }
 
-        // Truy vấn sản phẩm từ MongoDB với các điều kiện lọc và sắp xếp
+        // Get total count of matching documents
+        const totalResult = await spuModel.countDocuments(query);
+
+        // Calculate total pages
+        const totalPages = Math.ceil(totalResult / limit);
+
         const products = await spuModel
-            .find(query) // Lọc theo query đã xác định
-            .sort(sortOptions) // Sắp xếp theo sortOptions
-            .limit(limit) // Giới hạn số lượng kết quả
-            .skip(skip) // Bỏ qua số lượng kết quả trước đó
-            .lean(); // Trả về dữ liệu thuần (non-Mongo document)
+            .find(query)
+            .sort(sortOptions)
+            .limit(limit)
+            .skip(skip)
+            .lean();
 
         if (!products.length) {
             return {
                 products: [],
-                totalResult: 0,
+                pagination: {
+                    totalResult: 0,
+                    totalPages: 0,
+                    currentPage: page
+                }
             };
         }
 
@@ -338,7 +354,12 @@ const getSpuByIds = async (productIds = [], {
 
         return {
             products: spusWithPrice,
-            totalResult: spusWithPrice.length,
+            pagination: {
+                totalResult, // Total number of matching documents
+                totalPages, // Total number of pages
+                currentPage: page // Current page number
+            }
+
         };
     } catch (error) {
         console.error("Error fetching products:", error);

@@ -407,7 +407,7 @@ export class SpuService {
 
     static async findAllSpu({
         limit = 10,
-        skip = 0
+        page = 0
     }) {
         const query = {};
 
@@ -471,7 +471,7 @@ export class SpuService {
         minPrice,
         maxPrice,
         limit = 10,
-        skip = 0,
+        page = 1,
     }) {
         // Xây dựng query
         const category = await categoryModel.findOne({
@@ -486,6 +486,8 @@ export class SpuService {
             minPrice,
             maxPrice,
         });
+
+        const skip = (page - 1) * limit;
 
         const queryLast = {
             ...query,
@@ -523,6 +525,7 @@ export class SpuService {
             query: queryLast,
             sort: sortOptions,
             limit,
+            page,
             skip,
         });
     }

@@ -102,7 +102,6 @@ export const authenticationV2 = asyncErrorHandler(async (req, res, next) => {
 
         return next();
     } catch (e) {
-        console.log("🚀 ~ authenticationV2 ~ e:", e)
         throw new AuthFailureError("Lỗi JWT");
     }
 });
