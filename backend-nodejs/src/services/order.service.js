@@ -491,16 +491,44 @@ export class OrderService {
         return orders;
     }
 
-    static async getListOrderByAdmin() {
+    static async getListOrderByAdmin({
+        limit = 10,
+        page = 1,
+        order_status = null
+    }) {
+        const skip = (page - 1) * limit;
+
         try {
-            const orders = await orderModel.find().populate("order_userId").sort({
-                createdAt: -1
-            }).lean();
-            return orders;
+            const query = {};
+            if (order_status) {
+                query.order_status = order_status;
+            }
+
+            const totalResult = await orderModel.countDocuments(query);
+            const totalPages = Math.ceil(totalResult / limit);
+
+            const orders = await orderModel.find(query)
+                .populate("order_userId")
+                .sort({
+                    createdAt: -1
+                })
+                .limit(limit)
+                .skip(skip)
+                .lean();
+
+            return {
+                orders,
+                pagination: {
+                    totalResult,
+                    totalPages,
+                    currentPage: page
+                }
+            };
         } catch (error) {
             throw new Error(`Lỗi khi lấy danh sách đơn hàng: ${error.message}`);
         }
     }
+
 
     static async getOneOrderByAdmin({
         orderId

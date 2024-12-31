@@ -361,12 +361,19 @@ export class SpuService {
 
     static async findAlLDraftSpu({
         limit = 10,
-        skip = 0
+        page = 1
     }) {
         const query = {
             isDraft: true,
         };
 
+        const skip = (page - 1) * limit;
+        // Get total count of matching documents
+        const totalResult = await spuModel.countDocuments(query);
+
+        // Calculate total pages
+        const totalPages = Math.ceil(totalResult / limit);
+
         const spus = await spuModel
             .find(query)
             .skip(skip)
@@ -378,17 +385,31 @@ export class SpuService {
             .lean()
             .exec();
 
-        return spus
+        return ({
+            products: spus,
+            pagination: {
+                totalResult,
+                totalPages,
+                currentPage: page,
+            }
+        })
+
     }
 
     static async findAllPublishSpu({
         limit = 10,
-        skip = 0
+        page = 1
     }) {
         const query = {
             isDraft: false,
             isPublished: true,
         };
+        const skip = (page - 1) * limit;
+        // Get total count of matching documents
+        const totalResult = await spuModel.countDocuments(query);
+
+        // Calculate total pages
+        const totalPages = Math.ceil(totalResult / limit);
 
         const spus = await spuModel
             .find(query)
@@ -401,15 +422,31 @@ export class SpuService {
             .lean()
             .exec();
 
-        return spus
+        return ({
+            products: spus,
+            pagination: {
+                totalResult,
+                totalPages,
+                currentPage: page,
+            }
+        })
 
     }
 
     static async findAllSpu({
         limit = 10,
-        page = 0
+        page = 1
     }) {
+        console.log("🚀 ~ SpuService ~ page:", page)
+        console.log("🚀 ~ SpuService ~ limit:", limit)
         const query = {};
+
+        const skip = (page - 1) * limit;
+        // Get total count of matching documents
+        const totalResult = await spuModel.countDocuments(query);
+
+        // Calculate total pages
+        const totalPages = Math.ceil(totalResult / limit);
 
         const spus = await spuModel
             .find(query)
@@ -422,7 +459,14 @@ export class SpuService {
             .lean()
             .exec();
 
-        return spus
+        return {
+            products: spus,
+            pagination: {
+                totalResult,
+                totalPages,
+                currentPage: page,
+            }
+        }
     }
 
     static updateStockSPU = async (spuId, quantity, mongoSession = null) => {

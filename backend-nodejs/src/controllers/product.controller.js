@@ -143,7 +143,7 @@ class ProductController {
 
     getAllSpu = async (req, res, next) => {
         new SuccessResponse({
-            message: 'Get list  spu',
+            message: 'Get list spu',
             metadata: await SpuService.findAllSpu({
                 ...req.query
             }),
