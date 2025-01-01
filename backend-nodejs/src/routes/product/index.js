@@ -30,12 +30,12 @@ router.post('/published/all', asyncErrorHandler(productController.getListPublish
 // routes/recommendation.routes.js
 router.get('/recommendations/base/:productId', asyncErrorHandler(recommendController.getRecommendations));
 router.get('/recommendationsV2/manyRC/:userId/:productId', asyncErrorHandler(recommendController.getRecommendationsV2));
-router.get('/recommendations/home-page', asyncErrorHandler(recommendController.getRecommendForHomePage))
 router.get('/recommendations/profile', asyncErrorHandler(recommendController.getRecommendForProfilePage))
 router.get('/spu/filter', asyncErrorHandler(productController.findAllSpuWithCondition));
 router.get('/spu/get-published', asyncErrorHandler(productController.getAllPublishedSpu));
 
 router.use(authenticationV2);
+router.get('/recommendations/home-page', asyncErrorHandler(recommendController.getRecommendForHomePage))
 
 router.get('/recommendations/cart', asyncErrorHandler(recommendController.getRecommendForCartPage))
 router.get('/recommendations/detail-product/:productId', asyncErrorHandler(recommendController.getRecommendForDetailProductPage))

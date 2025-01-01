@@ -11,7 +11,8 @@ import {
     listResource,
     listRoleForDisplay,
     allRoleWithGrant,
-    updateRole
+    updateRole,
+    deleteRole
 } from '../../controllers/rbac.controller.js';
 import {
     grantAccess
@@ -26,7 +27,7 @@ router.get('/resources', asyncErrorHandler(listResource));
 ///
 router.get('/list/roles', asyncErrorHandler(listRoleForDisplay));
 router.use(authenticationV2);
-
+router.delete('/role/:id', grantAccess("deleteAny", "rbac"), asyncErrorHandler(deleteRole));
 router.patch('/role', grantAccess("updateAny", "rbac"), asyncErrorHandler(updateRole));
 router.post('/role', grantAccess("createAny", "rbac"), asyncErrorHandler(newRole));
 router.get('/roles', asyncErrorHandler(listRole));

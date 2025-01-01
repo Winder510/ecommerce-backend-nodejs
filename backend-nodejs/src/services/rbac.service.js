@@ -128,6 +128,8 @@ const getListRole = async () => {
 const getListRoleForSelect = async () => {
     return roleModel.find().select("rol_name rol_description _id")
 }
+
+
 const updateRolePermission = async ({
     id,
     name = null,
@@ -177,7 +179,6 @@ const updateRolePermission = async ({
 
     return updatedRole;
 };
-
 
 const getAllRoleWithGrant = async () => {
     return await roleModel.find()
