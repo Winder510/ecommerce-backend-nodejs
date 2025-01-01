@@ -77,5 +77,12 @@ class CommentController {
             }),
         }).send(res);
     };
+    test = async (req, res, next) => {
+        new SuccessResponse({
+            message: 'get ',
+            metadata: await commentService.test(),
+        }).send(res);
+    };
+
 }
 export default new CommentController();

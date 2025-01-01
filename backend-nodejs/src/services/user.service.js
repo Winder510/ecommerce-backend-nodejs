@@ -384,17 +384,19 @@ const updateProfileService = async ({
     }
 };
 
-const getListUser = async (filters = {}) => {
+const getListUser = async (filters) => {
     const {
         name,
-        role
+        role,
+        limit = 10,
+        page = 1,
     } = filters;
 
     const query = {};
     if (name) {
         query.usr_name = {
             $regex: name,
-            $options: 'i'
+            $options: 'i',
         };
     }
     if (role) {
@@ -402,14 +404,30 @@ const getListUser = async (filters = {}) => {
     }
 
     try {
-        // Query the database with filters
-        const users = await userModel.find(query).populate('usr_role', 'rol_name');
-        return users;
+        const skip = (page - 1) * limit;
+
+        const users = await userModel
+            .find(query)
+            .populate('usr_role', 'rol_name')
+            .skip(skip)
+            .limit(limit);
+
+        const totalResults = await userModel.countDocuments(query);
+
+        return {
+            users,
+            pagination: {
+                totalResults,
+                totalPages: Math.ceil(totalResults / limit),
+                currentPage: page,
+            },
+        };
     } catch (error) {
         console.error('Error fetching users:', error);
         throw new Error('Failed to fetch users.');
     }
 };
+
 
 const changeUserStatus = async ({
     userId,

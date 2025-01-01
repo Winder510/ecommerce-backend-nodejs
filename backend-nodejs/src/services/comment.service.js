@@ -119,8 +119,8 @@ export default class CommentService {
     static async getCommenByParentId({
         productId,
         parentCommentId = null,
-        limit = 50,
-        offset = 0
+        limit = 5,
+        page = 1
     }) {
         if (parentCommentId) {
             const parent = await commentModel.findById(parentCommentId);
@@ -142,11 +142,16 @@ export default class CommentService {
                 })
                 .sort({
                     comment_left: 1,
-                }).skip(offset) // Bỏ qua `offset` comment đầu tiên
+                }).skip(0) // Bỏ qua `offset` comment đầu tiên
                 .limit(limit); // Lấy `limit` comment tiếp theo;
 
-            return comments;
+            return {
+                comments,
+                pagination: {}
+            };
         }
+
+        const offset = (page - 1) * limit;
 
         const comments = await commentModel
             .find({
@@ -157,10 +162,24 @@ export default class CommentService {
                 select: 'usr_avatar usr_name'
             })
             .sort({
+                isCommentByPurchase: 1,
                 createdAt: -1,
-            }).skip(offset) // Bỏ qua `offset` comment đầu tiên
-            .limit(limit); // Lấy `limit` comment tiếp theo;
-        return comments;
+            }).skip(offset)
+            .limit(limit);
+
+        const totalComments = await commentModel.countDocuments({
+            comment_productId: productId,
+            comment_parentId: parentCommentId,
+        });
+
+        return {
+            comments,
+            pagination: {
+                totalResult: totalComments,
+                totalPages: Math.ceil(totalComments / limit),
+                currentPage: page
+            }
+        };
     }
 
     static async deleteComments({
@@ -413,4 +432,70 @@ export default class CommentService {
         }
     };
 
+    static test = async () => {
+
+        const products = await commentModel.aggregate([{
+                $match: {
+                    comment_rating: {
+                        $gt: 0
+                    }, // Lọc các bình luận có rating > 0
+                    comment_parentId: {
+                        $exists: false
+                    }, // Bình luận gốc (chưa được trả lời)
+                },
+            },
+            {
+                $lookup: {
+                    from: "Comments", // Join lại chính collection bình luận
+                    localField: "_id", // comment ID
+                    foreignField: "comment_parentId", // Tìm những bình luận trả lời bình luận gốc
+                    as: "replies",
+                },
+            },
+            {
+                $match: {
+                    "replies.isFromSystem": {
+                        $ne: true
+                    }, // Lọc bình luận không có trả lời từ hệ thống
+                },
+            },
+            {
+                $group: {
+                    _id: "$comment_productId", // Nhóm theo ID sản phẩm
+                    commentCount: {
+                        $sum: 1
+                    }, // Đếm số lượng bình luận phù hợp
+                },
+            },
+            {
+                $lookup: {
+                    from: "Spus", // Tên collection của sản phẩm
+                    localField: "_id",
+                    foreignField: "_id",
+                    as: "productDetails",
+                },
+            },
+            {
+                $unwind: "$productDetails", // Bóc tách productDetails từ mảng
+            },
+            {
+                $project: {
+                    _id: 0,
+                    productId: "$_id",
+                    commentCount: 1,
+                    productName: "$productDetails.product_name",
+                    productThumb: "$productDetails.product_thumb",
+                },
+            },
+            {
+                $sort: {
+                    commentCount: -1
+                },
+            },
+        ]);
+
+        return products;
+
+
+    }
 }

@@ -14,7 +14,6 @@ router.post('/new_user', asyncErrorHandler(userController.newUser));
 router.post('/address', asyncErrorHandler(userController.addNewUserAddress));
 router.get('/address/:id', asyncErrorHandler(userController.getUserAddress));
 router.get('/default/address/:id', asyncErrorHandler(userController.getUserDefaultAddress));
-router.get('/find-all', asyncErrorHandler(userController.getListUserForAddmin));
 router.post('/change-status', asyncErrorHandler(userController.changeUserStatus));
 router.get('/welcome', asyncErrorHandler(userController.checkLoginEmailToken));
 router.patch('', asyncErrorHandler(userController.changePassword));
@@ -22,5 +21,6 @@ router.use(authenticationV2);
 router.put("/profile", asyncErrorHandler(userController.updateUserProfile));
 router.post('/change-role', asyncErrorHandler(userController.changeUserRole));
 
+router.get('/find-all', asyncErrorHandler(userController.getListUserForAddmin));
 
 export default router;
