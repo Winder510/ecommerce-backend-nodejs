@@ -1,8 +1,12 @@
-import { ReasonPhrases, StatusCodes } from '../utils/httpStatusCode.js';
+import {
+    ReasonPhrases,
+    StatusCodes
+} from '../utils/httpStatusCode.js';
 
 const StatusCode = {
     FORBIDDEN: 403,
     CONFLICT: 409,
+    BADREQUEST: 400
 };
 const ReasonStatusCode = {
     FORBIDDEN: 'Bad request error',
@@ -20,7 +24,7 @@ export class ConflictRequestError extends ErrorResponse {
     }
 }
 export class BadRequestError extends ErrorResponse {
-    constructor(message = ReasonStatusCode.FORBIDDEN, statusCode = StatusCode.FORBIDDEN) {
+    constructor(message = ReasonStatusCode.FORBIDDEN, statusCode = StatusCode.BADREQUEST) {
         super(message, statusCode);
     }
 }

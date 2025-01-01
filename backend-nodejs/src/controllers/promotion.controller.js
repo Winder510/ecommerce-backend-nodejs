@@ -22,7 +22,7 @@ class PromotionController {
         new SuccessResponse({
             message: 'Get list successfully',
             metadata: await PromotionService.getListPromotions({
-                ...req.body
+                ...req.query
             }),
         }).send(res);
     };
@@ -98,6 +98,15 @@ class PromotionController {
             metadata: await PromotionService.updateAppliedQuantity({
                 ...req.body
             }),
+        }).send(res);
+    };
+    calculateRevenueAndDetails = async (req, res, next) => {
+        const {
+            promotionId
+        } = req.params
+        new SuccessResponse({
+            message: 'Find one promotion',
+            metadata: await PromotionService.calculateRevenueAndDetails(promotionId),
         }).send(res);
     };
 }

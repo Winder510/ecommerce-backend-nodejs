@@ -9,7 +9,7 @@ const router = express.Router();
 router.post('', asyncErrorHandler(promotionController.createNew));
 router.patch('', asyncErrorHandler(promotionController.updatePromotion));
 router.get('/get-one/:id', asyncErrorHandler(promotionController.getOnePromotion));
-router.post('/get-list', asyncErrorHandler(promotionController.getListPromotions));
+router.get('/get-list', asyncErrorHandler(promotionController.getListPromotions));
 router.patch('/toggle-disable/:id', asyncErrorHandler(promotionController.toggleUpdateDisable));
 
 router.get('/get-event', asyncErrorHandler(promotionController.getOnePromotionEvent));
@@ -21,5 +21,6 @@ router.get('/active-flash-sale', asyncErrorHandler(promotionController.getActive
 router.get('/find-one/:promotionId', asyncErrorHandler(promotionController.findOne));
 
 router.post('/test', asyncErrorHandler(promotionController.test));
+router.get('/statictis/:promotionId', asyncErrorHandler(promotionController.calculateRevenueAndDetails));
 
 export default router;

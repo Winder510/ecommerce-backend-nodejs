@@ -13,6 +13,10 @@ import {
     getPriceSpu
 } from "../models/repositories/spu.repo.js";
 import spuModel from "../models/spu.model.js";
+import {
+    model
+} from "mongoose";
+import skuModel from "../models/sku.model.js";
 class PromotionService {
     static async createNewPromotion({
         prom_name,
@@ -68,45 +72,111 @@ class PromotionService {
     }
 
     static async getListPromotions({
-        eventType
+        eventType,
+        status,
+        dateRange = [null, null],
+        page = 1,
+        limit = 10
     }) {
-        const currentTime = new Date(); // Thời gian hiện tại theo UTC
-        const vietnamTimezoneOffset = 7 * 60 * 60 * 1000; // Múi giờ Việt Nam: +7 tiếng
+        const currentTime = new Date();
+        const vietnamTimezoneOffset = 7 * 60 * 60 * 1000;
+        const vietnamCurrentTime = new Date(currentTime.getTime() + vietnamTimezoneOffset);
 
-        const promotions = await promotionModel.find({
+        // Tính toán skip cho phân trang
+        const skip = (page - 1) * limit;
+
+        // Xây dựng query filter
+        const queryFilter = {
             eventType
+        };
+
+        // Thêm điều kiện filter theo date range nếu có
+        const [startDate, endDate] = dateRange;
+        if (startDate && endDate) {
+            queryFilter.$or = [
+                // Sự kiện bắt đầu trong khoảng thời gian
+                {
+                    startTime: {
+                        $gte: new Date(startDate),
+                        $lte: new Date(endDate)
+                    }
+                },
+                // Sự kiện kết thúc trong khoảng thời gian
+                {
+                    endTime: {
+                        $gte: new Date(startDate),
+                        $lte: new Date(endDate)
+                    }
+                },
+                // Sự kiện bao trùm khoảng thời gian
+                {
+                    $and: [{
+                            startTime: {
+                                $lte: new Date(startDate)
+                            }
+                        },
+                        {
+                            endTime: {
+                                $gte: new Date(endDate)
+                            }
+                        }
+                    ]
+                }
+            ];
+        }
+
+        // Lấy tất cả promotions theo filter
+        const allPromotions = await promotionModel.find(queryFilter).sort({
+            createdAt: -1
         });
-        const modifiedPromotions = promotions.map((promotion) => {
+
+        // Xử lý và tính toán status cho tất cả promotions
+        const processedPromotions = allPromotions.map(promotion => {
             const {
                 appliedProduct,
                 startTime,
                 endTime,
                 ...rest
-            } = promotion.toObject(); // Loại bỏ trường appliedProduct
+            } = promotion.toObject();
 
-            const startDate = new Date(new Date(startTime).getTime() + vietnamTimezoneOffset); // Chuyển startTime sang giờ VN
-            const endDate = new Date(new Date(endTime).getTime() + vietnamTimezoneOffset); // Chuyển endTime sang giờ VN
-            const vietnamCurrentTime = new Date(currentTime.getTime() + vietnamTimezoneOffset); // Thời gian hiện tại theo giờ VN
-
-            // Xác định trạng thái của promotion
-            let status = "Sắp diễn ra"; // Mặc định là "sắp diễn ra"
-            if (vietnamCurrentTime >= startDate && vietnamCurrentTime <= endDate) {
-                status = "Đang diễn ra"; // Đang diễn ra
-            } else if (vietnamCurrentTime > endDate) {
-                status = "Đã kết thúc "; // Đã kết thúc
+            let computedStatus = "Sắp diễn ra";
+            if (vietnamCurrentTime >= startTime && vietnamCurrentTime <= endTime) {
+                computedStatus = "Đang diễn ra";
+            } else if (vietnamCurrentTime > endTime) {
+                computedStatus = "Đã kết thúc";
             }
 
             return {
                 ...rest,
-                startTime: startDate.toISOString(), // Định dạng lại thời gian theo ISO
-                endTime: endDate.toISOString(),
-                appliedProductLength: appliedProduct.length, // Tính độ dài của appliedProduct
-                status,
+                startTime,
+                endTime,
+                appliedProductLength: appliedProduct.length,
+                status: computedStatus,
             };
         });
 
-        return modifiedPromotions;
+        // Lọc theo status nếu có
+        const filteredPromotions = status ?
+            processedPromotions.filter(promotion => promotion.status === status) :
+            processedPromotions;
+
+        // Áp dụng phân trang cho kết quả đã lọc
+        const paginatedPromotions = filteredPromotions.slice(skip, skip + limit);
+
+        // Tính toán thông tin phân trang dựa trên số lượng sau khi lọc
+        const totalFilteredPromotions = filteredPromotions.length;
+
+        return {
+            promotions: paginatedPromotions,
+            pagination: {
+                total: totalFilteredPromotions,
+                totalPages: Math.ceil(totalFilteredPromotions / limit),
+                currentPage: page,
+                limit
+            }
+        };
     }
+
 
     static async toggleUpdateDisable(id) {
         const promotion = await promotionModel.findById(id);
@@ -476,6 +546,75 @@ class PromotionService {
             throw new Error(`Lỗi khi lấy sự kiện khuyến mãi: ${error.message}`);
         }
     };
+
+    static calculateRevenueAndDetails = async (promotionId) => {
+        const productDetails = [];
+        let totalRevenueAllSpus = 0; // Khởi tạo biến tổng doanh thu của tất cả các SPU
+        const promotion = await promotionModel.findById(promotionId).lean();
+
+        // Duyệt qua từng appliedProduct (SPU)
+        for (const appliedProduct of promotion.appliedProduct) {
+            const spuId = appliedProduct.spuId;
+            const spu = await spuModel.findById(spuId);
+            const spuName = spu.product_name; // Tên SPU
+            const spuThumb = spu.product_thumb;
+
+            // Duyệt qua từng SKU trong mỗi appliedProduct
+            const skus = [];
+            let totalRevenue = 0; // Khởi tạo biến tổng doanh thu cho mỗi SPU
+
+            for (const sku of appliedProduct.sku_list) {
+                const skuId = sku.skuId;
+                const skuFound = await skuModel.findById(skuId);
+
+                const skuName = skuFound.sku_name; // Tên SKU
+                const price = skuFound.sku_price; // Giá của SKU
+                const discountType = sku.discountType; // Kiểu giảm giá (PERCENTAGE/FIXED)
+                const discountValue = sku.discountValue; // Giá trị giảm giá
+                const appliedQuantity = sku.appliedQuantity; // Số lượng đã bán
+                const quantityLimit = sku.quantityLimit
+
+                let discountedPrice = price;
+                if (discountType === "PERCENTAGE") {
+                    discountedPrice = price * (1 - discountValue / 100);
+                } else if (discountType === "FIXED") {
+                    discountedPrice = price - discountValue;
+                }
+
+                const revenue = discountedPrice * appliedQuantity;
+                totalRevenue += revenue; // Cộng dồn doanh thu của SKU vào tổng doanh thu của SPU
+
+                skus.push({
+                    skuId: skuId,
+                    skuName: skuName,
+                    price: price,
+                    appliedQuantity: appliedQuantity,
+                    revenue: revenue,
+                    discountType: discountType,
+                    discountValue: discountValue,
+                    discountedPrice: discountedPrice,
+                    quantityLimit
+                });
+            }
+
+            productDetails.push({
+                spuName: spuName,
+                spuThumb: spuThumb,
+                skus: skus,
+                totalRevenue: totalRevenue // Thêm tổng doanh thu của SPU vào
+            });
+
+            totalRevenueAllSpus += totalRevenue;
+        }
+
+        return {
+            productDetails: productDetails,
+            totalRevenueAllSpus: totalRevenueAllSpus // Tổng doanh thu của tất cả SPU
+        };
+    };
+
+
+
 
 
 }

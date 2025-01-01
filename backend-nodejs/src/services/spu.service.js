@@ -148,6 +148,21 @@ export class SpuService {
     }) {
         const foundSpu = await spuModel.findById(spuId).lean();
         if (!foundSpu) throw new BadRequestError("Product not exists")
+        const currentTime = new Date();
+        currentTime.setHours(currentTime.getHours() + 7);
+
+        const isInPromotion = await promotionModel.find({
+            "appliedProduct.spuId": spuId,
+            startTime: {
+                $lte: currentTime
+            },
+            endTime: {
+                $gte: currentTime
+            },
+            status: 'active',
+        }).lean()
+
+        if (isInPromotion) throw new BadRequestError(`Sản phẩm này đang trong thời gian sự kiện ${isInPromotion[0].prom_name} không thể xóa. Hãy thử lại khi sự kiện kết thúc`)
 
         await skuModel.deleteMany({
             product_id: spuId

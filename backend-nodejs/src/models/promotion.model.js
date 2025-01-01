@@ -52,21 +52,6 @@ var promotionSchema = new mongoose.Schema({
         type: String,
         enum: ['Flash sale', 'Custom'],
     },
-    discountType: {
-        type: String,
-        enum: ['PERCENTAGE', 'FIXED'],
-    },
-    discountValue: {
-        type: Number,
-    },
-    applyToAllProducts: {
-        type: Boolean,
-        default: false,
-    },
-    applyToCategories: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'category',
-    }],
     startTime: {
         type: Date,
         required: true
