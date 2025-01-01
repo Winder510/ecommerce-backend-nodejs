@@ -65,7 +65,9 @@ class DiscountController {
     findAll = async (req, res, next) => {
         new SuccessResponse({
             message: 'success',
-            metadata: await DiscountService.findAll(),
+            metadata: await DiscountService.findAll({
+                ...req.query
+            }),
         }).send(res);
     };
 

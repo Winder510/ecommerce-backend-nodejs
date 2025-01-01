@@ -17,44 +17,45 @@ const router = express.Router();
 
 router.get('/search/:keySearch', asyncErrorHandler(productController.getListSearchSpu));
 
-// tam thoi khong check auth
-router.post('/spu/new', asyncErrorHandler(productController.createSpu));
-router.patch('/spu/update/:id', asyncErrorHandler(productController.updateSpu));
-router.delete('/spu/delete/:id', asyncErrorHandler(productController.deleteSpu));
 
 router.get('/spu', asyncErrorHandler(productController.findOneSpu));
 router.get('/sku/select', asyncErrorHandler(productController.findOneSku));
 router.post('/sku/set-default', asyncErrorHandler(productController.setDefaultSku));
 router.get('/sku/select-all', asyncErrorHandler(productController.findOneSku));
 router.get('/best-sold', asyncErrorHandler(productController.getBestSoldSpuEachCategory));
-
-
 router.get('/home-page-product', asyncErrorHandler(productController.getProductForHomePage))
-
-// for admin
-router.get('/publish/:id', asyncErrorHandler(productController.publishProduct));
-router.get('/unpublish/:id', asyncErrorHandler(productController.unPublishProduct));
-router.post('/list-detail-product', asyncErrorHandler(productController.getListProdcutDetailsForAdmin));
-router.post('/published/all', asyncErrorHandler(productController.getListPublishSpuByCategory));
-router.get('/top-products', asyncErrorHandler(productController.getBestSoldSpuEachCategory));
-
-router.get('/spu/get-all', asyncErrorHandler(productController.getAllSpu));
-router.get('/spu/get-published', asyncErrorHandler(productController.getAllPublishedSpu));
-router.get('/spu/get-draft', asyncErrorHandler(productController.getAllDraftSpu));
-
-router.get('/spu/filter', asyncErrorHandler(productController.findAllSpuWithCondition));
-router.post('/spu/filter-for-promotion', asyncErrorHandler(productController.filterSpuForPromotion));
-router.post('/spu/filter-for-voucher', asyncErrorHandler(productController.filterSpuForVoucher));
 router.get('/recommendations/trending', recommendController.getRecommendTrending)
+router.post('/published/all', asyncErrorHandler(productController.getListPublishSpuByCategory));
+
+// routes/recommendation.routes.js
+router.get('/recommendations/base/:productId', asyncErrorHandler(recommendController.getRecommendations));
+router.get('/recommendationsV2/manyRC/:userId/:productId', asyncErrorHandler(recommendController.getRecommendationsV2));
+router.get('/recommendations/home-page', asyncErrorHandler(recommendController.getRecommendForHomePage))
+router.get('/recommendations/profile', asyncErrorHandler(recommendController.getRecommendForProfilePage))
+router.get('/spu/filter', asyncErrorHandler(productController.findAllSpuWithCondition));
+router.get('/spu/get-published', asyncErrorHandler(productController.getAllPublishedSpu));
 
 router.use(authenticationV2);
-// routes/recommendation.routes.js
-router.get('/recommendations/base/:productId', recommendController.getRecommendations);
-router.get('/recommendationsV2/manyRC/:userId/:productId', recommendController.getRecommendationsV2);
-router.get('/recommendations/detail-product/:productId', recommendController.getRecommendForDetailProductPage)
-router.get('/recommendations/home-page', recommendController.getRecommendForHomePage)
-router.get('/recommendations/cart', recommendController.getRecommendForCartPage)
-router.get('/recommendations/profile', recommendController.getRecommendForProfilePage)
+
+router.get('/recommendations/cart', asyncErrorHandler(recommendController.getRecommendForCartPage))
+router.get('/recommendations/detail-product/:productId', asyncErrorHandler(recommendController.getRecommendForDetailProductPage))
+
+// tam thoi khong check auth
+router.post('/spu/new', grantAccess("createAny", "product"), asyncErrorHandler(productController.createSpu));
+router.patch('/spu/update/:id', grantAccess("updateAny", "product"), asyncErrorHandler(productController.updateSpu));
+router.delete('/spu/delete/:id', grantAccess("deleteAny", "product"), asyncErrorHandler(productController.deleteSpu));
+
+// for admin
+router.get('/publish/:id', grantAccess("updateAny", "product"), asyncErrorHandler(productController.publishProduct));
+router.get('/unpublish/:id', grantAccess("updateAny", "product"), asyncErrorHandler(productController.unPublishProduct));
+router.post('/list-detail-product', grantAccess("readAny", "product"), asyncErrorHandler(productController.getListProdcutDetailsForAdmin));
+router.get('/top-products', grantAccess("readAny", "product"), asyncErrorHandler(productController.getBestSoldSpuEachCategory));
+
+router.get('/spu/get-all', grantAccess("readAny", "product"), asyncErrorHandler(productController.getAllSpu));
+router.get('/spu/get-draft', grantAccess("readAny", "product"), asyncErrorHandler(productController.getAllDraftSpu));
+
+router.post('/spu/filter-for-promotion', grantAccess("readAny", "product"), asyncErrorHandler(productController.filterSpuForPromotion));
+router.post('/spu/filter-for-voucher', grantAccess("readAny", "product"), asyncErrorHandler(productController.filterSpuForVoucher));
 
 
 

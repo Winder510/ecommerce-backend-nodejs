@@ -12,12 +12,12 @@ import {
 
 const router = express.Router();
 
-router.use(authenticationV2)
 //admin
-router.get('/get-all-for-admin', asyncErrorHandler(orderController.getListOrderForAdmin));
-router.post('/change-status', asyncErrorHandler(orderController.updateOrderStatusByAdmin));
-router.get('/get-one-for-admin/:orderId', asyncErrorHandler(orderController.getOneOrderByAdmin));
-router.get('/count-order', asyncErrorHandler(orderController.getOrderCountByStatus));
+router.use(authenticationV2)
+router.get('/get-all-for-admin', grantAccess("readAny", "order"), asyncErrorHandler(orderController.getListOrderForAdmin));
+router.post('/change-status', grantAccess("updateAny", "order"), asyncErrorHandler(orderController.updateOrderStatusByAdmin));
+router.get('/get-one-for-admin/:orderId', grantAccess("readAny", "order"), asyncErrorHandler(orderController.getOneOrderByAdmin));
+router.get('/count-order', grantAccess("readAny", "order"), asyncErrorHandler(orderController.getOrderCountByStatus));
 
 
 // user

@@ -21,14 +21,9 @@ const grantAccess = (action, resource) => {
 
     return async (req, res, next) => {
         try {
-
-            //    rbac.setGrants(await getListRole())
-
+            rbac.setGrants(await getListRole())
             const user = await userModel.findById(req.user.userId).populate('usr_role');
             const roleName = user.usr_role.rol_name;
-            console.log("🚀 ~ return ~ roleName:", roleName)
-
-
             const permission = await rbac.can(roleName)[action](resource);
 
             if (!permission.granted) {

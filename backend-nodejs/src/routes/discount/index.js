@@ -6,6 +6,9 @@ import {
     asyncErrorHandler
 } from '../../helpers/asyncHandler.js';
 import discountController from '../../controllers/discount.controller.js';
+import {
+    grantAccess
+} from '../../middleware/rbac.js';
 
 const router = express.Router();
 
@@ -14,13 +17,15 @@ router.post('/amount', asyncErrorHandler(discountController.getDiscountAmount));
 router.get('/list_product_code', asyncErrorHandler(discountController.getAllProdcutWithDiscountCode));
 router.post('/amountV2', asyncErrorHandler(discountController.getDiscountAmountV2));
 // authentication
-//router.use(authenticationV2);
+router.use(authenticationV2);
 
-router.post('', asyncErrorHandler(discountController.createDiscount));
-router.patch('/:id', asyncErrorHandler(discountController.updateDiscount));
+router.post('', grantAccess("createAny", "discount"), asyncErrorHandler(discountController.createDiscount));
+router.patch('/:id', grantAccess("updateAny", "discount"), asyncErrorHandler(discountController.updateDiscount));
+router.delete('', grantAccess("deleteAny", "discount"), asyncErrorHandler(discountController.deleteDiscount));
 router.get('', asyncErrorHandler(discountController.getAllDiscountCode));
-router.delete('', asyncErrorHandler(discountController.deleteDiscount));
-router.get('/find-all', asyncErrorHandler(discountController.findAll));
+
+router.get('/find-all', grantAccess("readAny", "discount"), asyncErrorHandler(discountController.findAll));
+
 router.post('/find-all/available', asyncErrorHandler(discountController.filterAllDiscountForClient));
 router.post('/find-all/private', asyncErrorHandler(discountController.findPrivateDiscount));
 
