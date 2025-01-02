@@ -449,14 +449,22 @@ export class SpuService {
     }
 
     static async findAllSpu({
+        search,
         limit = 10,
         page = 1
     }) {
-        console.log("🚀 ~ SpuService ~ page:", page)
-        console.log("🚀 ~ SpuService ~ limit:", limit)
         const query = {};
 
+        // Thêm điều kiện tìm kiếm theo tên (nếu có)
+        if (search) {
+            query.product_name = {
+                $regex: search,
+                $options: 'i'
+            }; // 'i' để không phân biệt hoa thường
+        }
+
         const skip = (page - 1) * limit;
+
         // Get total count of matching documents
         const totalResult = await spuModel.countDocuments(query);
 
@@ -481,8 +489,9 @@ export class SpuService {
                 totalPages,
                 currentPage: page,
             }
-        }
+        };
     }
+
 
     static updateStockSPU = async (spuId, quantity, mongoSession = null) => {
         try {
