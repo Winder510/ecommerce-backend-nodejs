@@ -219,7 +219,7 @@ const getListAddress = async ({
         if (!user) {
             throw new Error('User not found');
         }
-        returnuserModel.usr_address; // Return the addresses, including fullAddress
+        return user.usr_address; // Return the addresses, including fullAddress
     } catch (error) {
         console.error("Error fetching addresses:", error);
         throw error;

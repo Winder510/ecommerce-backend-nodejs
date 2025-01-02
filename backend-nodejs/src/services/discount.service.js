@@ -603,6 +603,7 @@ export default class DiscountService {
         discountId,
         userId
     }) => {
+        console.log("🚀 ~ DiscountService ~ discountId:", discountId)
         try {
             // Lấy thông tin mã giảm giá
             const discount = await discountModel.findById(discountId);

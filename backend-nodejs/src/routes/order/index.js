@@ -12,7 +12,6 @@ import {
 
 const router = express.Router();
 
-router.get('/statistic/value', asyncErrorHandler(orderController.getOrdersAnalyticsByTimeRange));
 //admin
 router.use(authenticationV2)
 router.get('/get-all-for-admin', grantAccess("readAny", "order"), asyncErrorHandler(orderController.getListOrderForAdmin));
@@ -20,6 +19,7 @@ router.post('/change-status', grantAccess("updateAny", "order"), asyncErrorHandl
 router.get('/get-one-for-admin/:orderId', grantAccess("readAny", "order"), asyncErrorHandler(orderController.getOneOrderByAdmin));
 router.get('/count-order', grantAccess("readAny", "order"), asyncErrorHandler(orderController.getOrderCountByStatus));
 
+router.get('/statistic/value', grantAccess("readAny", "dashboard"), asyncErrorHandler(orderController.getOrdersAnalyticsByTimeRange));
 
 // user
 router.post('/check-purchase', asyncErrorHandler(orderController.hasUserPurchasedProduct));
