@@ -338,8 +338,11 @@ export class OrderService {
                             skuId
                         })
                     ),
-                    ...shop_discount.map((discountId) => {
-                        DiscountService.addDiscountUserUsage(discountId, userId)
+                    ...newOrder.order_discount.map((discountId) => {
+                        DiscountService.addDiscountUserUsage({
+                            discountId,
+                            userId
+                        })
                     })
                 ]);
                 if (newOrder.order_checkout.usedLoyalPoint > 0) {

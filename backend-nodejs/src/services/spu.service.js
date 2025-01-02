@@ -651,4 +651,34 @@ export class SpuService {
         return spus;
     }
 
+    static async filterSpuForVoucher({
+        startTime,
+        endTime,
+        product_name,
+        categoryId,
+        limit = 100,
+        skip = 0,
+    }) {
+        const filter = {};
+
+        if (product_name) {
+            filter.product_name = {
+                $regex: product_name,
+                $options: 'i'
+            };
+        }
+
+        if (categoryId) {
+            filter.product_category = {
+                $in: [categoryId]
+            };
+        }
+
+        const spus = await spuModel.find(filter)
+            .limit(limit)
+            .skip(skip)
+            .lean();
+
+        return spus;
+    }
 }
