@@ -219,7 +219,7 @@ const getListAddress = async ({
         if (!user) {
             throw new Error('User not found');
         }
-        return user.usr_address; // Return the addresses, including fullAddress
+        returnuserModel.usr_address; // Return the addresses, including fullAddress
     } catch (error) {
         console.error("Error fetching addresses:", error);
         throw error;
@@ -471,6 +471,139 @@ const changeUserRole = async ({
     return updatedUser;
 };
 
+const getUserStats = async () => {
+    try {
+        const stats = await Promise.all([
+            // Total users count
+            userModel.countDocuments(),
+            // Active users count
+            userModel.countDocuments({
+                usr_status: 'active'
+            }),
+            // Blocked users count
+            userModel.countDocuments({
+                usr_status: 'block'
+            }),
+            // Users with Google login
+            userModel.countDocuments({
+                googleId: {
+                    $exists: true,
+                    $ne: null
+                }
+            }),
+            // Users by gender
+            userModel.aggregate([{
+                $group: {
+                    _id: '$usr_sex',
+                    count: {
+                        $sum: 1
+                    }
+                }
+            }]),
+            // Users registration by month (current year)
+            userModel.aggregate([{
+                    $match: {
+                        createdAt: {
+                            $gte: new Date(new Date().getFullYear(), 0, 1)
+                        }
+                    }
+                },
+                {
+                    $group: {
+                        _id: {
+                            $month: '$createdAt'
+                        },
+                        count: {
+                            $sum: 1
+                        }
+                    }
+                },
+                {
+                    $sort: {
+                        '_id': 1
+                    }
+                }
+            ]),
+            // Top users by loyal points
+            userModel.find({
+                usr_loyalPoint: {
+                    $gt: 0
+                }
+            })
+            .sort({
+                usr_loyalPoint: -1
+            })
+            .limit(10)
+            .select('usr_name usr_loyalPoint usr_email'),
+            // Users by city
+            userModel.aggregate([{
+                    $unwind: '$usr_address'
+                },
+                {
+                    $match: {
+                        'usr_address.isDefault': true
+                    }
+                },
+                {
+                    $group: {
+                        _id: '$usr_address.city',
+                        count: {
+                            $sum: 1
+                        }
+                    }
+                },
+                {
+                    $sort: {
+                        count: -1
+                    }
+                },
+                {
+                    $limit: 10
+                }
+            ])
+        ]);
+
+        const [
+            totalUsers,
+            activeUsers,
+            blockedUsers,
+            googleUsers,
+            genderStats,
+            monthlyRegistrations,
+            topLoyalUsers,
+            cityStats
+        ] = stats;
+
+        // Process monthly data to include all months
+        const months = Array.from({
+            length: 12
+        }, (_, i) => i + 1);
+        const monthlyData = months.map(month => {
+            const found = monthlyRegistrations.find(item => item._id === month);
+            return {
+                month: new Date(0, month - 1).toLocaleString('default', {
+                    month: 'long'
+                }),
+                count: found ? found.count : 0
+            };
+        });
+
+        return {
+            overview: {
+                totalUsers,
+                activeUsers,
+                blockedUsers,
+                googleUsers
+            },
+            genderDistribution: genderStats,
+            monthlyRegistrations: monthlyData,
+            topLoyalUsers,
+            cityDistribution: cityStats
+        };
+    } catch (error) {
+        throw new Error(`Error getting user statistics: ${error.message}`);
+    }
+}
 export {
     newUserService,
     checkLoginEmailTokenService,
@@ -484,5 +617,6 @@ export {
     updateProfileService,
     getListUser,
     changeUserStatus,
-    changeUserRole
+    changeUserRole,
+    getUserStats
 };

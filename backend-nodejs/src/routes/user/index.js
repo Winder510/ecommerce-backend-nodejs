@@ -13,6 +13,8 @@ import {
 
 const router = express.Router();
 
+
+router.get('/statistic', asyncErrorHandler(userController.getUserStats));
 router.post('/address', asyncErrorHandler(userController.addNewUserAddress));
 router.get('/address/:id', asyncErrorHandler(userController.getUserAddress));
 router.get('/default/address/:id', asyncErrorHandler(userController.getUserDefaultAddress));

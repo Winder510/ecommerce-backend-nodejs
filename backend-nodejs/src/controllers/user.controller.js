@@ -12,6 +12,7 @@ import {
     getDefaultAddress,
     getListAddress,
     getListUser,
+    getUserStats,
     updateProfileService,
 } from '../services/user.service.js';
 
@@ -129,6 +130,14 @@ class UserController {
             }),
         }).send(res);
     };
+
+    getUserStats = async (req, res, next) => {
+        return new SuccessResponse({
+            message: 'Change status',
+            metadata: await getUserStats(),
+        }).send(res);
+    };
+
 
     getUserRole = async (req, res) => {
         try {

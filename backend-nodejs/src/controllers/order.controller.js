@@ -98,6 +98,13 @@ class CheckOutController {
         }).send(res);
     };
 
-
+    getOrdersAnalyticsByTimeRange = async (req, res, next) => {
+        new SuccessResponse({
+            message: 'Check purchase',
+            metadata: await OrderService.getOrdersAnalyticsByTimeRange({
+                ...req.query
+            }),
+        }).send(res);
+    };
 }
 export default new CheckOutController();

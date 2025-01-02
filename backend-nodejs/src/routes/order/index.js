@@ -12,6 +12,7 @@ import {
 
 const router = express.Router();
 
+router.get('/statistic/value', asyncErrorHandler(orderController.getOrdersAnalyticsByTimeRange));
 //admin
 router.use(authenticationV2)
 router.get('/get-all-for-admin', grantAccess("readAny", "order"), asyncErrorHandler(orderController.getListOrderForAdmin));

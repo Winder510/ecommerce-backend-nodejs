@@ -583,4 +583,193 @@ export class OrderService {
             throw new Error('Failed to check user purchase.');
         }
     };
+
+
+    static async getDashboardStats(startDate, endDate) {
+        try {
+            // Get basic order statistics
+            const stats = await orderModel.aggregate([{
+                    $match: {
+                        createdAt: {
+                            $gte: startDate ? new Date(startDate) : new Date(new Date().setDate(new Date().getDate() - 30)),
+                            $lte: endDate ? new Date(endDate) : new Date()
+                        }
+                    }
+                },
+                {
+                    $group: {
+                        _id: null,
+                        totalOrders: {
+                            $sum: 1
+                        },
+                        totalRevenue: {
+                            $sum: "$order_checkout.totalCheckOut"
+                        },
+                        totalShipping: {
+                            $sum: "$order_checkout.feeShip"
+                        },
+                        totalDiscount: {
+                            $sum: "$order_checkout.totalDiscount"
+                        },
+                        averageOrderValue: {
+                            $avg: "$order_checkout.totalCheckOut"
+                        }
+                    }
+                }
+            ]);
+
+            // Get orders by status
+            const ordersByStatus = await orderModel.aggregate([{
+                    $match: {
+                        createdAt: {
+                            $gte: startDate ? new Date(startDate) : new Date(new Date().setDate(new Date().getDate() - 30)),
+                            $lte: endDate ? new Date(endDate) : new Date()
+                        }
+                    }
+                },
+                {
+                    $group: {
+                        _id: "$order_status",
+                        count: {
+                            $sum: 1
+                        }
+                    }
+                }
+            ]);
+
+            // Get orders by payment method
+            const ordersByPaymentMethod = await orderModel.aggregate([{
+                    $match: {
+                        createdAt: {
+                            $gte: startDate ? new Date(startDate) : new Date(new Date().setDate(new Date().getDate() - 30)),
+                            $lte: endDate ? new Date(endDate) : new Date()
+                        }
+                    }
+                },
+                {
+                    $group: {
+                        _id: "$order_payment.payment_method",
+                        count: {
+                            $sum: 1
+                        },
+                        revenue: {
+                            $sum: "$order_checkout.totalCheckOut"
+                        }
+                    }
+                }
+            ]);
+
+            // Get daily orders trend
+            const dailyOrders = await orderModel.aggregate([{
+                    $match: {
+                        createdAt: {
+                            $gte: startDate ? new Date(startDate) : new Date(new Date().setDate(new Date().getDate() - 30)),
+                            $lte: endDate ? new Date(endDate) : new Date()
+                        }
+                    }
+                },
+                {
+                    $group: {
+                        _id: {
+                            $dateToString: {
+                                format: "%Y-%m-%d",
+                                date: "$createdAt"
+                            }
+                        },
+                        orders: {
+                            $sum: 1
+                        },
+                        revenue: {
+                            $sum: "$order_checkout.totalCheckOut"
+                        }
+                    }
+                },
+                {
+                    $sort: {
+                        "_id": 1
+                    }
+                }
+            ]);
+
+            // Get top selling products
+            const topProducts = await orderModel.aggregate([{
+                    $match: {
+                        createdAt: {
+                            $gte: startDate ? new Date(startDate) : new Date(new Date().setDate(new Date().getDate() - 30)),
+                            $lte: endDate ? new Date(endDate) : new Date()
+                        }
+                    }
+                },
+                {
+                    $unwind: "$order_products"
+                },
+                {
+                    $group: {
+                        _id: "$order_products.name",
+                        totalQuantity: {
+                            $sum: "$order_products.quantity"
+                        },
+                        totalRevenue: {
+                            $sum: {
+                                $multiply: ["$order_products.quantity", "$order_products.price.priceAfterDiscount"]
+                            }
+                        }
+                    }
+                },
+                {
+                    $sort: {
+                        totalQuantity: -1
+                    }
+                },
+                {
+                    $limit: 10
+                }
+            ]);
+
+            return {
+                summary: stats[0] || {
+                    totalOrders: 0,
+                    totalRevenue: 0,
+                    totalShipping: 0,
+                    totalDiscount: 0,
+                    averageOrderValue: 0
+                },
+                ordersByStatus,
+                ordersByPaymentMethod,
+                dailyOrders,
+                topProducts
+            };
+        } catch (error) {
+            throw new Error(`Error getting dashboard stats: ${error.message}`);
+        }
+    }
+
+    static async getOrdersAnalyticsByTimeRange({
+        timeRange
+    }) {
+        const now = new Date();
+        let startDate;
+
+        switch (timeRange) {
+            case 'today':
+                startDate = new Date(now.setHours(0, 0, 0, 0));
+                break;
+            case 'week':
+                startDate = new Date(now.setDate(now.getDate() - 7));
+                break;
+            case 'month':
+                startDate = new Date(now.setMonth(now.getMonth() - 1));
+                break;
+            case 'year':
+                startDate = new Date(now.setFullYear(now.getFullYear() - 1));
+                break;
+            default:
+                startDate = new Date(now.setDate(now.getDate() - 30));
+        }
+
+        return this.getDashboardStats(startDate, new Date());
+    }
+
+
+
 }
