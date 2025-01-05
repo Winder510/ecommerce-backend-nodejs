@@ -26,6 +26,7 @@ import skuModel from '../models/sku.model.js';
 import categoryModel from '../models/category.model.js';
 import promotionModel from '../models/promotion.model.js';
 import PromotionService from './promotion.service.js';
+import mongoose from 'mongoose';
 
 export class SpuService {
 
@@ -161,8 +162,9 @@ export class SpuService {
             },
             status: 'active',
         }).lean()
+        console.log("🚀 ~ SpuService ~ isInPromotion:", isInPromotion)
 
-        if (isInPromotion) throw new BadRequestError(`Sản phẩm này đang trong thời gian sự kiện ${isInPromotion[0].prom_name} không thể xóa. Hãy thử lại khi sự kiện kết thúc`)
+        if (isInPromotion.length !== 0) throw new BadRequestError(`Sản phẩm này đang trong thời gian sự kiện ${isInPromotion[0].prom_name} không thể xóa. Hãy thử lại khi sự kiện kết thúc`)
 
         await skuModel.deleteMany({
             product_id: spuId
@@ -376,17 +378,28 @@ export class SpuService {
 
     static async findAlLDraftSpu({
         limit = 10,
-        page = 1
+        page = 1,
+        stockStatus = '',
+        categoryId = '',
     }) {
         const query = {
             isDraft: true,
         };
 
+        if (stockStatus) {
+            query.product_stockStatus = stockStatus;
+        }
+
+        if (categoryId) {
+            query.product_category = {
+                $in: [new mongoose.Types.ObjectId(categoryId)]
+            };
+        }
+
         const skip = (page - 1) * limit;
-        // Get total count of matching documents
+
         const totalResult = await spuModel.countDocuments(query);
 
-        // Calculate total pages
         const totalPages = Math.ceil(totalResult / limit);
 
         const spus = await spuModel
@@ -400,25 +413,35 @@ export class SpuService {
             .lean()
             .exec();
 
-        return ({
+        return {
             products: spus,
             pagination: {
                 totalResult,
                 totalPages,
                 currentPage: page,
             }
-        })
-
+        };
     }
 
     static async findAllPublishSpu({
         limit = 10,
-        page = 1
+        page = 1,
+        stockStatus = '',
+        categoryId = '',
     }) {
         const query = {
             isDraft: false,
             isPublished: true,
         };
+        if (stockStatus) {
+            query.product_stockStatus = stockStatus;
+        }
+
+        if (categoryId) {
+            query.product_category = {
+                $in: [new mongoose.Types.ObjectId(categoryId)]
+            };
+        }
         const skip = (page - 1) * limit;
         // Get total count of matching documents
         const totalResult = await spuModel.countDocuments(query);
@@ -450,12 +473,24 @@ export class SpuService {
 
     static async findAllSpu({
         search,
+        stockStatus = '',
+        categoryId = '',
         limit = 10,
         page = 1
     }) {
         const query = {};
 
-        // Thêm điều kiện tìm kiếm theo tên (nếu có)
+        if (stockStatus) {
+            query.product_stockStatus = stockStatus;
+        }
+
+        if (categoryId) {
+            query.product_category = {
+                $in: [new mongoose.Types.ObjectId(categoryId)]
+            };
+        }
+        console.log("🚀 ~ SpuService ~ query:", query)
+
         if (search) {
             query.product_name = {
                 $regex: search,
@@ -465,10 +500,8 @@ export class SpuService {
 
         const skip = (page - 1) * limit;
 
-        // Get total count of matching documents
         const totalResult = await spuModel.countDocuments(query);
 
-        // Calculate total pages
         const totalPages = Math.ceil(totalResult / limit);
 
         const spus = await spuModel
