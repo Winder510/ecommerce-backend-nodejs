@@ -39,11 +39,12 @@ const sendSyncMessage = async ({
     await channel.close();
     await connection.close();
 }
+
 const sendNotifitoQueue = async (typeSend, {
+    userId = null,
     type,
-    recipientId,
-    senderId,
-    options = {}
+    priority = "",
+    metadata = {}
 }) => {
     const {
         channel,
@@ -79,11 +80,10 @@ const sendNotifitoQueue = async (typeSend, {
             JSON.stringify({
                 typeSend,
                 notifi_data: {
+                    userId,
                     type,
-                    recipientId,
-                    senderId,
-                    options,
-                    timestamp: new Date().toISOString(),
+                    priority,
+                    metadata,
                 }
             })
         )

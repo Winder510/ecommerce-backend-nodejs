@@ -1,9 +1,15 @@
-import { BadRequestError } from '../core/error.response.js';
+import {
+    BadRequestError
+} from '../core/error.response.js';
 import inventoryModel from '../models/inventory.model.js';
-import { getProductById } from '../models/repositories/product.repo.js';
+
 
 class InventoryService {
-    static async addStockToInventory({ stock, productId, location = 'QB' }) {
+    static async addStockToInventory({
+        stock,
+        productId,
+        location = 'QB'
+    }) {
         const product = await getProductById(productId);
         if (!product) {
             throw new BadRequestError('The product does not exists');

@@ -12,9 +12,6 @@ import {
     findAllDiscountCodeUnSelect
 } from '../models/repositories/discount.repo.js';
 import {
-    findAllProducts
-} from '../models/repositories/product.repo.js';
-import {
     sendNotifitoQueue
 } from './rabbitmq.service.js';
 
@@ -67,15 +64,22 @@ export default class DiscountService {
             discount_isPublic: isPublic
         });
 
-        // if ((newDiscount).discount_isPublic) {
-        //     sendNotifitoQueue(SEND_NOTIFICATION_TYPE.BROADCAST, {
-        //         type: TYPE_NOTIFICATION.PROMOTION_NEW,
-        //         senderId: 'system',
-        //         options: {
-        //             discount_name: name
-        //         }
-        //     })
-        // }
+        if ((newDiscount).discount_isPublic) {
+            sendNotifitoQueue(SEND_NOTIFICATION_TYPE.BROADCAST, {
+                type: "COUPON_RECEIVED",
+                metadata: {
+                    discount: {
+                        discountId: newDiscount._id,
+                        discountName: name,
+                        discountCode: code,
+                        discountValue: value,
+                        discountType: type,
+                        minPurchase: min_order_value,
+                        expiryDate: new Date(end_date)
+                    },
+                }
+            })
+        }
 
         return newDiscount;
     }

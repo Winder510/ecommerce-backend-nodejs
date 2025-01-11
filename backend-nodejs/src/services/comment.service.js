@@ -7,9 +7,7 @@ import {
     NotFoundError
 } from '../core/error.response.js';
 import commentModel from '../models/comment.model.js';
-import {
-    findProduct
-} from '../models/repositories/product.repo.js';
+
 import {
     sendNotifitoQueue
 } from './rabbitmq.service.js';

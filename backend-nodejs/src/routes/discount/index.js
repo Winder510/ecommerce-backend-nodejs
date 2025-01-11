@@ -12,6 +12,8 @@ import {
 
 const router = express.Router();
 
+router.post('', asyncErrorHandler(discountController.createDiscount));
+
 // get amount a discount
 router.post('/amount', asyncErrorHandler(discountController.getDiscountAmount));
 router.get('/list_product_code', asyncErrorHandler(discountController.getAllProdcutWithDiscountCode));
@@ -19,7 +21,7 @@ router.post('/amountV2', asyncErrorHandler(discountController.getDiscountAmountV
 // authentication
 router.use(authenticationV2);
 
-router.post('', grantAccess("createAny", "discount"), asyncErrorHandler(discountController.createDiscount));
+// router.post('', grantAccess("createAny", "discount"), asyncErrorHandler(discountController.createDiscount));
 router.patch('/:id', grantAccess("updateAny", "discount"), asyncErrorHandler(discountController.updateDiscount));
 router.delete('', grantAccess("deleteAny", "discount"), asyncErrorHandler(discountController.deleteDiscount));
 router.get('', asyncErrorHandler(discountController.getAllDiscountCode));

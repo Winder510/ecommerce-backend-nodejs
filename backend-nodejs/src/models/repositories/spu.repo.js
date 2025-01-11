@@ -1,10 +1,6 @@
 import {
     PRODUCT_STATUS
 } from '../../constant/index.js';
-
-import {
-    productModel
-} from '../product.model.js';
 import spuModel from '../spu.model.js';
 import {
     findSkuById,

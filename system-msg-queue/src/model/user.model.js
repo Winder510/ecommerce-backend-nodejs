@@ -10,6 +10,9 @@ var userSchema = new mongoose.Schema({
     usr_slug: {
         type: String,
     },
+    usr_img: {
+        type: String,
+    },
     usr_name: {
         type: String,
         required: true,
@@ -25,6 +28,33 @@ var userSchema = new mongoose.Schema({
     usr_phone: {
         type: String,
     },
+    usr_address: [{
+        fullName: {
+            type: String
+        },
+        phone: {
+            type: String
+        },
+        city: {
+            type: String
+        },
+        district: {
+            type: String
+        },
+        ward: {
+            type: String
+        },
+        specificAddress: {
+            type: String
+        },
+        isDefault: {
+            type: Boolean,
+            default: false
+        },
+        fullAddress: {
+            type: String
+        },
+    }],
     usr_sex: {
         type: String,
     },
@@ -32,17 +62,20 @@ var userSchema = new mongoose.Schema({
         type: String,
         default: '',
     },
+    usr_loyalPoint: {
+        type: Number,
+        default: 0,
+    },
     usr_date_of_birth: {
         type: Date,
         default: null,
     },
+    googleId: {
+        type: String,
+    },
     usr_role: {
         type: Schema.Types.ObjectId,
         ref: 'Role',
-    },
-    uer_favorite: {
-        type: Array,
-        default: []
     },
     usr_isDefaultPassword: {
         type: Boolean,
@@ -50,14 +83,12 @@ var userSchema = new mongoose.Schema({
     },
     usr_status: {
         type: String,
-        default: 'pending',
-        enum: ['pending', 'active', 'block'],
+        default: 'active',
+        enum: ['active', 'block'],
     },
 }, {
     timestamps: true,
     collection: COLLECTION_NAME,
 }, );
 
-
-//Export the model
 export default mongoose.model(DOCUMENT_NAME, userSchema);

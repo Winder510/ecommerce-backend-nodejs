@@ -1,130 +1,218 @@
-import {
-    TYPE_NOTIFICATION
-} from "../constant.js";
 import notificationModel from "../model/notification.model.js";
 import {
     getAllActiceUser,
     getUserById
 } from "./user.service.js";
-
-// Xử lý thông báo cho từng cá nhân
 export const processIndividualNotification = async (notificationData) => {
     try {
-        // Kiểm tra user tồn tại
-        const user = await getUserById(notificationData.recipientId);
+        // {
+        //     userId: 'user123',
+        //     type: 'ORDER_PLACED',
+        //     options: {
+        //       orderId: 'order123',
+        //       orderNumber: 'ORD123',
+        //       totalAmount: 1000000,
+        //       currency: 'VND',
+        //       items: [...]
+        //     }
 
-        if (!user) {
-            console.log(`User ${notificationData.recipientId} not found`);
-            return;
-        }
 
-        // Gửi thông báo
-        await pushNotifiToSystem({
-            receivedId: user.id,
+        // Tạo notification theo model mới
+        const notification = await createNotification({
+            userId,
             type: notificationData.type,
-            senderId: notificationData.senderId || 'system',
-            options: notificationData.options
+            ...generateNotificationContent(notificationData)
         });
 
+        // Gửi realtime notification nếu cần
+        await sendRealTimeNotification(notification);
+
         console.log(`Sent individual notification to user ${user.id}`);
+        return notification;
     } catch (error) {
         console.error('Error in individual notification processing:', error);
         throw error;
     }
 };
 
-// Xử lý thông báo broadcast
 export const processBroadcastNotification = async (notificationData) => {
     try {
+
+        console.log("🚀 ~ notificationData:", notificationData)
+        // type: 'PROMOTION_START',
+        // options: {
+        //   promoId: 'promo123',
+        //   promoCode: 'SALE50',
+        //   discountValue: 50,
+        //   discountType: 'percentage',
+        //   message: 'Siêu sale cuối năm!'
+
         // Lấy danh sách tất cả user active
         const users = await getAllActiceUser();
+        console.log("🚀 ~ users:", users)
 
         // Gửi thông báo cho từng user
         const notificationPromises = users.map(async (user) => {
             try {
-                await pushNotifiToSystem({
-                    receivedId: user._id,
+                const notification = await createNotification({
+                    userId: user._id,
                     type: notificationData.type,
-                    senderId: notificationData.senderId || 'system',
-                    options: notificationData.options
+                    ...generateNotificationContent(notificationData)
                 });
+
+                // Gửi realtime notification
+                await sendRealTimeNotification(notification);
+                return notification;
             } catch (userNotificationError) {
                 console.error(`Failed to send notification to user ${user.id}:`, userNotificationError);
+                return null;
             }
         });
 
-        // Đợi tất cả thông báo được gửi
-        await Promise.allSettled(notificationPromises);
+        const results = await Promise.allSettled(notificationPromises);
+        const successCount = results.filter(result => result.status === 'fulfilled' && result.value).length;
 
-        console.log(`Broadcast notification sent to ${users.length} users`);
+        console.log(`Broadcast notification sent successfully to ${successCount}/${users.length} users`);
+        return results;
     } catch (error) {
         console.error('Error in broadcast notification processing:', error);
         throw error;
     }
 };
 
-const pushNotifiToSystem = async ({
-    type,
-    receivedId,
-    senderId,
-    options = {}
-}) => {
-    let noti_content = getNotificationContent(type);
-
-    const newNotification = await notificationModel.create({
-        noti_type: type,
-        noti_receivedId: receivedId,
-        noti_options: options,
-        noti_senderId: senderId,
-        noti_content: noti_content,
-        noti_isRead: false, // Mặc định là chưa đọc
+const createNotification = async (data) => {
+    const notification = await notificationModel.create({
+        userId: data.userId,
+        type: data.type,
+        title: data.title,
+        message: data.message,
+        metadata: data.metadata,
+        actionUrl: data.actionUrl,
+        priority: data.priority || 'normal',
+        isRead: false,
+        isDelivered: false,
+        expiresAt: data.expiresAt
     });
-    return newNotification;
+    return notification;
 };
 
+const generateNotificationContent = (data) => {
+    let notificationContent = {
+        title: '',
+        message: '',
+        actionUrl: '',
+        metadata: {}
+    };
+
+    switch (data.type) {
+        case 'ORDER_PLACED':
+            notificationContent = {
+                title: 'Đặt hàng thành công',
+                message: 'Đơn hàng của bạn đã được đặt thành công.',
+                actionUrl: `/profile/order-list/${data.options?.orderId}`,
+                metadata: {
+                    order: {
+                        orderId: data.options?.orderId,
+                        orderNumber: data.options?.orderNumber,
+                        totalAmount: data.options?.totalAmount,
+                        currency: data.options?.currency,
+                        items: data.options?.items
+                    }
+                }
+            };
+            break;
+
+        case 'ORDER_SHIPPED':
+            notificationContent = {
+                title: 'Đơn hàng đang vận chuyển',
+                message: 'Đơn hàng của bạn đã được giao cho đơn vị vận chuyển.',
+                actionUrl: `/profile/order-list/${data.options?.orderId}`,
+                metadata: {
+                    order: {
+                        orderId: data.options?.orderId,
+                        orderNumber: data.options?.orderNumber
+                    }
+                }
+            };
+            break;
+
+        case 'PRICE_DROP':
+            notificationContent = {
+                title: 'Giảm giá sản phẩm',
+                message: `${data.options?.productName} đã giảm giá!`,
+                actionUrl: `/products/${data.options?.productId}`,
+                metadata: {
+                    product: {
+                        productId: data.options?.productId,
+                        productName: data.options?.productName,
+                        oldPrice: data.options?.oldPrice,
+                        newPrice: data.options?.newPrice,
+                        discount: data.options?.discount,
+                        imageUrl: data.options?.imageUrl
+                    }
+                }
+            };
+            break;
+
+        case 'PROMOTION_START':
+            notificationContent = {
+                title: 'Khuyến mãi mới',
+                message: data.options?.message || 'Khuyến mãi mới đang chờ bạn!',
+                actionUrl: `/promotion/${data.options?.promoId}`,
+                metadata: {
+                    promotion: {
+                        promoId: data.options?.promoId,
+                        promoCode: data.options?.promoCode,
+                        discountValue: data.options?.discountValue,
+                        discountType: data.options?.discountType,
+                        minPurchase: data.options?.minPurchase,
+                        expiryDate: data.options?.expiryDate
+                    }
+                }
+            };
+            break;
+        case 'COUPON_RECEIVED':
+            notificationContent = {
+                title: 'Voucher mới',
+                message: data.options?.message || 'Voucher mới đang chờ bạn!',
+                actionUrl: `/cart`,
+                metadata: {
+                    promotion: {
+                        promoId: data.options?.promoId,
+                        promoCode: data.options?.promoCode,
+                        discountValue: data.options?.discountValue,
+                        discountType: data.options?.discountType,
+                        minPurchase: data.options?.minPurchase,
+                        expiryDate: data.options?.expiryDate
+                    }
+                }
+            };
+            break;
+
+        default:
+            notificationContent = {
+                title: 'Thông báo mới',
+                message: data.options?.message || 'Bạn có thông báo mới',
+                actionUrl: '/',
+                metadata: {}
+            };
+    }
+
+    return notificationContent;
+};
 
 const sendRealTimeNotification = async (notification) => {
     try {
-        // Gửi socket hoặc push notification
-        // Ví dụ sử dụng socket.io
-        // socketService.emitToUser(notification.noti_receivedId, 'new_notification', notification);
+        // Thực hiện gửi notification qua socket hoặc push notification
+        // Ví dụ: socketService.emitToUser(notification.userId, 'new_notification', notification);
+
+        // Cập nhật trạng thái đã gửi
+        await notificationModel.findByIdAndUpdate(notification._id, {
+            isDelivered: true
+        });
+
     } catch (error) {
         console.error('Error sending realtime notification:', error);
+        throw error;
     }
-}
-
-function getNotificationContent(type) {
-    let noti_content = '';
-
-    switch (type) {
-        case TYPE_NOTIFICATION.ORDER_SUCCESS:
-            noti_content = 'Đơn hàng của bạn đã đặt thành công.';
-            break;
-        case TYPE_NOTIFICATION.ORDER_FAIL:
-            noti_content = 'Đơn hàng của bạn không thành công. Vui lòng thử lại.';
-            break;
-        case TYPE_NOTIFICATION.ORDER_PENDING:
-            noti_content = 'Đơn hàng của bạn đang chờ xử lý.';
-            break;
-        case TYPE_NOTIFICATION.ORDER_CONFIRMED:
-            noti_content = 'Đơn hàng của bạn đã được xác nhận.';
-            break;
-        case TYPE_NOTIFICATION.ORDER_SHIPPED:
-            noti_content = 'Đơn hàng của bạn đã được vận chuyển.';
-            break;
-        case TYPE_NOTIFICATION.ORDER_CANCELLED:
-            noti_content = 'Đơn hàng của bạn đã bị hủy.';
-            break;
-        case TYPE_NOTIFICATION.PROMOTION_NEW:
-            noti_content = 'Có khuyến mãi mới đang chờ bạn.';
-            break;
-        case TYPE_NOTIFICATION.PROMOTION_EXPIRE:
-            noti_content = 'Khuyến mãi của bạn đã hết hạn.';
-            break;
-        default:
-            noti_content = 'Loại thông báo không xác định.';
-            break;
-    }
-
-    return noti_content;
-}
+};
