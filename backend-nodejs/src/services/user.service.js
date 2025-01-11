@@ -251,7 +251,6 @@ const addNewAddress = async ({
 
         const fullAddress = `${specificAddress}, ${ward}, ${district}, ${city}`;
 
-        // Add the new address with the full address to the user object
         user.usr_address.push({
             fullName,
             phone,
@@ -260,7 +259,7 @@ const addNewAddress = async ({
             ward,
             specificAddress,
             isDefault,
-            fullAddress, // Store the full address
+            fullAddress,
         });
 
         await user.save();
@@ -271,28 +270,157 @@ const addNewAddress = async ({
     }
 };
 
-const getDefaultAddress = async ({
-    id
+const updateAddress = async ({
+    userId,
+    addressId,
+    updatedAddress
 }) => {
     try {
-        const user = await userModel.findById(id); // Assuming 'User' is the model for the 'userSchema'
+        const user = await userModel.findById(userId);
         if (!user) {
             throw new Error('User not found');
         }
 
-        // Find the default address from the user's addresses
+        const addressIndex = user.usr_address.findIndex(
+            addr => addr._id.toString() === addressId
+        );
+
+        if (addressIndex === -1) {
+            throw new Error('Address not found');
+        }
+
+        const {
+            fullName,
+            phone,
+            city,
+            district,
+            ward,
+            specificAddress,
+            isDefault
+        } = updatedAddress;
+
+        if (!fullName || !phone || !city || !district || !ward || !specificAddress) {
+            throw new Error('Missing required address fields');
+        }
+
+        const fullAddress = `${specificAddress}, ${ward}, ${district}, ${city}`;
+        const newAddress = {
+            fullName,
+            phone,
+            city,
+            district,
+            ward,
+            specificAddress,
+            isDefault,
+            fullAddress,
+            _id: addressId
+        };
+
+        if (isDefault) {
+            user.usr_address.forEach(addr => {
+                addr.isDefault = false;
+            });
+        }
+
+        user.usr_address[addressIndex] = newAddress;
+
+        await user.save();
+        return user.usr_address;
+    } catch (error) {
+        console.error("Error updating address:", error);
+        throw error;
+    }
+};
+
+const deleteAddress = async ({
+    userId,
+    addressId
+}) => {
+    try {
+        const user = await userModel.findById(userId);
+        if (!user) {
+            throw new Error('User not found');
+        }
+
+        const addressIndex = user.usr_address.findIndex(
+            addr => addr._id.toString() === addressId
+        );
+
+        if (addressIndex === -1) {
+            throw new Error('Address not found');
+        }
+
+        const isDefaultAddress = user.usr_address[addressIndex].isDefault;
+        if (isDefaultAddress && user.usr_address.length > 1) {
+            const newDefaultIndex = addressIndex === 0 ? 1 : 0;
+            user.usr_address[newDefaultIndex].isDefault = true;
+        }
+
+        // Remove the address
+        user.usr_address.splice(addressIndex, 1);
+
+        await user.save();
+        return user.usr_address;
+    } catch (error) {
+        console.error("Error deleting address:", error);
+        throw error;
+    }
+};
+
+const getDefaultAddress = async ({
+    id
+}) => {
+    try {
+        const user = await userModel.findById(id);
+        if (!user) {
+            throw new Error('User not found');
+        }
+
         const defaultAddress = user.usr_address.find(address => address.isDefault === true);
 
         if (!defaultAddress) {
             throw new Error('No default address found');
         }
 
-        return defaultAddress; // Return the default address
+        return defaultAddress;
     } catch (error) {
         console.error("Error fetching default address:", error);
         throw error;
     }
 };
+
+const updateDefaultAddress = async ({
+    userId,
+    addressId
+}) => {
+    try {
+        const user = await userModel.findById(userId);
+        if (!user) {
+            throw new Error('User not found');
+        }
+
+        const addressIndex = user.usr_address.findIndex(
+            addr => addr._id.toString() === addressId
+        );
+
+        if (addressIndex === -1) {
+            throw new Error('Address not found');
+        }
+
+        user.usr_address.forEach(addr => {
+            addr.isDefault = false;
+        });
+
+        user.usr_address[addressIndex].isDefault = true;
+
+        await user.save();
+        return user.usr_address;
+    } catch (error) {
+        console.error("Error updating default address:", error);
+        throw error;
+    }
+};
+
 
 const updateLoyaltyPoints = async (userId, points) => {
     try {
@@ -428,7 +556,6 @@ const getListUser = async (filters) => {
     }
 };
 
-
 const changeUserStatus = async ({
     userId,
     status
@@ -474,7 +601,6 @@ const changeUserRole = async ({
 const getUserStats = async () => {
     try {
         const stats = await Promise.all([
-            // Total users count
             userModel.countDocuments(),
             // Active users count
             userModel.countDocuments({
