@@ -20,6 +20,11 @@ router.get('/default/address/:id', asyncErrorHandler(userController.getUserDefau
 router.get('/welcome', asyncErrorHandler(userController.checkLoginEmailToken));
 router.patch('', asyncErrorHandler(userController.changePassword));
 router.use(authenticationV2);
+
+router.put('/address/:addressId', asyncErrorHandler(userController.updateAddress));
+router.delete('/address/:addressId', asyncErrorHandler(userController.deleteAddress));
+router.patch('/update-default-address/:addressId', asyncErrorHandler(userController.updateDefaultAddress));
+
 router.put("/profile", asyncErrorHandler(userController.updateUserProfile));
 
 router.get('/statistic', grantAccess("readAny", "dashboard"), asyncErrorHandler(userController.getUserStats));

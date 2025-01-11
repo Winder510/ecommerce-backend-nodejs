@@ -275,61 +275,59 @@ const updateAddress = async ({
     addressId,
     updatedAddress
 }) => {
-    try {
-        const user = await userModel.findById(userId);
-        if (!user) {
-            throw new Error('User not found');
-        }
 
-        const addressIndex = user.usr_address.findIndex(
-            addr => addr._id.toString() === addressId
-        );
-
-        if (addressIndex === -1) {
-            throw new Error('Address not found');
-        }
-
-        const {
-            fullName,
-            phone,
-            city,
-            district,
-            ward,
-            specificAddress,
-            isDefault
-        } = updatedAddress;
-
-        if (!fullName || !phone || !city || !district || !ward || !specificAddress) {
-            throw new Error('Missing required address fields');
-        }
-
-        const fullAddress = `${specificAddress}, ${ward}, ${district}, ${city}`;
-        const newAddress = {
-            fullName,
-            phone,
-            city,
-            district,
-            ward,
-            specificAddress,
-            isDefault,
-            fullAddress,
-            _id: addressId
-        };
-
-        if (isDefault) {
-            user.usr_address.forEach(addr => {
-                addr.isDefault = false;
-            });
-        }
-
-        user.usr_address[addressIndex] = newAddress;
-
-        await user.save();
-        return user.usr_address;
-    } catch (error) {
-        console.error("Error updating address:", error);
-        throw error;
+    const user = await userModel.findById(userId);
+    if (!user) {
+        throw new Error('User not found');
     }
+
+    const addressIndex = user.usr_address.findIndex(
+        addr => addr._id.toString() === addressId
+    );
+
+    if (addressIndex === -1) {
+        throw new Error('Address not found');
+    }
+
+    const {
+        fullName,
+        phone,
+        city,
+        district,
+        ward,
+        specificAddress,
+        isDefault
+    } = updatedAddress;
+    console.log("🚀 ~ updatedAddress:", updatedAddress)
+
+    if (!fullName || !phone || !city || !district || !ward || !specificAddress) {
+        throw new Error('Missing required address fields');
+    }
+
+    const fullAddress = `${specificAddress}, ${ward}, ${district}, ${city}`;
+    const newAddress = {
+        fullName,
+        phone,
+        city,
+        district,
+        ward,
+        specificAddress,
+        isDefault,
+        fullAddress,
+        _id: addressId
+    };
+
+    if (isDefault) {
+        user.usr_address.forEach(addr => {
+            addr.isDefault = false;
+        });
+    }
+
+    user.usr_address[addressIndex] = newAddress;
+
+    await user.save();
+    return user.usr_address;
+
 };
 
 const deleteAddress = async ({
@@ -744,5 +742,8 @@ export {
     getListUser,
     changeUserStatus,
     changeUserRole,
-    getUserStats
+    getUserStats,
+    updateAddress,
+    deleteAddress,
+    updateDefaultAddress
 };
