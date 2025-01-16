@@ -103,7 +103,7 @@ export default class CommentService {
         await comment.save();
 
         if (rating > 0) {
-            updateRatingSpu(productId, await this.calculateAverageRating(productId))
+            await updateRatingSpu(productId, await this.calculateAverageRating(productId))
         }
         // if(comment){
         //     sendNotifitoQueue("INDIVIDUAL",{
@@ -399,9 +399,11 @@ export default class CommentService {
 
     static calculateAverageRating = async (productId) => {
         try {
+            const objectIdProductId = new mongoose.Types.ObjectId(productId);
+
             const result = await commentModel.aggregate([{
                     $match: {
-                        comment_productId: productId,
+                        comment_productId: objectIdProductId,
                         comment_rating: {
                             $gt: 0
                         } // Lọc những comment có rating hợp lệ
@@ -412,7 +414,7 @@ export default class CommentService {
                         _id: "$comment_productId",
                         averageRating: {
                             $avg: "$comment_rating"
-                        } // Tính rating trung bình
+                        }
                     }
                 }
             ]);
@@ -422,7 +424,6 @@ export default class CommentService {
                 return 0;
             }
 
-            // Trả về giá trị trung bình
             return result[0].averageRating;
         } catch (error) {
             console.error(`Lỗi: ${error.message}`);

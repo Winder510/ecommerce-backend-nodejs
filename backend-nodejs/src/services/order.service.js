@@ -714,7 +714,7 @@ export class OrderService {
                         },
                         totalRevenue: {
                             $sum: {
-                                $multiply: ["$order_products.quantity", "$order_products.price.priceAfterDiscount"]
+                                $multiply: ["$order_products.quantity", "$order_products.priceAfterDiscount"]
                             }
                         }
                     }
