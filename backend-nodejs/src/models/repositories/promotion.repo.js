@@ -1,3 +1,6 @@
+import {
+    BadRequestError
+} from "../../core/error.response.js";
 import promotionModel from "../promotion.model.js";
 
 export const isTimeSlotAvailable = async (startTime, endTime) => {
@@ -62,10 +65,36 @@ export const getTotalQuantityAppliedAndLimit = async (appliedProducts) => {
 
     // Lặp qua từng appliedProduct để tính tổng quantityLimit và appliedQuantity
     appliedProducts.forEach(appliedProduct => {
+        console.log("🚀 ~ getTotalQuantityAppliedAndLimitV2 ~ appliedProduct:", appliedProduct)
         appliedProduct.sku_list.forEach(sku => {
             totalQuantityLimit += sku.quantityLimit || 0; // Tính tổng quantityLimit
             totalAppliedQuantity += sku.appliedQuantity || 0; // Tính tổng appliedQuantity
         });
+    });
+
+    return {
+        totalQuantityLimit,
+        totalAppliedQuantity
+    };
+};
+
+export const getTotalQuantityAppliedAndLimitV2 = async (spuId, appliedProducts) => {
+    console.log("🚀 ~ getTotalQuantityAppliedAndLimitV2 ~ spuId:", spuId)
+    if (!appliedProducts || appliedProducts.length === 0) {
+        throw new BadRequestError("No applied products found");
+    }
+
+    let totalQuantityLimit = 0;
+    let totalAppliedQuantity = 0;
+
+    // Lặp qua từng appliedProduct để tính tổng quantityLimit và appliedQuantity
+    appliedProducts.forEach(appliedProduct => {
+        if (appliedProduct.spuId.toString() === spuId.toString()) {
+            appliedProduct.sku_list.forEach(sku => {
+                totalQuantityLimit += sku.quantityLimit || 0; // Tính tổng quantityLimit
+                totalAppliedQuantity += sku.appliedQuantity || 0; // Tính tổng appliedQuantity
+            });
+        }
     });
 
     return {

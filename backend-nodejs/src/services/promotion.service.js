@@ -7,6 +7,7 @@ import {
 import {
     getListAppliedSpu,
     getTotalQuantityAppliedAndLimit,
+    getTotalQuantityAppliedAndLimitV2,
     isTimeSlotAvailable
 } from '../models/repositories/promotion.repo.js'
 import {
@@ -357,12 +358,18 @@ class PromotionService {
         if (!spus || spus.length === 0) {
             throw new BadRequestError("No SPUs found for the provided promotion");
         }
+
         const {
             totalQuantityLimit,
             totalAppliedQuantity
         } = await getTotalQuantityAppliedAndLimit(appliedProducts)
 
         const spuswithPrice = await Promise.all(spus.map(async spu => {
+            const {
+                totalQuantityLimit,
+                totalAppliedQuantity
+            } = await getTotalQuantityAppliedAndLimitV2(spu._id, appliedProducts)
+
             return {
                 ...spu,
                 product_price: await getPriceSpu(spu._id),
