@@ -11,15 +11,18 @@ const app = express();
 import './dbs/init.mongo.js';
 import session from 'express-session';
 import passport from './configs/passport.config.js';
-import {
-    initRedis
-} from './dbs/init.redis.js';
-await initRedis();
-import {
-    initElastic
-} from './dbs/init.elastic.js';
-initElastic();
+
+// import {
+//     initRedis
+// } from './dbs/init.redis.js';
+// await initRedis();
+// import {
+//     initElastic
+// } from './dbs/init.elastic.js';
+
+// initElastic();
 // init middleware
+
 app.use('/api/v1/payment/webhook', express.raw({
     type: 'application/json'
 }));
@@ -36,6 +39,7 @@ app.use(
         optionsSuccessStatus: 204, // Trả về status code 204 cho yêu cầu OPTIONS
     }),
 );
+
 // For parsing application/json
 app.use(express.json());
 // For parsing application/x-www-form-urlencoded
