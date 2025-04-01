@@ -2,7 +2,7 @@ import {
     reservationIventory
 } from '../models/repositories/iventory.repo.js';
 import {
-    getRedis
+    getIORedis
 } from '../dbs/init.redis.js';
 import {
     reservationSku
@@ -15,7 +15,7 @@ const acquireLock = async ({
 }) => {
     const {
         instanceRedis: redisClient
-    } = getRedis();
+    } = getIORedis();
 
     const key = `lock_v2024_${productId}`;
     const retryTimes = 10;

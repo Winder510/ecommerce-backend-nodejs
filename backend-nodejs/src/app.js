@@ -5,23 +5,23 @@ import compression from 'compression';
 import router from './routes/index.js';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
-import './services/cronJob.service.js'
+// import './services/cronJob.service.js'
 const app = express();
+
 //init db
 import './dbs/init.mongo.js';
+import {
+    initIORedis
+} from './dbs/init.redis.js';
+import {
+    initElastic
+} from './dbs/init.elastic.js';
 import session from 'express-session';
 import passport from './configs/passport.config.js';
 
-// import {
-//     initRedis
-// } from './dbs/init.redis.js';
-// await initRedis();
-// import {
-//     initElastic
-// } from './dbs/init.elastic.js';
-
-// initElastic();
-// init middleware
+// Initialize databases
+await initIORedis();
+await initElastic();
 
 app.use('/api/v1/payment/webhook', express.raw({
     type: 'application/json'
@@ -64,11 +64,7 @@ app.use(passport.session());
 
 // init route
 app.use('/', router);
-app.get('/', (req, res) => {
-    res.send({
-        message: "Server is running",
-    })
-})
+
 // handling error
 app.use((req, res, next) => {
     const error = new Error('Not found !!');
@@ -87,4 +83,5 @@ app.use((error, req, res, next) => {
         message: error.message || 'Internal server error',
     });
 });
+
 export default app;

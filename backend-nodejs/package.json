@@ -25,6 +25,7 @@
         "elasticsearch": "^16.7.3",
         "express": "^4.19.2",
         "express-session": "^1.18.1",
+        "ioredis": "^5.6.0",
         "joi": "^17.13.3",
         "jsonwebtoken": "^9.0.2",
         "lodash": "^4.17.21",

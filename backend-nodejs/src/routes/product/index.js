@@ -11,6 +11,9 @@ import recommendController from '../../controllers/recommend.controller.js';
 import {
     grantAccess
 } from '../../middleware/rbac.js';
+import {
+    readCacheSpu
+} from '../../middleware/cacheSpu.middleware.js';
 
 
 const router = express.Router();
@@ -18,7 +21,7 @@ const router = express.Router();
 router.get('/search/:keySearch', asyncErrorHandler(productController.getListSearchSpu));
 
 
-router.get('/spu', asyncErrorHandler(productController.findOneSpu));
+router.get('/spu', readCacheSpu, asyncErrorHandler(productController.findOneSpu));
 router.get('/sku/select', asyncErrorHandler(productController.findOneSku));
 router.post('/sku/set-default', asyncErrorHandler(productController.setDefaultSku));
 router.get('/sku/select-all', asyncErrorHandler(productController.findOneSku));
@@ -40,7 +43,6 @@ router.get('/recommendations/home-page', asyncErrorHandler(recommendController.g
 router.get('/recommendations/cart', asyncErrorHandler(recommendController.getRecommendForCartPage))
 router.get('/recommendations/detail-product/:productId', asyncErrorHandler(recommendController.getRecommendForDetailProductPage))
 
-// tam thoi khong check auth
 router.post('/spu/new', grantAccess("createAny", "product"), asyncErrorHandler(productController.createSpu));
 router.patch('/spu/update/:id', grantAccess("updateAny", "product"), asyncErrorHandler(productController.updateSpu));
 router.delete('/spu/delete/:id', grantAccess("deleteAny", "product"), asyncErrorHandler(productController.deleteSpu));

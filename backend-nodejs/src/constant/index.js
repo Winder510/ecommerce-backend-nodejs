@@ -28,10 +28,18 @@ const SEND_NOTIFICATION_TYPE = {
     BROADCAST: 'BROADCAST',
     INDIVIDUAL: 'INDIIDUAL'
 }
+
+const KEY_CACHE = {
+    SKU: 'sku',
+    SPU: 'spu',
+    CATEGORY: 'category',
+    PRODUCT: 'product',
+}
 export {
     TYPE_NOTIFICATION,
     STOCK_STATUS,
     PRODUCT_STATUS,
     DISCOUNT_TYPE,
-    SEND_NOTIFICATION_TYPE
+    SEND_NOTIFICATION_TYPE,
+    KEY_CACHE
 };

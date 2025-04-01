@@ -1,4 +1,4 @@
-import redis from 'redis';
+import redis from 'ioredis';
 import {
     InternalError
 } from '../core/error.response.js';
@@ -29,26 +29,24 @@ const handleEventConnection = (connectionRedis) => {
     });
 };
 
-const initRedis = async () => {
+const initIORedis = async () => {
     if (client.instanceRedis) {
         console.log('Redis client is already initialized.');
         return client.instanceRedis;
     }
 
-    const instanceRedis = await redis.createClient({
-        url: 'redis://localhost:6379', //redis://localhost:6379
-        socket: {
-            reconnectStrategy: function (retries) {
-                console.log(retries);
-                if (retries > 20) {
-                    console.log('Too many attempts to reconnect. Redis connection was terminated');
-                    return new Error('Too many retries.');
-                } else {
-                    return retries * 500;
-                }
-            },
+    const instanceRedis = new redis({
+        host: 'localhost',
+        port: 6379,
+        retryStrategy(times) {
+            if (times > 20) {
+                console.log('Too many attempts to reconnect. Redis connection was terminated');
+                return new Error('Too many retries.');
+            }
+            return Math.min(times * 500, 2000);
         },
         connectTimeout: 10000,
+        lazyConnect: true
     });
 
     handleEventConnection(instanceRedis);
@@ -59,14 +57,14 @@ const initRedis = async () => {
     return client.instanceRedis;
 };
 
-const getRedis = () => {
+const getIORedis = () => {
     if (!client.instanceRedis) {
-        throw new InternalError('Redis client has not been initialized. Call initRedis() first.');
+        throw new InternalError('Redis client has not been initialized. Call initIORedis() first.');
     }
     return client;
 };
 
-const closeRedis = () => {
+const closeIORedis = () => {
     if (client.instanceRedis) {
         client.instanceRedis.quit((err, res) => {
             if (err) {
@@ -81,7 +79,7 @@ const closeRedis = () => {
 };
 
 export {
-    initRedis,
-    getRedis,
-    closeRedis
+    initIORedis,
+    getIORedis,
+    closeIORedis
 };

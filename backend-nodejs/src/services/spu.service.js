@@ -27,7 +27,14 @@ import categoryModel from '../models/category.model.js';
 import promotionModel from '../models/promotion.model.js';
 import PromotionService from './promotion.service.js';
 import mongoose from 'mongoose';
-
+import {
+    KEY_CACHE
+} from '../constant/index.js';
+import {
+    setCacheIO,
+    setCacheIOExpiration
+} from "../models/repositories/cache.repo.js"
+import exp from 'constants';
 export class SpuService {
 
     static async newSPu({
@@ -44,14 +51,6 @@ export class SpuService {
         isDraft,
         isPublished,
         isDeleted
-        // sku_list = [  "sku_index": [
-        //         1,
-        //         2
-        //     ],
-        //    
-        //     "sku_price": 2900,
-        //     "sku_stock": 2
-        //     ]
 
     }) {
         const product_quantity = sku_list.reduce((acc, sku) => {
@@ -183,6 +182,10 @@ export class SpuService {
     static async getOneSpu({
         _id
     }) {
+        if (!_id < 0) throw new BadRequestError('Missing required fields');
+
+        const spuKeyCache = `${KEY_CACHE.SPU}-${_id}`;
+
         const foundSpu = await spuModel.findById(_id).lean();
 
         if (!foundSpu) throw new BadRequestError('Spu not exists');
@@ -191,10 +194,21 @@ export class SpuService {
             product_id: _id,
         });
 
-        return {
+        const spuCache = {
             spu_info: _.omit(foundSpu, ['__v', 'isDeleted', 'updatedAt', 'createdAt']),
             sku_list: sku_list.map((sku) => _.omit(sku, ['__v', 'isDeleted', 'updatedAt', 'createdAt'])),
-        };
+        }
+
+        const valueCache = spuCache ? spuCache : null;
+
+        setCacheIOExpiration({
+            key: spuKeyCache,
+            value: JSON.stringify(valueCache),
+            expirationInSeconds: 60 * 60 * 24 * 7,
+        });
+
+        return valueCache;
+
     }
 
     static async getListPublishSpuByCategory({

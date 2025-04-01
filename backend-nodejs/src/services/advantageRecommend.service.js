@@ -3,7 +3,7 @@ import spuModel from '../models/spu.model.js';
 import orderModel from '../models/order.model.js';
 import userModel from '../models/user.model.js';
 import {
-    getRedis
+    getIORedis
 } from '../dbs/init.redis.js';
 import skuModel from '../models/sku.model.js';
 // const redis = new Redis({
