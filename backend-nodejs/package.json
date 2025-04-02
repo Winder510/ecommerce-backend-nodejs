@@ -13,6 +13,7 @@
     "license": "ISC",
     "dependencies": {
         "@elastic/elasticsearch": "7.17",
+        "@google/generative-ai": "^0.24.0",
         "accesscontrol": "^2.2.1",
         "amqplib": "^0.10.4",
         "bcrypt": "^5.1.0",

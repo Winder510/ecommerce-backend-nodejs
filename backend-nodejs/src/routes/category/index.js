@@ -10,9 +10,12 @@ import {
 import {
     authenticationV2
 } from '../../auth/authUtils.js';
+import {
+    readCacheCategory
+} from '../../middleware/cache.middleware.js';
 
 const router = express.Router();
-router.get('/all', asyncErrorHandler(CategoryController.getAllCategory));
+router.get('/all', readCacheCategory, asyncErrorHandler(CategoryController.getAllCategory));
 router.get('/find-one/:id', asyncErrorHandler(CategoryController.findOne));
 
 router.use(authenticationV2);

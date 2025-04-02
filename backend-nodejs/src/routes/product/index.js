@@ -13,7 +13,7 @@ import {
 } from '../../middleware/rbac.js';
 import {
     readCacheSpu
-} from '../../middleware/cacheSpu.middleware.js';
+} from '../../middleware/cache.middleware.js';
 
 
 const router = express.Router();

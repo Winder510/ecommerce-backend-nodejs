@@ -2,6 +2,12 @@ import categoryModel from '../models/category.model.js';
 import {
     BadRequestError
 } from '../core/error.response.js';
+import {
+    setCacheIO
+} from '../models/repositories/cache.repo.js';
+import {
+    KEY_CACHE
+} from '../constant/index.js';
 export class CategoryService {
     static async createCategory({
         name,
@@ -68,18 +74,21 @@ export class CategoryService {
 
         return Promise.all(
             subCategories.map(async (subCategory) => {
-                const children = await this.getSubCategories(subCategory._id); // Gọi đệ quy để lấy danh mục con
+                const children = await this.getSubCategories(subCategory._id);
                 return {
                     ...subCategory.toObject(),
-                    children, // Thêm danh mục con vào danh mục cha
+                    children,
                 };
             }),
         );
     }
 
     static async getCategories() {
+
+        const categoryKeyCache = `${KEY_CACHE.CATEGORY}-{all}`;
+
         // Tìm tất cả danh mục (bao gồm cả cha và con) với category_parentId là null hoặc khác null
-        const categories = await categoryModel.aggregate([{
+        let categories = await categoryModel.aggregate([{
                 $lookup: {
                     from: 'Categories', // Tên collection cho các danh mục
                     localField: '_id', // Trường liên kết với bảng con (category_parentId trong bảng con)
@@ -110,6 +119,13 @@ export class CategoryService {
                 }
             }
         ]);
+
+        categories = categories ? categories : [];
+
+        setCacheIO({
+            key: categoryKeyCache,
+            value: JSON.stringify(categories)
+        })
 
         return categories;
     }
