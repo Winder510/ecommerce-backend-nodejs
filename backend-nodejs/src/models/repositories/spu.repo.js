@@ -56,6 +56,7 @@ const querySpu = async ({
         }
     };
 };
+
 const querySpuV2 = async ({
     query,
     sort = {
@@ -362,8 +363,6 @@ const getSpuByIds = async (productIds = [], {
         throw new Error("Failed to fetch products");
     }
 };
-
-
 
 const getPriceSpu = async (spuId) => {
     return await getLowestPriceSku(spuId)

@@ -18,7 +18,7 @@ import productRouter from './product/index.js';
 import promotionRouter from './promotion/index.js';
 import ESRouter from './elasticSearch/index.js';
 import orderRouter from './order/index.js';
-
+import chatBotRouter from './chatBot/index.js';
 
 
 
@@ -45,7 +45,7 @@ router.use('/api/v1/checkout', checkoutRouter);
 router.use('/api/v1/cart', cartRouter);
 router.use('/api/v1/discount', discountRouter);
 router.use('/api/v1/payment', paymentRouter);
-//router.use('/api/v1', passportRouter);
+router.use('/api/v1/chat-bot', chatBotRouter);
 router.use('/api/v1/auth', accessRouter);
 
 

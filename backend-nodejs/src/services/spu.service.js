@@ -388,8 +388,6 @@ export class SpuService {
         }
     }
 
-
-
     static async findAlLDraftSpu({
         limit = 10,
         page = 1,
@@ -503,7 +501,6 @@ export class SpuService {
                 $in: [new mongoose.Types.ObjectId(categoryId)]
             };
         }
-        console.log("🚀 ~ SpuService ~ query:", query)
 
         if (search) {
             query.product_name = {
